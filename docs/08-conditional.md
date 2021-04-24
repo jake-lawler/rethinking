@@ -1,0 +1,353 @@
+# Conditional Manatees {#conditional}
+
+
+
+
+## Chapter Notes
+
+### Ruggedness & GDP Model {-}
+
+
+```r
+data(rugged) 
+
+# loading data, standardizing variables, creating index variable for continent ID (cid).
+
+data_rugged <- rugged %>%
+  mutate(log_gdp = log(rgdppc_2000))%>%
+  filter(!is.na(log_gdp)) %>%
+  mutate(log_gdp_std = log_gdp/ mean(log_gdp),
+         rugged_std = rugged/ max(rugged),
+         cid= if_else(cont_africa==1,1,2),
+         cid = factor(cid))
+  
+# plotting priors
+
+rugged_prior <- tibble(a=rnorm(100,1,0.1),b=rnorm(100,0,0.3),mu=a+b)
+
+ggplot()+
+  geom_abline(data=rugged_prior, mapping=aes(slope=b,intercept=a - b *mean(data_rugged$rugged_std)))+
+  geom_hline(yintercept = max(data_rugged$log_gdp_std) ,colour="red")+
+  geom_hline(yintercept = min(data_rugged$log_gdp_std),colour="red")+
+  xlim(0,1)+
+  xlab("Ruggedness")+
+  ylab("Log GDP")
+```
+
+![](08-conditional_files/figure-epub3/unnamed-chunk-2-1.png)<!-- -->
+
+```r
+# regression of log gdp on ruggedness
+
+set.seed(100)
+m8.1 <- quap( alist(
+log_gdp_std ~ dnorm( mu , sigma ) , 
+mu <- a + b*( rugged_std - 0.215 ) , 
+a ~ dnorm( 1 , 0.1 ) , 
+b ~ dnorm( 0 , 0.3 ) , sigma ~ dexp(1)
+) , data=data_rugged )
+
+# model including continent ID
+
+set.seed(100)
+m8.2 <- quap( alist(
+log_gdp_std ~ dnorm( mu , sigma ) , 
+mu <- a[cid] + b*( rugged_std - 0.215 ) , 
+a[cid] ~ dnorm( 1 , 0.1 ) , 
+b ~ dnorm( 0 , 0.3 ) , 
+sigma ~ dexp( 1 )
+) , data=data_rugged )
+
+compare( m8.1 , m8.2 )
+```
+
+```
+##           WAIC       SE    dWAIC     dSE    pWAIC       weight
+## m8.2 -251.8651 15.45758  0.00000      NA 4.469525 1.000000e+00
+## m8.1 -188.8462 13.31864 63.01889 15.2182 2.648242 2.068341e-14
+```
+
+```r
+rugged_precis <- precis(m8.2,depth = 2)
+
+
+
+rugged_seq <- seq( from=-0.1 , to=1.1 , length.out=30 ) # compute mu over samples, fixing cid=2 and then cid=1 
+
+mu_not_africa <- as_tibble(link( m8.2 ,
+data=tibble( cid=2 , rugged_std=rugged_seq ) ))
+```
+
+```
+## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+## Using compatibility `.name_repair`.
+```
+
+```r
+mu_africa <- as_tibble(link( m8.2 ,
+data=tibble( cid=1 , rugged_std=rugged_seq ) ))
+
+not_africa_lower <- purrr::map_dbl(mu_not_africa,quantile,probs=0.025,names=FALSE)
+
+not_africa_mean <- purrr::map_dbl(mu_not_africa,mean)
+
+not_africa_upper <- purrr::map_dbl(mu_not_africa,quantile,probs=0.975,names=FALSE)
+
+
+
+africa_lower <- purrr::map_dbl(mu_africa,quantile,probs=0.025,names=FALSE)
+
+africa_mean <- purrr::map_dbl(mu_africa,mean)
+
+africa_upper <- purrr::map_dbl(mu_africa,quantile,probs=0.975,names=FALSE)
+
+
+shaded_interval <- tibble(rugged = rugged_seq, na_lower = not_africa_lower, na_mean = not_africa_mean, na_upper = not_africa_upper,
+                                               a_lower = africa_lower, a_mean = africa_mean, a_upper = africa_upper)
+
+
+
+ggplot(data = shaded_interval)+
+  geom_point(data = data_rugged, mapping = aes(x=rugged_std, y = log_gdp_std, colour = cid))+
+# geom_line(aes(x=rugged,y=na_mean),colour="#00BFC4")+
+# geom_line(aes(x=rugged,y=a_mean),colour="#F8766D")+
+  geom_abline(data=rugged_precis, aes(intercept = mean[2],slope = mean[3]), colour= "#00BFC4")+ 
+  geom_abline(data=rugged_precis, aes(intercept = mean[1],slope = mean[3]), colour= "#F8766D")+
+  geom_ribbon(aes(x=rugged,ymin=na_lower,ymax=na_upper),alpha=0.1,fill="#00BFC4")+
+  geom_ribbon(aes(x=rugged,ymin=a_lower,ymax=a_upper),alpha=0.1,fill="#F8766D")+
+  xlim(0, 1)+
+  xlab("Ruggedness")+
+  ylab("Log GDP")+
+  theme(legend.position =  "none")
+```
+
+![](08-conditional_files/figure-epub3/unnamed-chunk-2-2.png)<!-- -->
+
+```r
+# model allowing slopes to vary
+
+set.seed(100)
+m8.3 <- quap( alist(
+log_gdp_std ~ dnorm( mu , sigma ) , 
+mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) , 
+a[cid] ~ dnorm( 1 , 0.1 ) , 
+b[cid] ~ dnorm( 0 , 0.3 ) , 
+sigma ~ dexp( 1 )
+) , data=data_rugged )  
+ 
+compare( m8.1 , m8.2 , m8.3 , func=PSIS )
+```
+
+```
+##           PSIS       SE     dPSIS       dSE    pPSIS       weight
+## m8.3 -258.6786 15.32203  0.000000        NA 5.353173 9.696032e-01
+## m8.2 -251.7535 15.53286  6.925096  6.789394 4.525019 3.039684e-02
+## m8.1 -188.8192 13.36087 69.859371 15.531288 2.661879 6.558798e-16
+```
+
+```r
+rugged_precis_2 <- precis(m8.3,depth = 2)
+
+mu_not_africa_2 <- as_tibble(link( m8.3 ,
+data=tibble( cid=2 , rugged_std=rugged_seq ) ))
+
+mu_africa_2 <- as_tibble(link( m8.3 ,
+data=tibble( cid=1 , rugged_std=rugged_seq ) ))
+
+not_africa_lower_2 <- purrr::map_dbl(mu_not_africa_2,quantile,probs=0.025,names=FALSE)
+
+not_africa_mean_2 <- purrr::map_dbl(mu_not_africa_2,mean)
+
+not_africa_upper_2 <- purrr::map_dbl(mu_not_africa_2,quantile,probs=0.975,names=FALSE)
+
+
+
+africa_lower_2 <- purrr::map_dbl(mu_africa_2,quantile,probs=0.025,names=FALSE)
+
+africa_mean_2 <- purrr::map_dbl(mu_africa_2,mean)
+
+africa_upper_2 <- purrr::map_dbl(mu_africa_2,quantile,probs=0.975,names=FALSE)
+
+
+shaded_interval_2 <- tibble(rugged = rugged_seq, na_lower = not_africa_lower_2, na_mean = not_africa_mean_2, na_upper = not_africa_upper_2,
+                                               a_lower = africa_lower_2, a_mean = africa_mean_2, a_upper = africa_upper_2)
+```
+
+
+
+To do: check why geom_line excludes 6 rows in the second plot.
+Fix the graph labels to label africa / not africa correctly.
+Consider wrapping work in a function. I can use this function later to plot model results, and shaded intervals easily.
+
+
+
+
+## Questions
+
+### 8E1 {-}
+
+#### Question {-}
+
+For each of the causal relationships below, name a hypothetical third variable that would lead to an interaction effect.
+
+1. Bread dough rises because of yeast. 
+
+2. Education leads to higher income.
+
+3. Gasoline makes a car go.
+
+#### Answer {-}
+
+Here are three hypotheses about interaction effects:
+
+1. The amount that yeast causes bread dough to rise depends on temperature.
+
+2. The effect that education has on income depends on the industry you work in.
+
+3. That effect that gasoline has on car speed depends on whether the engine is running.
+
+
+
+### 8E2 {-}
+
+#### Question {-}
+
+Which of the following explanations invokes an interaction?
+
+1. Caramelizing onions requires cooking over low heat and making sure the onions do not dry out.
+
+2. A car will go faster when it has more cylinders or when it has a better fuel injector. 
+
+3. Most people acquire their political beliefs from their parents, unless they get them instead from their friends.
+
+4. Intelligent animal species tend to be either highly social or have manipulative appendages (hands, tentacles, etc.).
+
+#### Answer {-}
+
+1. This is an interaction effect. The effect of low heat on caramelisation depends on moisture.
+
+2. I don't know enough about car engines to know if this is an interaction effect. The question doesn't suggest that the effect of additional cylinders depends on fuel injector quality, so this wouldn't be an interaction effect.
+
+3. Can interpret this sentence as an interaction effect: the effect a person's parents' political beliefs on them depends on whether they have adopted their friends' beliefs.
+
+4. Don't think this suggests an interaction effect.
+
+
+### 8E3 {-}
+
+#### Question {-}
+
+For each of the explanations in 8E2, write a linear model that expresses the stated relationship.
+
+#### Answer {-}
+
+1. Caramelizing onions requires cooking over low heat and making sure the onions do not dry out.
+
+
+$$
+\begin{aligned}
+&\text{Caramelisation} \sim \text{Normal}(\mu,\sigma) \\
+&\mu = \alpha + \beta_{h} * \text{heat} + \beta_w * \text{water} + \beta_i * \text{heat}*\text{water} 
+\end{aligned}
+$$
+
+2. A car will go faster when it has more cylinders or when it has a better fuel injector. 
+
+$$
+\begin{aligned}
+&\text{Speed} \sim \text{Normal}(\mu,\sigma) \\
+&\mu = \alpha + \beta_{c} * \text{cylinders} + \beta_f * \text{fuel injector quality}  \\
+\end{aligned}
+$$
+
+3. Most people acquire their political beliefs from their parents, unless they get them instead from their friends.
+
+$$
+\begin{aligned}
+&\text{beliefs} \sim \text{Normal}(\mu,\sigma) \\
+&\mu_i = \alpha + \beta_{p} * \text{parents' beliefs}_i + \beta_f * \text{friends' beliefs}_i + \beta_i * \text{parents' beliefs}_i*\text{friends' beliefs}_i  \\
+\end{aligned}
+$$
+
+4. Intelligent animal species tend to be either highly social or have manipulative appendages (hands, tentacles, etc.).
+
+$$
+\begin{aligned}
+&\text{intelligence} \sim \text{Normal}(\mu,\sigma) \\
+&\mu_i = \alpha + \beta_{s} * \text{sociality}_i + \beta_a * \text{appendages}_i  \\
+\end{aligned}
+$$
+
+The statement above doesn't suggest that sociality or manipulative appendages cause intelligence. But that if you want to predict a species' intelligence, having information about either of those two traits will help you.
+
+
+### 8M1 {-}
+
+#### Question {-}
+
+Recall the tulips example from the chapter. Suppose another set of treatments adjusted the temperature in the greenhouse over two levels: cold and hot. 
+The data in the chapter were collected at the cold temperature. You find none of the plants grown under the hot temperature developed any blooms at all, regardless of the water and shade levels. 
+
+Can you explain this result in terms of interactions between water, shade, and temperature?
+
+#### Answer {-}
+
+The effect of water and shade on the development of blooms depends on temperature. At hot temperatures, no amount of light and water will cause blooms.
+
+
+### 8M2 {-}
+
+#### Question {-}
+
+Can you invent a regression equation that would make the bloom size zero, whenever the temperature is hot?
+
+#### Answer {-}
+
+Here's the original model:
+
+$$
+\begin{aligned}
+&\text{B}_i \sim \text{Normal}(\mu,\sigma) \\
+&\mu = \alpha + \beta_{W} * \text{W}_i + \beta_S * \text{S}_i + \beta_{WS} * \text{W}_i* \text{S}_i  \\
+\end{aligned}
+$$
+
+Here's one that produces no blooms whenever temperature is hot:
+
+$$
+\begin{aligned}
+&\text{B}_i \sim \text{Normal}(\mu,\sigma) \\
+&\mu = \left( alpha + \beta_{W} * \text{W}_i + \beta_S * \text{S}_i + \beta_{WS} * \text{W}_i* \text{S}_i \right) * \text{cold}  \\
+\end{aligned}
+$$
+
+Where the cold variable can take two values, 1 for cold and 0 for hot.
+
+
+### 8M3 {-}
+
+#### Question {-}
+
+In parts of North America, ravens depend upon wolves for their food. This is because ravens are carnivorous but cannot usually kill or open carcasses of prey. Wolves however can and do kill and tear open animals, and they tolerate ravens co-feeding at their kills. This species relationship is generally described as a “species interaction.” 
+
+Can you invent a hypothetical set of data on raven population size in which this relationship would manifest as a statistical interaction? Do you think the biological interaction could be linear? Why or why not?
+
+#### Answer {-}
+
+
+What is the outcome variable of interest? Is it population of ravens?
+
+Raven population size
+Wolf population size
+Prey population size
+
+
+It may not be linear - perhaps when there are few wolves, increasing the number of wolves permits the raven population to increase with the number of prey animals
+
+
+
+
+
+
+
+

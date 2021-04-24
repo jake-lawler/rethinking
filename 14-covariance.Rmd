@@ -1,0 +1,530 @@
+# Adventures in Covariance {#covariance}
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE}
+
+library(MASS)
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(cowplot)
+
+inverse_logit <- function(x){
+  exp(x) / (1 + exp(x))
+}
+
+```
+
+## Chapter Notes
+
+### Varying Slopes by Construction {-}
+
+The chapter introduces a simulation exercise to explain varying effects models. We have a population of cafes, and are interested in waiting times. As in the previous chapter, we'll allow intercepts to vary, with partial pooling across cafes. But we're also interested in the effect of the predictor afternoon (i.e. whether you are getting coffee in the morning or afternoon). We want to also allow the slopes to vary, and to pool across cafes. This is a *varying effects* strategy. 
+
+More than this, the key addition here is that we also want to allow our intercepts and slopes to covary, pooling information across intercepts and slopes.
+
+We're going to use a multi-variate normal distribution to generate a population of cafes. We need a vector of means and a variance-covariance matrix:
+
+```{r}
+
+a <- 3.5 
+b <- (-1)
+sigma_a <- 1 
+sigma_b <- 0.5 
+rho <- (-0.7)
+
+Mu <- c(a,b)
+
+
+
+```
+
+Where
+
+* $a$ is average morning wait time
+* $b$ is average difference in wait time between morning and afternoon 
+* we have the standard deviations in the intercepts and slopes
+* $\rho$ is correlation between intercepts and slopes
+* $\mu$ is the vector of means
+
+We could build the variance covariance matrix directly it should look like this:
+
+$$
+\begin{pmatrix}
+\sigma_\alpha^2 & \sigma_\alpha \sigma_\beta \rho \\
+\sigma_\alpha \sigma_\beta \rho & \sigma_\beta^2 
+\end{pmatrix}
+$$
+
+Instead we decompose it, in a way that treats the standard deviations and correlations separately, because this will become useful in setting priors
+
+```{r}
+
+sigmas <- c(sigma_a,sigma_b)  
+
+Rho <- matrix( c(1,rho,rho,1) , nrow=2 ) 
+
+Sigma <- diag(sigmas) %*% Rho %*% diag(sigmas)
+```
+
+i.e.
+
+$$
+\begin{pmatrix}
+\sigma_\alpha^2 & \sigma_\alpha \sigma_\beta \rho \\
+\sigma_\alpha \sigma_\beta \rho & \sigma_\beta^2 
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sigma_\alpha & 0 \\
+0 & \sigma_\beta 
+\end{pmatrix}
+\begin{pmatrix}
+1 &  \rho \\
+ \rho & 1 
+\end{pmatrix}
+\begin{pmatrix}
+\sigma_\alpha & 0 \\
+0 & \sigma_\beta 
+\end{pmatrix}
+$$
+
+That's the setup, here's the simulation part, with a plot of the data, that shows how the intercepts and slopes covary.
+
+```{r warning = FALSE}
+
+N_cafes <- 20
+
+set.seed(5)
+vary_effects <- as_tibble(mvrnorm(N_cafes, Mu, Sigma))%>%
+  rename(intercepts = V1, slopes = V2)
+
+vary_effects <- bind_cols(cafe = 1:N_cafes,vary_effects)
+
+plot_cafe_data <- ggplot(data = vary_effects, aes(x = intercepts, y = slopes))+
+  geom_point(col = "blue", shape = 1)
+
+  for (l in c(0.1,0.3,0.5,0.8,0.99)){
+  plot_cafe_data <- plot_cafe_data + 
+    stat_ellipse(type = "norm",level = l)}
+
+plot_cafe_data
+
+```
+
+Each point is a cafe.
+
+We now simulate 10 visits to each cafe:
+
+```{r}
+
+set.seed(22) 
+data_cafe <- tibble( cafe= rep( 1:N_cafes , each=10 ), 
+                     afternoon=rep(0:1,10*N_cafes/2))%>%
+  left_join(vary_effects, by = "cafe")%>%
+  mutate(wait = rnorm(200,mean  = intercepts + slopes * afternoon , sd = 0.5 ))
+
+```
+
+Now we fit a model to see if we can get back the data generating process. The model looks like this:
+
+$$
+\begin{aligned}
+W_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha_{\text{CAFE}[i]} + \beta_{\text{CAFE}[i]}A_i \\
+\\
+\begin{bmatrix}
+\alpha_{\text{CAFE}[i]} \\
+\beta_{\text{CAFE}[i]}
+\end{bmatrix}
+&\sim \text{MVNormal}\left( 
+\begin{bmatrix}
+\alpha \\
+\beta
+\end{bmatrix}
+, S
+\right) && \text{population of varying effects}\\
+\\
+S &= \begin{pmatrix}
+\sigma_\alpha & 0  \\
+ 0 & \sigma_\beta
+\end{pmatrix}
+R
+\begin{pmatrix}
+\sigma_\alpha & 0  \\
+ 0 & \sigma_\beta
+\end{pmatrix} && \text{construct covariance matrix} \\
+\\
+\alpha &\sim \text{Normal}(5,2) && \text{prior for average intercept}\\
+\beta &\sim \text{Normal}(-1,0.5) && \text{prior for average slope} \\
+\sigma &\sim \text{Exponential}(1) && \text{prior std dev within cafes} \\
+\sigma_\alpha &\sim \text{Exponential}(1) && \text{prior std dev among intercepts}\\
+\sigma_\beta &\sim \text{Exponential}(1) && \text{prior std dev among slopes}\\
+R &\sim \text{LKJcorr}(2) && \text{prior for correlation matrix}
+\end{aligned}
+$$
+
+```{r include = FALSE, cache = TRUE}
+
+list_cafe <- with(data_cafe, list(cafe = cafe, afternoon = afternoon, wait = wait))
+
+set.seed(100) 
+m14.1 <- ulam( alist(
+wait ~ normal( mu , sigma ),
+mu <- a_cafe[cafe] + b_cafe[cafe]*afternoon, 
+c(a_cafe,b_cafe)[cafe] ~ multi_normal( c(a,b) , Rho , sigma_cafe ), 
+a ~ normal(5,2), 
+b ~ normal(-1,0.5), 
+sigma_cafe ~ exponential(1), 
+sigma ~ exponential(1), 
+Rho ~ lkj_corr(2)
+) , data=list_cafe , chains=4 , cores=4, cmdstan = TRUE )
+
+```
+
+
+After running, we plot the posterior correlation between intercepts and slopes. In our simulation data, there is a negative correlation: busy cafes have larger differences in wait times between morning and afternoon. Our model reflects this:
+
+```{r echo = FALSE}
+
+post_14.1 <- extract.samples(m14.1) 
+
+post_14.1_rho <- as_tibble(post_14.1$Rho)[,2]%>%
+  rename(rho=V2)
+
+prior_14.1_rho <- as_tibble(rlkjcorr( 1e4 , K=2 , eta=2 ))%>%
+  rename(rho=V2)
+
+ggplot()+
+  geom_density(aes(x = post_14.1_rho$rho),col="blue")+
+  geom_density(aes(x = prior_14.1_rho$rho))+
+  geom_text(aes(x=-0.9, y = 1.5, label="posterior"),colour="blue")+
+  geom_text(aes(x=0.5, y = 1, label="prior"))+
+  xlab("Correlation")
+
+
+
+```
+
+>Revisit: The book includes a section on constructing a model with more than two varying effects, using the chimp example. This section is especially useful because it demonstrates a non-centered parameterisation for this kinds of model using Cholesky decomposition.
+
+### Instruments and Causal Designs {-}
+
+We return to the problem of estimating the effect of education on wages. We expect there to be some unobserved factors that may confound inference:
+
+```{r echo = FALSE}
+
+dag_edu <- dagitty( "dag{ U [latent]; U -> W; U -> E; E -> W }" ) 
+coordinates(dag_edu) <- list( x=c(E=0,U=1,W=2) , y=c(E=0,U=-1,W=0) )
+drawdag( dag_edu )
+
+```
+
+We can't close the backdoor path, because we have not observed U. But we might be able to use an *instrumental variable* to make inferences. An instrumental variable $Q$ must be:
+
+(1) Independent of U
+(2) Not independent of E
+(3) Q must have no influence on W except through E
+
+The book notes that 1 and 3 in particular, are not testable, and can be strong assumptions.
+
+Assuming we have an instrumental variable, our DAG now looks like:
+
+```{r echo = FALSE}
+
+dag_edu_2 <- dagitty( "dag{ U [latent]; U -> W; U -> E; E -> W; Q->E }" ) 
+coordinates(dag_edu_2) <- list( x=c(Q=-1,E=0,U=1,W=2) , y=c(Q=-0.5,E=0,U=-1,W=0) )
+drawdag( dag_edu_2 )
+
+```
+
+How do we use $Q$. The book suggesting thinking of Q in this example as the quarter of the year a person is born in, which has an influence on how much education a person receives. The chapter simulates some data:
+
+```{r}
+
+set.seed(73) 
+N <- 500 
+U_sim <- rnorm( N ) 
+Q_sim <- sample( 1:4 , size=N , replace=TRUE ) 
+E_sim <- rnorm( N , U_sim + Q_sim ) 
+W_sim <- rnorm( N , U_sim + 0*E_sim ) 
+data_edu_sim <- list(W=standardize(W_sim) , 
+                E=standardize(E_sim) ,
+                Q=standardize(Q_sim) )
+
+```
+
+You can see that in the simulated data, education has no causal effect on wages. The first model attempted is a straightforward regression of wages on education:
+
+$$
+\begin{aligned}
+W &\sim N(\mu_i, \sigma)\\
+\mu_i &= \alpha_W + \beta_{EW}E\\
+\alpha_W &\sim N(0,0.2)\\
+\beta_{EW} &\sim N(0,0.5)\\
+\sigma &\sim \text{Exp}(1)
+\end{aligned}
+$$
+
+```{r include = FALSE, cache = TRUE}
+
+m14.4 <- ulam( alist( 
+  W ~ dnorm( mu , sigma ), 
+  mu <- aW + bEW*E, 
+  aW ~ dnorm( 0 , 0.2 ), 
+  bEW ~ dnorm( 0 , 0.5 ), 
+  sigma ~ dexp( 1 )
+  ) , data=data_edu_sim , chains=4 , cores=4, cmdstan = TRUE )
+
+```
+
+The model believes that education leads to higher wages (you can see that $b_{EW}$ is very far from 0):
+
+```{r echo = FALSE}
+
+precis(m14.4)
+
+```
+
+Next we add $Q$ as a predictor:
+
+$$
+\begin{aligned}
+W &\sim N(\mu_i, \sigma)\\
+\mu_i &= \alpha_W + \beta_{EW}E + \beta_{QW}Q\\
+\alpha_W &\sim N(0,0.2)\\
+\beta_{EW} &\sim N(0,0.5)\\
+\beta_{QW} &\sim N(0,0.5)\\
+\sigma &\sim \text{Exp}(1)
+\end{aligned}
+$$
+
+```{r include = FALSE, cache = TRUE}
+
+m14.5 <- ulam( alist( 
+  W ~ dnorm( mu , sigma ), 
+  mu <- aW + bEW*E + bQW*Q, 
+  aW ~ dnorm( 0 , 0.2 ), 
+  bEW ~ dnorm( 0 , 0.5 ),
+  bQW ~ dnorm( 0 , 0.5 ),
+  sigma ~ dexp( 1 )
+  ) , data=data_edu_sim , chains=4 , cores=4, cmdstan = TRUE )
+
+```
+
+And the results are worse:
+
+```{r echo = FALSE}
+
+precis(m14.5)
+
+```
+
+The estimated effect of education on wages is even larger, and the model also thinks that $Q$ is correlated with wages even when $E$ is included in the model. We know from the simulation that $Q$ has no effect on wages except through E; the error comes from the fact that E is a collider of $Q$ and $U$.
+
+The chapter goes on to describe how $Q$ should be used, starting by writing the generative version of the model (assuming the DAG).
+
+According to the DAG, wages are a function of education, and our unobserved confound:
+
+$$
+\begin{aligned}
+W_i &\sim N(\mu_{W,i},\sigma_W)\\
+\mu_{W,i} &= \alpha_W + \beta_{EW}E_i + U_i
+\end{aligned}
+$$
+Education is a function of quarter of birth and the unobserved confound:
+
+$$
+\begin{aligned}
+E_i &\sim N(\mu_{E,i},\sigma_E)\\
+\mu_{E,i} &= \alpha_E + \beta_{QE}Q_i + U_i
+\end{aligned}
+$$
+We assume even numbers of people born in each quarter:
+
+$$
+Q \sim \text{Categorical}([0.25,0.25,0.25,0.25])
+$$
+For now we assume U is normally distributed with mean 0 and standard deviation 1:
+
+$$
+U_i \sim N(0,1)
+$$
+
+In order to create a statistical model out of all of this, we use a *multivariate linear model*:
+
+$$
+\begin{aligned}
+\begin{pmatrix} W_i \\ E_i \end{pmatrix} &\sim \text{MVNormal}(\begin{pmatrix} \mu_{W,i} \\ \mu_{E,i} \end{pmatrix},S)\\
+\mu_{W,i} &= \alpha_W + \beta_{EW}E_i \\
+\mu_{E,i} &= \alpha_E + \beta_{QE}Q_i
+\end{aligned}
+$$
+What's happening here is that wages and education are both simultaneously outcomes of our regression. The $S$ here is analogous to $\sigma$ in the above simple linear regressions - it's meant to capture residual correlations between pairs of $W$ and $E$ (e.g. from the action of our unobserved confound).
+
+```{r include = FALSE, cache = TRUE}
+
+m14.6 <- ulam( alist(
+  c(W,E) ~ multi_normal( c(muW,muE) , Rho , Sigma ), 
+  muW <- aW + bEW*E, 
+  muE <- aE + bQE*Q, 
+  c(aW,aE) ~ normal( 0 , 0.2 ), 
+  c(bEW,bQE) ~ normal( 0 , 0.5 ), 
+  Rho ~ lkj_corr( 2 ), 
+  Sigma ~ exponential( 1 )
+), data=data_edu_sim , chains=4 , cores=4, cmdstan = TRUE )
+
+```
+
+Here are the results:
+
+```{r echo = FALSE}
+
+precis(m14.6, depth = 3)
+
+```
+
+The model now correctly believes that the causal effect of education on wages is close to zero. The residual correlation between wages and education, $\rho_{1,2}$, is positive, which reflects the influence of $U$. 
+
+Endnotes 208 and 209 point to some real-world attempts to use instrumental variables for inference. 
+
+Revisit: The chapter includes a short discussion of the front-door criterion, which I first read about in Judea Pearl's *Book of Why*. Then there is a second example that uses a custom covariance matrix. This time to make inferences about social relations in a community in Nicaragua.
+
+### Continuous Categories and the Gaussian Process {-}
+
+The challenge of this section is to extend our application of varying effects from unordered categories to continuous variables. To do this the chapter introduces *Gaussian process regression*. The chapter returns to the chapter 11 data set of tool use in historic Oceanic societies, this time adding a measure of geographic distance to the model.
+
+```{r echo = FALSE}
+
+data("islandsDistMatrix")
+
+mat_distance <- islandsDistMatrix 
+colnames(mat_distance) <- c("Ml","Ti","SC","Ya","Fi","Tr","Ch","Mn","To","Ha")
+round(mat_distance,1)
+
+```
+
+Here's the model we'll be using:
+
+$$
+\begin{aligned}
+T_i &\sim \text{Poisson}(\lambda_i) \\
+\lambda_i &= \exp(k_{\text{SOC}[i]}) \alpha P_i^\beta / \gamma\\
+\\
+\begin{pmatrix}
+k_1 \\
+k_2 \\
+k_3 \\
+\dots \\
+k_{10}
+\end{pmatrix}
+&\sim \text{MVNormal}\left( 
+\begin{pmatrix}
+0 \\
+0 \\
+0 \\
+\dots \\
+0
+\end{pmatrix}
+, K
+\right) && \text{prior for intercepts}\\
+\\
+K_{ij} &= \eta^2 \exp(-\rho^2D^2_{ij}) + \delta_{ij}\sigma^2 && \text{covariance matrix}
+\end{aligned}
+$$
+Here the $\lambda_i$ term is the model from chapter 11 with an additional term for varying intercept $k_{\text{SOC}[i]}$. Negative values of $k_\text{SOC[i]}$ will reduce $\lambda$, and positive values will increase it. 
+
+Why are the entries of the covariance matrix defined like that?
+
+* The $\exp(-\rho^2D^2_{ij})$ term means that covariance between societies $i$ and $j$ declines exponentially with the square of the distance between them. The exact rate is controlled by $\rho$.
+* $\eta^2$ is the maximum covariance between any two societies.
+* In the $\delta_{ij}\sigma^2$ term, $\delta_{ij}$ is the Kronecker delta. This term would be used if we had more than one observation for society and wanted to allow for additional covariance when $i=j$.
+
+```{r include = FALSE, cache = TRUE}
+
+data(Kline2)
+
+data_soc <- as_tibble(Kline2)%>%
+  mutate(society = 1:10)
+
+list_soc <- with(data_soc, list(T = total_tools,
+                                P = population,
+                                society = society,
+                                Dmat = islandsDistMatrix))
+  
+m14.8 <- ulam( alist( 
+  T ~ dpois(lambda), 
+  lambda <- (a*P^b/g)*exp(k[society]), 
+  vector[10]:k ~ multi_normal( 0 , SIGMA ), 
+  matrix[10,10]:SIGMA <- cov_GPL2( Dmat , etasq , rhosq , 0.01 ), 
+  c(a,b,g) ~ dexp( 1 ), 
+  etasq ~ dexp( 2 ), 
+  rhosq ~ dexp( 0.5 )
+), data=list_soc , chains=4 , cores=4 , iter=2000, cmdstan = TRUE )
+
+```
+
+Here are the parameter results:
+
+```{r echo = FALSE}
+
+precis(m14.8, depth=3)
+
+```
+
+These are a little difficult to interpret, but we can plot the Gaussian process function to get a sense of how the model expects covariance to change with increasing distance:
+
+```{r echo = FALSE, warning=FALSE, cache = TRUE}
+
+func_gaus <- function(distance, eta_2, rho_2){eta_2 * exp(-rho_2 * distance^2)}
+
+data_gaus_prior <- tibble(eta_2 = rexp(250,2), rho_2 = rexp(250,0.2))
+
+plot_gp_prior <- ggplot()+xlim(0,10)+ylim(0,2)+xlab("distance (000km)")+ylab("covariance")
+
+for(i in 1:250){
+  plot_gp_prior <- plot_gp_prior+
+    geom_function(fun = func_gaus, args = list(eta_2 = data_gaus_prior$eta_2[[i]], rho_2 = data_gaus_prior$rho_2[[i]]), alpha=0.1)
+}
+
+
+post_gaus <- extract.samples(m14.8)
+
+
+plot_gp_post <- ggplot()+xlim(0,10)+ylim(0,2)+xlab("distance (000km)")+ylab("covariance")+
+  geom_function(fun = func_gaus, args = list(eta_2 = mean(post_gaus$etasq), rho_2 = mean(post_gaus$rhosq)),size=1.2)
+
+for(i in 1:250){
+  plot_gp_post <- plot_gp_post+
+    geom_function(fun = func_gaus, args = list(eta_2 = post_gaus$etasq[[i]], rho_2 = post_gaus$rhosq[[i]]), alpha=0.1)
+}
+
+plot_grid(plot_gp_prior+ggtitle("prior"),plot_gp_post+ggtitle("posterior"))
+
+```
+
+I've drawn 250 lines for each plot. The bold line in the right hand plot is the posterior mean. Because each society is assigned a parameter, and the model includes a covariance matrix, we can also make inferences about which societies are correlated. The chapter produces a matrix of correlations and plots them.
+
+Revisit: The chapter closes with a fun rundown of phylogenetic regression. Here we use Gaussian processes in a model that includes phylogenetic distance, as opposed to physical distance.
+
+
+
+## Questions
+
+### 14E1 {-}
+
+#### Question {-}
+
+
+#### Answer {-}
+
+
+
+## Further Resources {-}
+
+Endnote 204 lists a handful of resources for non-centered parameterisation:
+
+* Model determination using sampling-based methods - Gelfand (1996)
+* Updating schemes, correlation structure, blocking and parameterisation for the Gibbs sampler - Roberts and Sahu (1997)
+* A general framework for the parametrization of hierarchical models - Papaspiliopoulos et al. (2007)
+* Hamiltonian Monte Carlo for hierarchical models - Betancourt and Girolami (2013)

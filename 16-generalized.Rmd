@@ -1,0 +1,303 @@
+# Generalized Linear Madness {#generalized}
+
+```{r echo=FALSE, warning=FALSE,message=FALSE}
+
+library(MASS)
+library(tidyverse)
+library(rethinking)
+library(dagitty)
+library(cowplot)
+
+inverse_logit <- function(x){
+  exp(x) / (1 + exp(x))
+}
+
+```
+
+## Chapter Notes
+
+This chapter goes beyond generalised linear models, introducing examples of structural, causal models more informed by scientific theory. 
+
+
+### Geometric People {-}
+
+```{r include = FALSE}
+
+data(Howell1) 
+data_howell <- Howell1
+
+```
+
+
+The chapter introduces a simple example of a structural model. In chapter 4, we used people's weight to predict their heights. But we know more about the relationship between weight and height, and we can give our model this information. One way to do this would be to assume a person is roughly a cylinder, we would have the following equation relating volume to height:
+
+$$
+V = \pi r^2 h.
+$$
+
+We don't have data on the radius of our population; we assume it is some fixed proportion $p$ of height. We further assume that there is a fixed ratio between volume and weight. We have:
+
+$$
+W = kV = k\pi p^2 h^3.
+$$
+
+Here's the model we fit:
+
+$$
+\begin{aligned}
+W_{i} &\sim \text{Log-Normal}(\mu_{i},\sigma_{i}) \\
+\exp(\mu_i) &= k \pi p^2 h_i^3
+\end{aligned}
+$$
+We use the log-normal since we know weight must be non-negative. One benefit of a structural model is that the parameters have scientific meaning, and so it can be easier to assign priors. E.g the chapter uses $\text{Beta}(2,18)$ as a prior for $p$ since we know that it must be between zero and one and is likely below 0.5. The meaning of $k$ is something like density, and we can assign reasonable priors accordingly. 
+You could also set sensible priors by dividing out the units in the volume equation above by e.g. dividing both weight and height by their averages. Then you can get a good guess at $k$ for a person of average height and weight, and set priors informed by this value.
+
+
+```{r include = FALSE, cache= TRUE}
+
+data_howell <- data_howell%>%
+  mutate(w = weight / mean(weight),
+         h = height / mean(height))
+
+
+m16.1 <- ulam( alist( 
+  w ~ dlnorm( mu , sigma ), 
+  exp(mu) <- 3.141593 * k * p^2 * h^3, 
+  p ~ beta( 2 , 18 ), 
+  k ~ exponential( 0.5 ), 
+  sigma ~ exponential( 1 )
+), data=data_howell , chains=4 , cores=4, cmdstan = TRUE )
+
+```
+
+Here are the parameter estimates:
+
+```{r echo = FALSE}
+precis( m16.1 )
+```
+
+Let's plot the posterior predictions:
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+
+seq_h <- seq( from=0 , to=max(data_howell$h) , length.out=30 ) 
+
+sim_w <- sim( m16.1 , data=list(h=seq_h) )
+
+mean_w <- vector(length = 30, mode = "numeric")
+high_w <- vector(length = 30, mode = "numeric")
+low_w <- vector(length = 30, mode = "numeric")
+  
+for( i  in 1:30){
+  mean_w[[i]] <- mean(sim_w[,i])
+  low_w[[i]] <- quantile(sim_w[,i],prob=0.055)
+  high_w[[i]] <- quantile(sim_w[,i],prob=0.945)
+  }
+
+
+ggplot()+
+  geom_point(aes(x=data_howell$h, y=data_howell$w), col= "light blue")+
+  geom_line(aes(x=seq_h, y = mean_w))+
+  geom_ribbon(aes(x=seq_h,ymin=low_w, ymax=high_w), alpha=0.1)+
+  xlab("Height (Scaled)")+
+  ylab("Weight (Scaled)")
+
+```
+
+The blue dots are the raw data, the shaded region is the 89% compatibility interval.
+
+The exponent of height on weight is not estimated by the model, it is fixed at 3 by our cylinder model, but it performs well. The chapter notes that with a theoretically informed model, deviations can tell us something about the process - e.g. the model fits poorly at low heights, this may be because either $p$ or $k$ is different for children than adults.
+
+### Hidden Minds and Observed Behaviour {-}
+
+The next example I won't go into much detail. It comes from an experiment in developmental psychology where children choose one of three different coloured blocks, and we want to back inferences about their decision making processes using a structural, causal model. 
+
+The approach laid out is to generate a priori plausible strategies (the design of the experiment suggests some: children were shown four other children making their own colour choice first so one strategy might be to follow the majority). We will know the probability that a child chooses a particular colour, assuming they followed a particular strategy, and so Bayes theorem can tell us the relative probability of each strategy after seeing the colour choices.
+
+The chapter describes this as an example of a state space model, where multiple hidden states produce observations. 
+
+### Ordinary Differential Nut Cracking {-}
+
+This example I'll go into a little more. It uses data on chimpanzees who try to crack open nuts using tools, and it uses ordinary differential equations in the way that scientific theory informs the model. That said, it's not a very different approach than the cylinder weight example above because the ODE has a simple analytical solution.
+
+The first model the chapter tries is one in which only strength matters for rate of nut opening. Let's assume that strength is proportional to mass. We have theory about how mass of chimpanzees change as they age: they have a maximum potential mass, and the rate of mass increase depends on how far away they are from that maximum:
+
+$$
+\frac{\text{d}M}{\text{d}t} = k (M_\text{max} - M_t)
+$$
+
+which is an ordinary differential equation with solution:
+
+$$
+M_t = M_\text{max}(1- \exp(-kt))
+$$
+
+We also have that strength is proportional to mass $S = \beta M_t$ and we also want to define some function to relate strength to rate of nut cracking $\lambda$. The chapter chooses one that allows increasing returns to strength $\lambda = \alpha S^\theta$. All together:
+
+$$
+\lambda = \alpha S^\theta = \alpha (\beta M_\text{max}(1- \exp(-kt)))^\theta.
+$$
+
+We make simplifications by rescaling mass so that maximum body mass is one. We can also use replace $\alpha \beta^\theta$ by $\phi$ since that term just rescales units. We have:
+
+$$
+\lambda = \phi (1- \exp(-kt))^\theta.
+$$
+
+We then fit a model for number of nuts cracked using a Poisson likelihood, where $lambda$ defines our rate of nut cracking. Our predictor is age.
+
+```{r include = FALSE, cache = TRUE}
+
+data(Panda_nuts)
+
+data_panda <- Panda_nuts
+
+list_panda <- list( n = as.integer( data_panda$nuts_opened ), 
+                  age = data_panda$age / max(data_panda$age), 
+                  seconds = data_panda$seconds )
+
+m16.4 <- ulam( alist( 
+  n ~ poisson( lambda ), 
+  lambda <- seconds*phi*(1-exp(-k*age))^theta, 
+  phi ~ lognormal( log(1) , 0.1 ), 
+  k ~ lognormal( log(2) , 0.25 ), 
+  theta ~ lognormal( log(5) , 0.25 )
+), data=list_panda , chains=4,  cores=4, cmdstan = TRUE)
+
+```
+
+
+We plot the posterior.
+
+```{r echo = FALSE}
+
+post_panda <- extract.samples(m16.4)
+
+plot_panda <- ggplot(data_panda)+
+  geom_point(aes(x= age, y = nuts_opened / seconds, size = seconds), col = "blue", shape = 1)+
+  xlab("age")+
+  ylab("nuts per second")+
+  theme(legend.position = "none")+
+  xlim(c(0,16))
+
+for(i in 1:30){
+  plot_panda <- plot_panda +
+    geom_function(fun = function(x, phi, k, theta){phi*(1-exp(-k*x/ max(data_panda$age)))^theta},
+                  args = with(post_panda,list(phi = phi[[i]], k = k[[i]], theta = theta[[i]])),
+                  alpha = 0.2)
+}
+
+
+```
+
+The blue circles are the raw data, scaled by the number of seconds particular trial lasted. The lines are drawn from the posterior.   
+
+
+### Population Dynamics {-}
+
+In this example, the ODEs used have no analytical solution. We are modelling population dynamics of hare and lynx.
+
+We have:
+
+$$
+\frac{\text{d}H}{\text{d}t} = H_t b_H - H_t L_t m_H = H_t (b_H - L_t m_H)
+$$
+where:
+
+* $H_t$ is the population of hare at time $t$.
+* $b_H$ is the hare birth rate
+* the term $L_t m_H$ is the hare death rate, which is influenced by the population of lynx $L_t$.
+
+Similarly, for the lynx:
+
+$$
+\frac{\text{d}L}{\text{d}t} = L_t (H_t b_L - m_L).
+$$
+
+In this case we assume the lynx birth rate depends on the number of hare, and the death rate is constant. This is the Lotka-Volterra model.
+
+We want a statistical model using these dynamics. One problem though is that our data does not contain true populations of hare and lynx, it contains counts of pelts. We write a model that assumes some proportion of the animal population was trapped each year, with some error term. Our data cannot tell us the proportion of animals that were captured, so we have to fix it using a prior. The chapter points out that although this is not ideal, it is better that our model forces us to grapple with the limitations of the data rather than naively use the pelt data as if they were true population counts. The model is this:
+
+$$
+\begin{aligned}
+h_{t} &\sim \text{Log-Normal}(\log(p_HH_t),\sigma_{H}) \\
+l_{t} &\sim \text{Log-Normal}(\log(p_LL_t),\sigma_{L}) \\
+H_{T>1} &= H_1 + \int^T_1 H_t(b_H - L_t m_H)\text{dt} \\
+L_{T>1} &= L_1 + \int^T_1 L_t(H_t b_L - m_L)\text{dt}
+\end{aligned}
+$$
+where:
+
+* $h_t$ and $l_t$ are the observed populations
+* $H_t$ and $L_t$ are the true populations
+* $p_H$ and $p_L$ are the proportions of the true population captured each year, fixed by some beta prior
+
+We make use of Stan's built-in functions for numerically solving differential equations. Here's the model code:
+
+```{r echo = FALSE}
+data("Lynx_Hare_model")
+
+cat(Lynx_Hare_model)
+```
+
+The *functions* block at the top includes the specification of the differential equations. Stan's *integrate_ode_rk45* function does the integration in the *transformed parameters* block.
+
+```{r include = FALSE, cache = TRUE}
+
+data(Lynx_Hare)
+
+data_lynx <- Lynx_Hare
+
+list_lynx <- list( N = nrow(data_lynx), pelts = data_lynx[,2:3] )
+
+m16.5 <- stan( model_code=Lynx_Hare_model , data=list_lynx , chains=3 ,
+cores=3 , control=list( adapt_delta=0.95 ))
+
+
+```
+
+We run the model, and plot the results:
+
+```{r echo = FALSE}
+
+post_lynx <- extract.samples(m16.5)
+
+data_pelts <- list_lynx$pelts%>%
+  mutate(Year=1900:1920)%>%
+  pivot_longer(cols=-Year,names_to = "Species",values_to = "Pelts")
+
+post_tidy <- tibble(Year = 1900:1920)
+
+for(i in 1:20){
+  column_lynx <- paste0("Lynx_",i)
+  column_hare <- paste0("Hare_",i)
+  post_tidy <- post_tidy%>%
+    mutate(!!column_lynx := post_lynx$pelts_pred[i,,1],
+          !!column_hare := post_lynx$pelts_pred[i,,2] )
+}
+
+post_tidy <- post_tidy%>%
+  pivot_longer(cols=-Year, names_to = "Simulation", values_to = "Population")%>%
+  mutate(Species = str_sub(Simulation,1,4))%>%
+  left_join(data_pelts, by=c("Year", "Species"))
+
+plot_lynx <- ggplot(post_tidy)+
+  geom_line(aes(x=Year,y=Population,group=Simulation,col=Species))+
+  geom_point(aes(x=Year,y=Pelts,col=Species), shape = 19, size = 2)
+
+plot_lynx
+
+# https://cameronpatrick.com/post/2019/11/plotting-multiple-variables-ggplot2-tidyr/
+```
+
+
+## Questions
+
+## Further Reading {-}
+
+Endnote 233 recommends a few articles about the philosophy of model building:
+
+* The strategy of model building in population biology - Levins (1966)
+* Using false models to elaborate constraints on processes: Blending inheritance in organic and cultural evolution. - Wimsatt (2002) 
+* Models are stupid, and we need more of them. - Smaldino (2017)
+
