@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 15 Missing Data and Other Opportunities | Statistical Rethinking Notes</title>
+  <meta name="description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 15 Missing Data and Other Opportunities | Statistical Rethinking Notes" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="github-repo" content="jake-lawler/rethinking" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 15 Missing Data and Other Opportunities | Statistical Rethinking Notes" />
+  
+  <meta name="twitter:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  
+
+<meta name="author" content="Jake Lawler" />
+
+
+<meta name="date" content="2021-04-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="covariance.html"/>
+<link rel="next" href="generalized.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="prague.html"><a href="prague.html"><i class="fa fa-check"></i><b>1</b> The Golem of Prague</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="prague.html"><a href="prague.html#chapter-notes"><i class="fa fa-check"></i><b>1.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="1.2" data-path="prague.html"><a href="prague.html#questions"><i class="fa fa-check"></i><b>1.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="prague.html"><a href="prague.html#further-reading"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="small-worlds.html"><a href="small-worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="small-worlds.html"><a href="small-worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="2.2" data-path="small-worlds.html"><a href="small-worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="3.2" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="geocentric.html"><a href="geocentric.html"><i class="fa fa-check"></i><b>4</b> Geocentric Models</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="4.2" data-path="geocentric.html"><a href="geocentric.html#questions-3"><i class="fa fa-check"></i><b>4.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e1-2"><i class="fa fa-check"></i>4E1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e2-2"><i class="fa fa-check"></i>4E2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e3-2"><i class="fa fa-check"></i>4E3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e4-2"><i class="fa fa-check"></i>4E4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e5-1"><i class="fa fa-check"></i>4E5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m1-2"><i class="fa fa-check"></i>4M1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m2-2"><i class="fa fa-check"></i>4M2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m3-2"><i class="fa fa-check"></i>4M3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m4-2"><i class="fa fa-check"></i>4M4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m5-2"><i class="fa fa-check"></i>4M5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m6-2"><i class="fa fa-check"></i>4M6</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m7-1"><i class="fa fa-check"></i>4M7</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#further-reading-3"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="many-variables.html"><a href="many-variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="many-variables.html"><a href="many-variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="5.2" data-path="many-variables.html"><a href="many-variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="haunted-dag.html"><a href="haunted-dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="haunted-dag.html"><a href="haunted-dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.2" data-path="haunted-dag.html"><a href="haunted-dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ulysses.html"><a href="ulysses.html"><i class="fa fa-check"></i><b>7</b> Ulysses’ Compass</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ulysses.html"><a href="ulysses.html#chapter-notes-6"><i class="fa fa-check"></i><b>7.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e1-5"><i class="fa fa-check"></i>7E1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e2-4"><i class="fa fa-check"></i>7E2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e3-5"><i class="fa fa-check"></i>7E3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e4-5"><i class="fa fa-check"></i>7E4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m1-4"><i class="fa fa-check"></i>7M1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m2-4"><i class="fa fa-check"></i>7M2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m3-4"><i class="fa fa-check"></i>7M3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m4-3"><i class="fa fa-check"></i>7M4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m5-3"><i class="fa fa-check"></i>7M5</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m6-3"><i class="fa fa-check"></i>7M6</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h1-3"><i class="fa fa-check"></i>7H1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h2-3"><i class="fa fa-check"></i>7H2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h3-3"><i class="fa fa-check"></i>7H3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h4-3"><i class="fa fa-check"></i>7H4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h5-2"><i class="fa fa-check"></i>7H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#further-reading-6"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="conditional.html"><a href="conditional.html"><i class="fa fa-check"></i><b>8</b> Conditional Manatees</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="conditional.html"><a href="conditional.html#chapter-notes-7"><i class="fa fa-check"></i><b>8.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#ruggedness-gdp-model"><i class="fa fa-check"></i>Ruggedness &amp; GDP Model</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="conditional.html"><a href="conditional.html#questions-7"><i class="fa fa-check"></i><b>8.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e1-6"><i class="fa fa-check"></i>8E1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e2-5"><i class="fa fa-check"></i>8E2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e3-6"><i class="fa fa-check"></i>8E3</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m1-5"><i class="fa fa-check"></i>8M1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m2-5"><i class="fa fa-check"></i>8M2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m3-5"><i class="fa fa-check"></i>8M3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="markov-chain.html"><a href="markov-chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="markov-chain.html"><a href="markov-chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="markov-chain.html"><a href="markov-chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="big-entropy.html"><a href="big-entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="big-entropy.html"><a href="big-entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="big-entropy.html"><a href="big-entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="god-spiked.html"><a href="god-spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="god-spiked.html"><a href="god-spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
+<li class="chapter" data-level="11.1.1" data-path="god-spiked.html"><a href="god-spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="god-spiked.html"><a href="god-spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="models-memory.html"><a href="models-memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="models-memory.html"><a href="models-memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="models-memory.html"><a href="models-memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="covariance.html"><a href="covariance.html"><i class="fa fa-check"></i><b>14</b> Adventures in Covariance</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="covariance.html"><a href="covariance.html#chapter-notes-13"><i class="fa fa-check"></i><b>14.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#varying-slopes-by-construction"><i class="fa fa-check"></i>Varying Slopes by Construction</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#instruments-and-causal-designs"><i class="fa fa-check"></i>Instruments and Causal Designs</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#continuous-categories-and-the-gaussian-process"><i class="fa fa-check"></i>Continuous Categories and the Gaussian Process</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2" data-path="covariance.html"><a href="covariance.html#questions-13"><i class="fa fa-check"></i><b>14.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#e1-11"><i class="fa fa-check"></i>14E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#further-resources-4"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="missing-data.html"><a href="missing-data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
+</ul></li>
+<li class="chapter" data-level="15.2" data-path="missing-data.html"><a href="missing-data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="generalized.html"><a href="generalized.html"><i class="fa fa-check"></i><b>16</b> Generalized Linear Madness</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="generalized.html"><a href="generalized.html#chapter-notes-15"><i class="fa fa-check"></i><b>16.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#geometric-people"><i class="fa fa-check"></i>Geometric People</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#hidden-minds-and-observed-behaviour"><i class="fa fa-check"></i>Hidden Minds and Observed Behaviour</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#ordinary-differential-nut-cracking"><i class="fa fa-check"></i>Ordinary Differential Nut Cracking</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#population-dynamics"><i class="fa fa-check"></i>Population Dynamics</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="generalized.html"><a href="generalized.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#further-reading-9"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Statistical Rethinking Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="missing_data" class="section level1" number="15">
+<h1><span class="header-section-number">Chapter 15</span> Missing Data and Other Opportunities</h1>
+<div id="chapter-notes-14" class="section level2" number="15.1">
+<h2><span class="header-section-number">15.1</span> Chapter Notes</h2>
+<div id="measurement-error" class="section level3 unnumbered">
+<h3>Measurement Error</h3>
+<p>We want to build models that allow for measurement error. The book returns to the Waffle House / Divorce example from chapter 5. Both the marriage and divorce columns in the data come with standard errors that we did not make use of back when we first saw this example. The plot on the left here is a straightforward plot of the data, including error bars, on divorce against age of marriage. There’s one data point per U.S. state.</p>
+<p><img src="15-missing_data_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>The plot on the left is meant to demonstrate that the standard error is much larger for states with small populations as you’d expect. This is important, because variation in the size of the error among states is likely to introduce biases.</p>
+<p>In order to motivate the approach to incorporating measurement data, the chapter draws the following graph of the data generating processes:</p>
+<p><img src="15-missing_data_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>As usual, variables in circles are unobserved. Here the DAG assumes that the marriage rate (<span class="math inline">\(M\)</span>) and age at marriage (<span class="math inline">\(A\)</span>) influence the divorce rate (<span class="math inline">\(D\)</span>). But we don’t observe the divorce rate, we observe <span class="math inline">\(D_obs\)</span> which is also influenced by measurement error <span class="math inline">\(e_D\)</span>. We can attempt to recover <span class="math inline">\(D\)</span> by assuming a distribution for it, and assigning it a parameter in our model with a specified error. E.g:</p>
+<p><span class="math display">\[
+D_{\text{OBS},i} \sim \text{Normal}(D_{\text{TRUE},i},D_{\text{SE},i})
+\]</span></p>
+<p>Our model will look like this:</p>
+<p><span class="math display">\[
+\begin{aligned}
+D_{\text{OBS},i} &amp;\sim \text{Normal}(D_{\text{TRUE},i},D_{\text{SE},i}) \\
+D_{\text{TRUE},i} &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \beta_A A_i + \beta_M M_i\\
+\end{aligned}
+\]</span></p>
+<p>Here’s the posterior for (some of) the model parameters:</p>
+<pre><code>##              mean         sd       5.5%      94.5%    n_eff     Rhat4
+## a     -0.05451383 0.09730348 -0.2065350  0.1022117 2733.185 0.9999792
+## bA    -0.61676710 0.16051094 -0.8689005 -0.3533691 2220.434 1.0014498
+## bM     0.04997726 0.16765985 -0.2200219  0.3155651 2069.855 1.0018047
+## sigma  0.59243675 0.10812991  0.4325387  0.7715494 1256.021 1.0012504</code></pre>
+<p>Compared to the chapter 5 model, <span class="math inline">\(bA\)</span> has almost halved. In this case the impact of measurement error was to exaggerate the effect of marriage age on divorce. However you can’t assume that measurement error will always increase the effects of interest, sometimes it can obscure them. Endnote 223 points to some papers on this.</p>
+<p>What if there is also measurement error on the predictor variables e.g. marriage rate? Here’s the DAG:</p>
+<p><img src="15-missing_data_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>and here’s the model:</p>
+<p><span class="math display">\[
+\begin{aligned}
+D_{\text{OBS},i} &amp;\sim \text{Normal}(D_{\text{TRUE},i},D_{\text{SE},i}) \\
+D_{\text{TRUE},i} &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \beta_A A_i + \beta_M M_{\text{TRUE},i}\\
+M_{\text{OBS},i} &amp;\sim \text{Normal}(M_{\text{TRUE},i},M_{\text{SE},i}) \\
+M_{\text{TRUE},i} &amp;\sim \text{Normal}(0,1) \\
+\end{aligned}
+\]</span></p>
+<p>Standardising the observed marriage rate helps us choose a sensible prior distribution for the true marriage rate. Although later in the chapter (and in an exercise) a prior more informed by the data generating process is trialled.</p>
+<p>Revisit: Fit the model, plot figure 15.3.</p>
+</div>
+<div id="missing-data" class="section level3 unnumbered">
+<h3>Missing Data</h3>
+<p>Sometimes data is simply missing. We want a principled approach that considers the data generating process.</p>
+<p>The chapter introduces a simple example about dogs eating homework to demonstrate:</p>
+<p><img src="15-missing_data_files/figure-html/unnamed-chunk-7-1.png" width="50%" /><img src="15-missing_data_files/figure-html/unnamed-chunk-7-2.png" width="50%" /><img src="15-missing_data_files/figure-html/unnamed-chunk-7-3.png" width="50%" /><img src="15-missing_data_files/figure-html/unnamed-chunk-7-4.png" width="50%" /></p>
+<p><span class="math inline">\(S\)</span> is the amount a student studies. It influences homework quality. <span class="math inline">\(D\)</span> is whether a dog has eaten the homework. <span class="math inline">\(H_\text{obs}\)</span> is the quality of observed homework. It is influenced by true homework quality, but is missing in cases when <span class="math inline">\(D\)</span>=1 (i.e. a dog has eaten the homework). There are four possible generative processes discussed.</p>
+<p>Until I figure out how to caption dagitty objects, let’s call these (a), (b), (c), (d) going from the top left corner to the top right, bottom right then bottom left.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Dogs eat homework at random</li>
+<li>Dogs eat the homework of students who study a lot (not paying enough attention to the dog)</li>
+<li>Noisiness (<span class="math inline">\(X\)</span>) influences both homework quality and tendency for homework to be eaten</li>
+<li>Dogs prefer to eat bad homework</li>
+</ol>
+<p>In the first case (a), because whether the dogs eat the homework at random, H is independent of D and so we wouldn’t expect the dogs to change the inferences we make about the effect of <span class="math inline">\(S\)</span> on <span class="math inline">\(H\)</span>.</p>
+<p>The second case (b) is also not so bad. There is a backdoor path from <span class="math inline">\(D\)</span> to <span class="math inline">\(H\)</span> through <span class="math inline">\(S\)</span>, but since we want to condition on <span class="math inline">\(S\)</span> anyway it’s not terrible.</p>
+<p>In both of these cases, the exercises include comparison of inferences made with complete data and when some data is missing (eaten).</p>
+<p>The main body of this chapter gives a fuller treatment to scenarios (c) and (d), where things get trickier. We simulate some data:</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="missing-data.html#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">501</span>) </span>
+<span id="cb179-2"><a href="missing-data.html#cb179-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
+<span id="cb179-3"><a href="missing-data.html#cb179-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N) </span>
+<span id="cb179-4"><a href="missing-data.html#cb179-4" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N)</span>
+<span id="cb179-5"><a href="missing-data.html#cb179-5" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">rbinom</span>( N , <span class="at">size=</span><span class="dv">10</span> , <span class="fu">inv_logit</span>( <span class="dv">2</span> <span class="sc">+</span> S <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>X ) )</span>
+<span id="cb179-6"><a href="missing-data.html#cb179-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb179-7"><a href="missing-data.html#cb179-7" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">if_else</span>( X <span class="sc">&gt;</span> <span class="dv">1</span> , <span class="dv">1</span> , <span class="dv">0</span> ) </span>
+<span id="cb179-8"><a href="missing-data.html#cb179-8" aria-hidden="true" tabindex="-1"></a>H_obs <span class="ot">&lt;-</span> H</span>
+<span id="cb179-9"><a href="missing-data.html#cb179-9" aria-hidden="true" tabindex="-1"></a>H_obs[D<span class="sc">==</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code></pre></div>
+<p>What’s happening here:</p>
+<ul>
+<li>Homework is a binomial variable with 10 trials, where the probability of success is increased by <span class="math inline">\(S\)</span> and decreased by <span class="math inline">\(X\)</span>. The chapter says that “the true coefficient on S should be 1.00.” but I don’t understand why.</li>
+<li>If <span class="math inline">\(X\)</span> is greater than 1, the dog eats the homework. Increased noise is therefore associated both with worse quality homework and missing homework.</li>
+</ul>
+<p>Here’s a summary of the posterior parameter distributions we get assuming we can see <span class="math inline">\(H\)</span> directly:</p>
+<pre><code>##         mean         sd      5.5%     94.5%    n_eff    Rhat4
+## a  1.1135375 0.02410944 1.0758589 1.1523427 2597.326 1.000184
+## bS 0.6898362 0.02490829 0.6500868 0.7300311 2316.962 1.000640</code></pre>
+<p>Now here’s the outcome of the same model where the missing cases are simply dropped:</p>
+<pre><code>##         mean         sd      5.5%     94.5%    n_eff     Rhat4
+## a  1.7946147 0.03356130 1.7408573 1.8485027 1801.153 1.0000524
+## bS 0.8276137 0.03382677 0.7750254 0.8813257 1908.130 0.9994402</code></pre>
+<p>We can see that <span class="math inline">\(bS\)</span> is now closer to the true value of 1. This is because on average homework is missing from noisy houses, and it’s usually noisy houses where our estimate of the effect of studying is confounded. In this case the missingness made our inference easier, but in another scenario it could easily make things worse.</p>
+<p>In scenario (d) dogs prefer to eat bad homework. But the variable causes its own missingness through the non-causal path <span class="math inline">\(S \rightarrow H \rightarrow D \rightarrow H_{obs}\)</span>. This is the most difficult situation to deal with.</p>
+<p>The next section of the chapter applies the above to the problem of imputing missing data in the primate milk example from earlier in the book. Revisit.</p>
+</div>
+</div>
+<div id="questions-14" class="section level2" number="15.2">
+<h2><span class="header-section-number">15.2</span> Questions</h2>
+</div>
+<div id="further-reading-8" class="section level2 unnumbered">
+<h2>Further Reading</h2>
+<p>Endnote 225: “See Molenberghs et al. (2014) for an overview of contemporary approaches, Bayesian and otherwise”</p>
+<p>Endnote 226: “In ecology, the absence ofan observation ofa species is a subtle kind of observation. It could mean the species isn’t there. Or it could mean it is there but you didn’t see it. An entire category of models, occupancy models, exists to take this duality into account.”</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="covariance.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="generalized.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/15-missing_data.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

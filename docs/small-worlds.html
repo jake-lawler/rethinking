@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Small Worlds and Large Worlds | Statistical Rethinking Notes</title>
+  <meta name="description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Small Worlds and Large Worlds | Statistical Rethinking Notes" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="github-repo" content="jake-lawler/rethinking" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Small Worlds and Large Worlds | Statistical Rethinking Notes" />
+  
+  <meta name="twitter:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  
+
+<meta name="author" content="Jake Lawler" />
+
+
+<meta name="date" content="2021-04-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="prague.html"/>
+<link rel="next" href="sampling-imaginary.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="prague.html"><a href="prague.html"><i class="fa fa-check"></i><b>1</b> The Golem of Prague</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="prague.html"><a href="prague.html#chapter-notes"><i class="fa fa-check"></i><b>1.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="1.2" data-path="prague.html"><a href="prague.html#questions"><i class="fa fa-check"></i><b>1.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="prague.html"><a href="prague.html#further-reading"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="small-worlds.html"><a href="small-worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="small-worlds.html"><a href="small-worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="2.2" data-path="small-worlds.html"><a href="small-worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="3.2" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="geocentric.html"><a href="geocentric.html"><i class="fa fa-check"></i><b>4</b> Geocentric Models</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="4.2" data-path="geocentric.html"><a href="geocentric.html#questions-3"><i class="fa fa-check"></i><b>4.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e1-2"><i class="fa fa-check"></i>4E1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e2-2"><i class="fa fa-check"></i>4E2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e3-2"><i class="fa fa-check"></i>4E3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e4-2"><i class="fa fa-check"></i>4E4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e5-1"><i class="fa fa-check"></i>4E5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m1-2"><i class="fa fa-check"></i>4M1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m2-2"><i class="fa fa-check"></i>4M2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m3-2"><i class="fa fa-check"></i>4M3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m4-2"><i class="fa fa-check"></i>4M4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m5-2"><i class="fa fa-check"></i>4M5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m6-2"><i class="fa fa-check"></i>4M6</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m7-1"><i class="fa fa-check"></i>4M7</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#further-reading-3"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="many-variables.html"><a href="many-variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="many-variables.html"><a href="many-variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="5.2" data-path="many-variables.html"><a href="many-variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="haunted-dag.html"><a href="haunted-dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="haunted-dag.html"><a href="haunted-dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.2" data-path="haunted-dag.html"><a href="haunted-dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ulysses.html"><a href="ulysses.html"><i class="fa fa-check"></i><b>7</b> Ulysses’ Compass</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ulysses.html"><a href="ulysses.html#chapter-notes-6"><i class="fa fa-check"></i><b>7.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e1-5"><i class="fa fa-check"></i>7E1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e2-4"><i class="fa fa-check"></i>7E2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e3-5"><i class="fa fa-check"></i>7E3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e4-5"><i class="fa fa-check"></i>7E4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m1-4"><i class="fa fa-check"></i>7M1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m2-4"><i class="fa fa-check"></i>7M2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m3-4"><i class="fa fa-check"></i>7M3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m4-3"><i class="fa fa-check"></i>7M4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m5-3"><i class="fa fa-check"></i>7M5</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m6-3"><i class="fa fa-check"></i>7M6</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h1-3"><i class="fa fa-check"></i>7H1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h2-3"><i class="fa fa-check"></i>7H2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h3-3"><i class="fa fa-check"></i>7H3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h4-3"><i class="fa fa-check"></i>7H4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h5-2"><i class="fa fa-check"></i>7H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#further-reading-6"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="conditional.html"><a href="conditional.html"><i class="fa fa-check"></i><b>8</b> Conditional Manatees</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="conditional.html"><a href="conditional.html#chapter-notes-7"><i class="fa fa-check"></i><b>8.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#ruggedness-gdp-model"><i class="fa fa-check"></i>Ruggedness &amp; GDP Model</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="conditional.html"><a href="conditional.html#questions-7"><i class="fa fa-check"></i><b>8.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e1-6"><i class="fa fa-check"></i>8E1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e2-5"><i class="fa fa-check"></i>8E2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e3-6"><i class="fa fa-check"></i>8E3</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m1-5"><i class="fa fa-check"></i>8M1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m2-5"><i class="fa fa-check"></i>8M2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m3-5"><i class="fa fa-check"></i>8M3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="markov-chain.html"><a href="markov-chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="markov-chain.html"><a href="markov-chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="markov-chain.html"><a href="markov-chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="big-entropy.html"><a href="big-entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="big-entropy.html"><a href="big-entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="big-entropy.html"><a href="big-entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="god-spiked.html"><a href="god-spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="god-spiked.html"><a href="god-spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
+<li class="chapter" data-level="11.1.1" data-path="god-spiked.html"><a href="god-spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="god-spiked.html"><a href="god-spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="models-memory.html"><a href="models-memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="models-memory.html"><a href="models-memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="models-memory.html"><a href="models-memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="covariance.html"><a href="covariance.html"><i class="fa fa-check"></i><b>14</b> Adventures in Covariance</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="covariance.html"><a href="covariance.html#chapter-notes-13"><i class="fa fa-check"></i><b>14.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#varying-slopes-by-construction"><i class="fa fa-check"></i>Varying Slopes by Construction</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#instruments-and-causal-designs"><i class="fa fa-check"></i>Instruments and Causal Designs</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#continuous-categories-and-the-gaussian-process"><i class="fa fa-check"></i>Continuous Categories and the Gaussian Process</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2" data-path="covariance.html"><a href="covariance.html#questions-13"><i class="fa fa-check"></i><b>14.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#e1-11"><i class="fa fa-check"></i>14E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#further-resources-4"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="missing-data.html"><a href="missing-data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
+</ul></li>
+<li class="chapter" data-level="15.2" data-path="missing-data.html"><a href="missing-data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="generalized.html"><a href="generalized.html"><i class="fa fa-check"></i><b>16</b> Generalized Linear Madness</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="generalized.html"><a href="generalized.html#chapter-notes-15"><i class="fa fa-check"></i><b>16.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#geometric-people"><i class="fa fa-check"></i>Geometric People</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#hidden-minds-and-observed-behaviour"><i class="fa fa-check"></i>Hidden Minds and Observed Behaviour</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#ordinary-differential-nut-cracking"><i class="fa fa-check"></i>Ordinary Differential Nut Cracking</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#population-dynamics"><i class="fa fa-check"></i>Population Dynamics</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="generalized.html"><a href="generalized.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#further-reading-9"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Statistical Rethinking Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="small_worlds" class="section level1" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Small Worlds and Large Worlds</h1>
+<div id="chapter-notes-1" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Chapter Notes</h2>
+<p>I haven’t written chapter notes for the first five chapters.</p>
+</div>
+<div id="questions-1" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Questions</h2>
+<div id="e1" class="section level3 unnumbered">
+<h3>2E1</h3>
+<div id="question" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Which of the expressions below correspond to the statement: the probability of rain on Monday?</p>
+<ol style="list-style-type: decimal">
+<li>Pr(rain)</li>
+<li>Pr(rain|Monday)</li>
+<li>Pr(Monday|rain)</li>
+<li>Pr(rain,Monday)/ Pr(Monday)</li>
+</ol>
+</blockquote>
+</div>
+<div id="answer" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Numbers (2) and (4) are equivalent, and both have the meaning “the probability of rain, given that it is Monday.”</p>
+</div>
+</div>
+<div id="e2" class="section level3 unnumbered">
+<h3>2E2</h3>
+<div id="question-1" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Which of the following statements corresponds to the expression: Pr(Monday|rain)?</p>
+<ol style="list-style-type: decimal">
+<li>The probability of rain on Monday.</li>
+<li>The probability of rain, given that it is Monday.</li>
+<li>The probability that it is Monday, given that it is raining.</li>
+<li>The probability that it is Monday and that it is raining.</li>
+</ol>
+</blockquote>
+</div>
+<div id="answer-1" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>The expression should be read “the probability of it being Monday, given that there is rain,” which is (3).</p>
+</div>
+</div>
+<div id="e3" class="section level3 unnumbered">
+<h3>2E3</h3>
+<div id="question-2" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Which of the expressions below correspond to the statement: the probability that it is Monday, given that it is raining?</p>
+<ol style="list-style-type: decimal">
+<li>Pr(Monday|rain)</li>
+<li>Pr(rain|Monday)</li>
+<li>Pr(rain|Monday) Pr(Monday)</li>
+<li>Pr(rain|Monday) Pr(Monday)/ Pr(rain)</li>
+<li>Pr(Monday|rain) Pr(rain)/ Pr(Monday)</li>
+</ol>
+</blockquote>
+</div>
+<div id="answer-2" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Number (1) is the probability that it is Monday, given that it is raining. Number (4) is equivalent by Bayes’ rule.</p>
+</div>
+</div>
+<div id="e4" class="section level3 unnumbered">
+<h3>2E4</h3>
+<div id="question-3" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>The Bayesian statistician Bruno de Finetti (1906–1985) began his 1973 book on probability theory with the declaration: “PROBABILITY DOES NOT EXIST.” The capitals appeared in the original, so I imagine de Finetti wanted us to shout this statement. What he meant is that probability is a device for describing uncertainty from the perspective of an observer with limited knowledge; it has no objective reality.</p>
+<p>Discuss the globe tossing example from the chapter, in light of this statement. What does it mean to say “the probability of water is 0.7?”</p>
+</blockquote>
+</div>
+<div id="answer-3" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>It’s very fun that the question “what do we mean when we talk about probability” is listed as an easy question.</p>
+<p>Bruno de Finetti was a major figure in the subjective Bayesian school. For de Finetti, when someone says “the probability of water is 0.7” they are expressing something about their belief. Maybe that they believe the toy globe is 70% covered in water, or that the real globe is 70% covered in water. Maybe they are expressing something about their expectation for the next toss of the globe. Sometimes subjective Bayesian statements of probability are described in terms of odds that someone would accept on a wager about the belief in question, but this isn’t core to the approach (maybe this comes from an overly literal reading of the Dutch Book arguments for the laws of probability).</p>
+</div>
+</div>
+<div id="m1" class="section level3 unnumbered">
+<h3>2M1</h3>
+<div id="question-4" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Recall the globe tossing model from the chapter. Compute and plot the grid approximate posterior distribution for each of the following sets of observations. In each case, assume a uniform prior for p. </p>
+<ol style="list-style-type: decimal">
+<li>W, W, W</li>
+<li>W, W, W, L</li>
+<li>L, W, W, L, W, W, W</li>
+</ol>
+</blockquote>
+</div>
+<div id="answer-4" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p><img src="02-small_worlds_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="02-small_worlds_files/figure-html/unnamed-chunk-2-2.png" width="672" /><img src="02-small_worlds_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+</div>
+</div>
+<div id="m2" class="section level3 unnumbered">
+<h3>2M2</h3>
+<div id="question-5" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Now assume a prior for p that is equal to zero when p &lt; 0.5 and is a positive constant when p ≥ 0.5. Again compute and plot the grid approximate posterior distribution for each of the sets of observations in the problem just above.</p>
+</blockquote>
+</div>
+<div id="answer-5" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p><img src="02-small_worlds_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="02-small_worlds_files/figure-html/unnamed-chunk-3-2.png" width="672" /><img src="02-small_worlds_files/figure-html/unnamed-chunk-3-3.png" width="672" /></p>
+</div>
+</div>
+<div id="m3" class="section level3 unnumbered">
+<h3>2M3</h3>
+<div id="question-6" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Suppose there are two globes, one for Earth and one for Mars. The Earth globe is 70% covered in water. The Mars globe is 100% land. Further suppose that one of these globes — you don’t know which — was tossed in the air and produced a “land” observation. Assume that each globe was equally likely to be tossed.</p>
+<p>Show that the posterior probability that the globe was the Earth, conditional on seeing “land,” <span class="math inline">\(\text{Pr}(Earth | Land)\)</span>, is 0.23.</p>
+</blockquote>
+</div>
+<div id="answer-6" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Using Bayes Theorem:</p>
+<p><span class="math display">\[
+\text{Posterior} = \frac{\text{ prior * probability of the data }}{\text{ average probability of the data }}
+\]</span></p>
+<p>The numerator for our calculation will be the prior probability that the globe tossed was the Earth, multiplied by the likelihood of seeing land, assuming the globe tossed was the Earth: <span class="math inline">\(0.5 * 0.3\)</span>.</p>
+<p>The denominator is the sum of these probabilities over each value of the prior. In this case, the prior probability of Mars * probability of seeing land given Mars + prior probability of the Earth * probability of seeing land given Earth: 0.5 * 1 + 0.5 * 0.3.</p>
+<p>So we have <span class="math inline">\(\frac{ 0.5 * 0.3 } { 0.5 * 1 + 0.5 * 0.3 }\)</span> which is</p>
+<pre><code>## [1] 0.2307692</code></pre>
+<p>as required.</p>
+</div>
+</div>
+<div id="m4" class="section level3 unnumbered">
+<h3>2M4</h3>
+<div id="question-7" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Suppose you have a deck with only three cards. Each card has two sides, and each side is either black or white. One card has two black sides. The second card has one black and one white side. The third card has two white sides. Now suppose all three cards are placed in a bag and shuffled. Someone reaches into the bag and pulls out a card and places it flat on a table. A black side is shown facing up, but you don’t know the color of the side facing down.</p>
+<p>Show that the probability that the other side is also black is 2/3. Use the counting method (Section 2 of the chapter) to approach this problem. This means counting up the ways that each card could produce the observed data (a black side facing up on the table).</p>
+</blockquote>
+</div>
+<div id="answer-7" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>We are looking for the posterior probability that we have chosen the black/black card (Card One), given that we see a black side facing up.</p>
+<p>We assume for now that the chance of choosing each card is the same. That is that for every 1 way of choosing Card One, there is 1 way of choosing Card Two, and 1 way of choosing Card Three. Now we need to count up the number of ways of seeing a black side for each of the cards.</p>
+<ul>
+<li><p>Card One (black/black)
+There are two ways of seeing a black side after choosing this card - we could lay side one face up, or side two.</p></li>
+<li><p>Card Two (black/white)
+There is only one way of seeing a black side after choosing this card - we would need to lay side one face up.</p></li>
+<li><p>Card Three (white/white)
+There are no ways of seeing a black side after choosing this card.</p></li>
+</ul>
+<p>Our calculation is <span class="math inline">\(\frac{1 * 2}{1 * 2 + 1 * 1 + 1 * 0} = \frac{2}{2+1+0} = \frac{2}{3}\)</span>.</p>
+</div>
+</div>
+<div id="m5" class="section level3 unnumbered">
+<h3>2M5</h3>
+<div id="question-8" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Now suppose there are four cards: B/B, B/W, W/W, and another B/B. Again suppose a card is drawn from the bag and a black side appears face up. Again calculate the probability that the other side is black.</p>
+</blockquote>
+</div>
+<div id="answer-8" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>We are looking for the probability that we have chosen either Card One or Card Four.</p>
+<p>Following the logic above, we get <span class="math inline">\(\frac{2 + 2}{2 + 2 + 1 + 0} = \frac{4}{5}\)</span>.</p>
+</div>
+</div>
+<div id="m6" class="section level3 unnumbered">
+<h3>2M6</h3>
+<div id="question-9" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Imagine that black ink is heavy, and so cards with black sides are heavier than cards with white sides. As a result, it’s less likely that a card with black sides is pulled from the bag. So again assume there are three cards: B/B, B/W, and W/W. After experimenting a number of times, you conclude that for every way to pull the B/B card from the bag, there are 2 ways to pull the B/W card and 3 ways to pull the W/W card. Again suppose that a card is pulled and a black side appears face up.</p>
+<p>Show that the probability the other side is black is now 0.5. Use the counting method, as before.</p>
+</blockquote>
+</div>
+<div id="answer-9" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>We just replace the 1’s from 2M4 with the new relative number of ways of pulling each card:</p>
+<ul>
+<li>B/B: 1 way</li>
+<li>B/W: 2 ways</li>
+<li>W/W: 3 ways</li>
+</ul>
+<p>Our calculation is <span class="math inline">\(\frac{1 * 2}{1 * 2 + 2 * 1 + 3 * 0} = \frac{2}{2+2+0} = \frac{1}{2}\)</span>.</p>
+</div>
+</div>
+<div id="m7" class="section level3 unnumbered">
+<h3>2M7</h3>
+<div id="question-10" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Assume again the original card problem, with a single card showing a black side face up. Before looking at the other side, we draw another card from the bag and lay it face up on the table. The face that is shown on the new card is white.</p>
+<p>Show that the probability that the first card, the one showing a black side, has black on its other side is now 0.75. Use the counting method, if you can.</p>
+<p>Hint: Treat this like the sequence of globe tosses, counting all the ways to see each observation, for each possible first card.</p>
+</blockquote>
+</div>
+<div id="answer-10" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>We are again looking for the probability that the first card we pulled was Card One (b/b), given the data (that we see one card with a black side and then one card with a white side).</p>
+<p>we will use a table:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Cards</th>
+<th align="right">Prior Count</th>
+<th align="right">Black Side Count</th>
+<th align="right">White Side Count</th>
+<th align="right">Posterior Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Card One</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">Card Two</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Card Three</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>For each row, we derive the White Side Counts by adding up the number of ways to see a white side for the two cards left in the bag. E.g. if we pulled Card One first, we have one card remaining with two white sides, and one card remaining with one white side = 3 white sides.</p>
+<p>Our probability that we first pulled Card One is then <span class="math inline">\(\frac{6}{6+2} = 0.75\)</span> as required.</p>
+</div>
+</div>
+<div id="h1" class="section level3 unnumbered">
+<h3>2H1</h3>
+<div id="question-11" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Suppose there are two species of panda bear. Both are equally common in the wild and live in the same places. They look exactly alike and eat the same food, and there is yet no genetic assay capable of telling them apart. They differ however in their family sizes. Species A gives birth to twins 10% of the time, otherwise birthing a single infant. Species B births twins 20% of the time, otherwise birthing singleton infants. Assume these numbers are known with certainty, from many years of field research.</p>
+<p>Now suppose you are managing a captive panda breeding program. You have a new female panda of unknown species, and she has just given birth to twins. What is the probability that her next birth will also be twins?</p>
+</blockquote>
+</div>
+<div id="answer-11" class="section level4 unnumbered">
+<h4>Answer</h4>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Species</th>
+<th align="right">Prior Count</th>
+<th align="right">Twins Count</th>
+<th align="right">Posterior Count</th>
+<th align="right">Posterior Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Species A</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="even">
+<td align="left">Species B</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.67</td>
+</tr>
+</tbody>
+</table>
+<p>Probability of having twins is <span class="math inline">\(\text{probability of species } A * 0.1 + \text{probability of species } B * 0.2 = 1/3 * 0.1 + 2/3 * 0.2 = 1/6\)</span>.</p>
+</div>
+</div>
+<div id="h2" class="section level3 unnumbered">
+<h3>2H2</h3>
+<div id="question-12" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Recall all the facts from the problem above. Now compute the probability that the panda we have is from species A, assuming we have observed only the first birth and that it was twins.</p>
+</blockquote>
+</div>
+<div id="answer-12" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>This questions implies that there was an easier way of answering the first question.</p>
+<p>In any case, we have already calculated that the probability of species A is 1/3.</p>
+</div>
+</div>
+<div id="h3" class="section level3 unnumbered">
+<h3>2H3</h3>
+<div id="question-13" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Continuing on from the previous problem, suppose the same panda mother has a second birth and that it is not twins, but a singleton infant. Compute the posterior probability that this panda is species A.</p>
+</blockquote>
+</div>
+<div id="answer-13" class="section level4 unnumbered">
+<h4>Answer</h4>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="13%" />
+<col width="13%" />
+<col width="18%" />
+<col width="18%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Species</th>
+<th align="right">Prior Count</th>
+<th align="right">Twins Count</th>
+<th align="right">Singleton Count</th>
+<th align="right">Posterior Count</th>
+<th align="right">Posterior Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Species A</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">0.36</td>
+</tr>
+<tr class="even">
+<td align="left">Species B</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="right">16</td>
+<td align="right">0.64</td>
+</tr>
+</tbody>
+</table>
+<p>The probability of species A is now 36%.</p>
+</div>
+</div>
+<div id="h4" class="section level3 unnumbered">
+<h3>2H4</h3>
+<div id="question-14" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>A common boast of Bayesian statisticians is that Bayesian inference makes it easy to use all of the data, even if the data are of different types. So suppose now that a veterinarian comes along who has a new genetic test that she claims can identify the species of our mother panda. But the test, like all tests, is imperfect. This is the information you have about the test:</p>
+<ul>
+<li>The probability it correctly identifies a species A panda is 0.8.</li>
+<li>The probability it correctly identifies a species B panda is 0.65.</li>
+</ul>
+<p>The vet administers the test to your panda and tells you that the test is positive for species A. First ignore your previous information from the births and compute the posterior probability that your panda is species A. Then redo your calculation, now using the birth data as well.</p>
+</blockquote>
+</div>
+<div id="answer-14" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Using test results alone:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Species</th>
+<th align="right">Prior Count</th>
+<th align="right">Test for A</th>
+<th align="right">Posterior Count</th>
+<th align="right">Posterior Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Species A</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="even">
+<td align="left">Species B</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.2</td>
+</tr>
+</tbody>
+</table>
+<p>Using births and test results:</p>
+<table>
+<colgroup>
+<col width="10%" />
+<col width="12%" />
+<col width="12%" />
+<col width="16%" />
+<col width="11%" />
+<col width="16%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Species</th>
+<th align="right">Prior Count</th>
+<th align="right">Twins Count</th>
+<th align="right">Singleton Count</th>
+<th align="right">Test for A</th>
+<th align="right">Posterior Count</th>
+<th align="right">Posterior Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Species A</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">8</td>
+<td align="right">72</td>
+<td align="right">0.69</td>
+</tr>
+<tr class="even">
+<td align="left">Species B</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="right">2</td>
+<td align="right">32</td>
+<td align="right">0.31</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="further-reading-1" class="section level2 unnumbered">
+<h2>Further Reading</h2>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="prague.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sampling-imaginary.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/02-small_worlds.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

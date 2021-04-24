@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Sampling the Imaginary | Statistical Rethinking Notes</title>
+  <meta name="description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Sampling the Imaginary | Statistical Rethinking Notes" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  <meta name="github-repo" content="jake-lawler/rethinking" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Sampling the Imaginary | Statistical Rethinking Notes" />
+  
+  <meta name="twitter:description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
+  
+
+<meta name="author" content="Jake Lawler" />
+
+
+<meta name="date" content="2021-04-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="small-worlds.html"/>
+<link rel="next" href="geocentric.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="prague.html"><a href="prague.html"><i class="fa fa-check"></i><b>1</b> The Golem of Prague</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="prague.html"><a href="prague.html#chapter-notes"><i class="fa fa-check"></i><b>1.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="1.2" data-path="prague.html"><a href="prague.html#questions"><i class="fa fa-check"></i><b>1.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="prague.html"><a href="prague.html#further-reading"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="small-worlds.html"><a href="small-worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="small-worlds.html"><a href="small-worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="2.2" data-path="small-worlds.html"><a href="small-worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="3.2" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="geocentric.html"><a href="geocentric.html"><i class="fa fa-check"></i><b>4</b> Geocentric Models</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="4.2" data-path="geocentric.html"><a href="geocentric.html#questions-3"><i class="fa fa-check"></i><b>4.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e1-2"><i class="fa fa-check"></i>4E1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e2-2"><i class="fa fa-check"></i>4E2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e3-2"><i class="fa fa-check"></i>4E3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e4-2"><i class="fa fa-check"></i>4E4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e5-1"><i class="fa fa-check"></i>4E5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m1-2"><i class="fa fa-check"></i>4M1</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m2-2"><i class="fa fa-check"></i>4M2</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m3-2"><i class="fa fa-check"></i>4M3</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m4-2"><i class="fa fa-check"></i>4M4</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m5-2"><i class="fa fa-check"></i>4M5</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m6-2"><i class="fa fa-check"></i>4M6</a></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#m7-1"><i class="fa fa-check"></i>4M7</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#further-reading-3"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="many-variables.html"><a href="many-variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="many-variables.html"><a href="many-variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="5.2" data-path="many-variables.html"><a href="many-variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="haunted-dag.html"><a href="haunted-dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="haunted-dag.html"><a href="haunted-dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.2" data-path="haunted-dag.html"><a href="haunted-dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="ulysses.html"><a href="ulysses.html"><i class="fa fa-check"></i><b>7</b> Ulysses’ Compass</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="ulysses.html"><a href="ulysses.html#chapter-notes-6"><i class="fa fa-check"></i><b>7.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e1-5"><i class="fa fa-check"></i>7E1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e2-4"><i class="fa fa-check"></i>7E2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e3-5"><i class="fa fa-check"></i>7E3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#e4-5"><i class="fa fa-check"></i>7E4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m1-4"><i class="fa fa-check"></i>7M1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m2-4"><i class="fa fa-check"></i>7M2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m3-4"><i class="fa fa-check"></i>7M3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m4-3"><i class="fa fa-check"></i>7M4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m5-3"><i class="fa fa-check"></i>7M5</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#m6-3"><i class="fa fa-check"></i>7M6</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h1-3"><i class="fa fa-check"></i>7H1</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h2-3"><i class="fa fa-check"></i>7H2</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h3-3"><i class="fa fa-check"></i>7H3</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h4-3"><i class="fa fa-check"></i>7H4</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#h5-2"><i class="fa fa-check"></i>7H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#further-reading-6"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="conditional.html"><a href="conditional.html"><i class="fa fa-check"></i><b>8</b> Conditional Manatees</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="conditional.html"><a href="conditional.html#chapter-notes-7"><i class="fa fa-check"></i><b>8.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#ruggedness-gdp-model"><i class="fa fa-check"></i>Ruggedness &amp; GDP Model</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="conditional.html"><a href="conditional.html#questions-7"><i class="fa fa-check"></i><b>8.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e1-6"><i class="fa fa-check"></i>8E1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e2-5"><i class="fa fa-check"></i>8E2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#e3-6"><i class="fa fa-check"></i>8E3</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m1-5"><i class="fa fa-check"></i>8M1</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m2-5"><i class="fa fa-check"></i>8M2</a></li>
+<li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m3-5"><i class="fa fa-check"></i>8M3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="markov-chain.html"><a href="markov-chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="markov-chain.html"><a href="markov-chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="markov-chain.html"><a href="markov-chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="big-entropy.html"><a href="big-entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="big-entropy.html"><a href="big-entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="big-entropy.html"><a href="big-entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="god-spiked.html"><a href="god-spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="god-spiked.html"><a href="god-spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
+<li class="chapter" data-level="11.1.1" data-path="god-spiked.html"><a href="god-spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="god-spiked.html"><a href="god-spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="models-memory.html"><a href="models-memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="models-memory.html"><a href="models-memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="models-memory.html"><a href="models-memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="covariance.html"><a href="covariance.html"><i class="fa fa-check"></i><b>14</b> Adventures in Covariance</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="covariance.html"><a href="covariance.html#chapter-notes-13"><i class="fa fa-check"></i><b>14.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#varying-slopes-by-construction"><i class="fa fa-check"></i>Varying Slopes by Construction</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#instruments-and-causal-designs"><i class="fa fa-check"></i>Instruments and Causal Designs</a></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#continuous-categories-and-the-gaussian-process"><i class="fa fa-check"></i>Continuous Categories and the Gaussian Process</a></li>
+</ul></li>
+<li class="chapter" data-level="14.2" data-path="covariance.html"><a href="covariance.html#questions-13"><i class="fa fa-check"></i><b>14.2</b> Questions</a>
+<ul>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#e1-11"><i class="fa fa-check"></i>14E1</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#further-resources-4"><i class="fa fa-check"></i>Further Resources</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="missing-data.html"><a href="missing-data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
+</ul></li>
+<li class="chapter" data-level="15.2" data-path="missing-data.html"><a href="missing-data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="generalized.html"><a href="generalized.html"><i class="fa fa-check"></i><b>16</b> Generalized Linear Madness</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="generalized.html"><a href="generalized.html#chapter-notes-15"><i class="fa fa-check"></i><b>16.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#geometric-people"><i class="fa fa-check"></i>Geometric People</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#hidden-minds-and-observed-behaviour"><i class="fa fa-check"></i>Hidden Minds and Observed Behaviour</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#ordinary-differential-nut-cracking"><i class="fa fa-check"></i>Ordinary Differential Nut Cracking</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#population-dynamics"><i class="fa fa-check"></i>Population Dynamics</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="generalized.html"><a href="generalized.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="generalized.html"><a href="generalized.html#further-reading-9"><i class="fa fa-check"></i>Further Reading</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Statistical Rethinking Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="sampling_imaginary" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Sampling the Imaginary</h1>
+<div id="chapter-notes-2" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Chapter Notes</h2>
+<p>I haven’t written chapter notes for the first five chapters.</p>
+</div>
+<div id="questions-2" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Questions</h2>
+<blockquote>
+<p>The Easy problems use the samples from the posterior distribution for the globe tossing example. This code will give you a specific set of samples, so that you can check your answers exactly.</p>
+</blockquote>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="sampling-imaginary.html#cb2-1" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">0</span> , <span class="at">to=</span><span class="dv">1</span> , <span class="at">length.out=</span><span class="dv">1000</span> ) </span>
+<span id="cb2-2"><a href="sampling-imaginary.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="sampling-imaginary.html#cb2-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">rep</span>( <span class="dv">1</span> , <span class="dv">1000</span> ) </span>
+<span id="cb2-4"><a href="sampling-imaginary.html#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="sampling-imaginary.html#cb2-5" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>( <span class="dv">6</span> , <span class="at">size=</span><span class="dv">9</span> , <span class="at">prob=</span>p_grid ) </span>
+<span id="cb2-6"><a href="sampling-imaginary.html#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="sampling-imaginary.html#cb2-7" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb2-8"><a href="sampling-imaginary.html#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="sampling-imaginary.html#cb2-9" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
+<span id="cb2-10"><a href="sampling-imaginary.html#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="sampling-imaginary.html#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>) </span>
+<span id="cb2-12"><a href="sampling-imaginary.html#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="sampling-imaginary.html#cb2-13" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">sample</span>( p_grid , <span class="at">prob=</span>posterior , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> )</span></code></pre></div>
+<div id="e1-1" class="section level3 unnumbered">
+<h3>3E1</h3>
+<div id="question-15" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>How much posterior probability lies below p = 0.2?</p>
+</blockquote>
+</div>
+<div id="answer-15" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Here’s the code:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="sampling-imaginary.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Exact answer</span></span>
+<span id="cb3-2"><a href="sampling-imaginary.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior[p_grid<span class="sc">&lt;</span><span class="fl">0.2</span>])<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb3-3"><a href="sampling-imaginary.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="sampling-imaginary.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb3-5"><a href="sampling-imaginary.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples<span class="sc">&lt;</span><span class="fl">0.2</span>)<span class="sc">/</span><span class="fu">length</span>(samples)<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<p>The exact answer is 0.09% Sampling from the posterior suggests 0.04%.</p>
+</div>
+</div>
+<div id="e2-1" class="section level3 unnumbered">
+<h3>3E2</h3>
+<div id="question-16" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>How much posterior probability lies above p = 0.8?</p>
+</blockquote>
+</div>
+<div id="answer-16" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Similarly:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="sampling-imaginary.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Exact answer</span></span>
+<span id="cb4-2"><a href="sampling-imaginary.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior[p_grid<span class="sc">&gt;</span><span class="fl">0.8</span>])<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb4-3"><a href="sampling-imaginary.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="sampling-imaginary.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb4-5"><a href="sampling-imaginary.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples<span class="sc">&gt;</span><span class="fl">0.8</span>)<span class="sc">/</span><span class="fu">length</span>(samples)<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<p>The exact answer is 12.03%. Sampling from the posterior suggests 11.16%.</p>
+</div>
+</div>
+<div id="e3-1" class="section level3 unnumbered">
+<h3>3E3</h3>
+<div id="question-17" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>How much posterior probability lies between p = 0.2 and p = 0.8?</p>
+</blockquote>
+</div>
+<div id="answer-17" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Code:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="sampling-imaginary.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Exact answer</span></span>
+<span id="cb5-2"><a href="sampling-imaginary.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior[p_grid <span class="sc">&gt;</span> <span class="fl">0.2</span> <span class="sc">&amp;</span> p_grid <span class="sc">&lt;</span> <span class="fl">0.8</span>])<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb5-3"><a href="sampling-imaginary.html#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="sampling-imaginary.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb5-5"><a href="sampling-imaginary.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&gt;</span> <span class="fl">0.2</span> <span class="sc">&amp;</span> samples <span class="sc">&lt;</span> <span class="fl">0.8</span>)<span class="sc">/</span><span class="fu">length</span>(samples)<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<p>The exact answer is 87.88%. Sampling from the posterior suggests 88.8%.</p>
+</div>
+</div>
+<div id="e4-1" class="section level3 unnumbered">
+<h3>3E4</h3>
+<div id="question-18" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>20% of the posterior probability lies below which value of p?</p>
+</blockquote>
+</div>
+<div id="answer-18" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Code:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="sampling-imaginary.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Exact answer</span></span>
+<span id="cb6-2"><a href="sampling-imaginary.html#cb6-2" aria-hidden="true" tabindex="-1"></a>p_grid[[</span>
+<span id="cb6-3"><a href="sampling-imaginary.html#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">which</span>(<span class="fu">cumsum</span>(posterior)<span class="sc">&gt;</span><span class="fl">0.2</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb6-4"><a href="sampling-imaginary.html#cb6-4" aria-hidden="true" tabindex="-1"></a>  ]]</span>
+<span id="cb6-5"><a href="sampling-imaginary.html#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="sampling-imaginary.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb6-7"><a href="sampling-imaginary.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples,<span class="fl">0.2</span>)</span></code></pre></div>
+<p>The exact answer suggests that 20% of the posterior probability lies below p = 0.52. The sample answer suggests p = 0.52.</p>
+</div>
+</div>
+<div id="e5" class="section level3 unnumbered">
+<h3>3E5</h3>
+<div id="question-19" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>20% of the posterior probability lies above which value of p?</p>
+</blockquote>
+</div>
+<div id="answer-19" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>Code:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="sampling-imaginary.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Exact answer</span></span>
+<span id="cb7-2"><a href="sampling-imaginary.html#cb7-2" aria-hidden="true" tabindex="-1"></a>p_grid[[</span>
+<span id="cb7-3"><a href="sampling-imaginary.html#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">which</span>(<span class="fu">cumsum</span>(posterior)<span class="sc">&gt;</span><span class="fl">0.8</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb7-4"><a href="sampling-imaginary.html#cb7-4" aria-hidden="true" tabindex="-1"></a>  ]]</span>
+<span id="cb7-5"><a href="sampling-imaginary.html#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="sampling-imaginary.html#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb7-7"><a href="sampling-imaginary.html#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples,<span class="fl">0.8</span>)</span></code></pre></div>
+<p>The code checks the value of p such that 80% of the posterior probability lies below p. This is equivalent to 20% lying above p.</p>
+<p>The exact answer suggests p = 0.76. The sample answer suggests p = 0.76.</p>
+</div>
+</div>
+<div id="e6" class="section level3 unnumbered">
+<h3>3E6</h3>
+<div id="question-20" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Which values of p contain the narrowest interval equal to 66% of the posterior probability?</p>
+</blockquote>
+</div>
+<div id="answer-20" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="sampling-imaginary.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb8-2"><a href="sampling-imaginary.html#cb8-2" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples,<span class="at">prob=</span><span class="fl">0.66</span>)</span></code></pre></div>
+<p>The interval (0.51 , 0.77) for p is the narrowest interval that contains 66% of the posterior probability.</p>
+</div>
+</div>
+<div id="e7" class="section level3 unnumbered">
+<h3>3E7</h3>
+<div id="question-21" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Which values of p contain 66% of the posterior probability, assuming equal posterior probability both below and above the interval?</p>
+</blockquote>
+</div>
+<div id="answer-21" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="sampling-imaginary.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Sample answer</span></span>
+<span id="cb9-2"><a href="sampling-imaginary.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples,<span class="fu">c</span>(<span class="fl">0.17</span>,<span class="fl">0.83</span>))</span>
+<span id="cb9-3"><a href="sampling-imaginary.html#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="sampling-imaginary.html#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Figures calculated by splitting the remaining probability 0.34 in half above and below the desired interval.</span></span>
+<span id="cb9-5"><a href="sampling-imaginary.html#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#quantile(samples,c( (1-0.66) / 2 ,1 - (1-0.66) / 2))</span></span>
+<span id="cb9-6"><a href="sampling-imaginary.html#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="sampling-imaginary.html#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#alternatively:</span></span>
+<span id="cb9-8"><a href="sampling-imaginary.html#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#rethinking::PI(samples,0.66)</span></span></code></pre></div>
+<p>The interval (0.5 , 0.77) for p is the interval that contains 66% of the posterior probability, assuming equal posterior probability both below and above the interval.</p>
+</div>
+</div>
+<div id="m1-1" class="section level3 unnumbered">
+<h3>3M1</h3>
+<div id="question-22" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Suppose the globe tossing data had turned out to be 8 water in 15 tosses. Construct the posterior distribution, using grid approximation. Use the same flat prior as before.</p>
+</blockquote>
+</div>
+<div id="answer-22" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="sampling-imaginary.html#cb10-1" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out =</span> <span class="fl">1e4</span>)</span>
+<span id="cb10-2"><a href="sampling-imaginary.html#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="sampling-imaginary.html#cb10-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>,<span class="fl">1e4</span>)</span>
+<span id="cb10-4"><a href="sampling-imaginary.html#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="sampling-imaginary.html#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This next line contains the only code change</span></span>
+<span id="cb10-6"><a href="sampling-imaginary.html#cb10-6" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">8</span>,<span class="at">size=</span><span class="dv">15</span>,<span class="at">prob=</span>p_grid)</span>
+<span id="cb10-7"><a href="sampling-imaginary.html#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="sampling-imaginary.html#cb10-8" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> prior <span class="sc">*</span> likelihood</span>
+<span id="cb10-9"><a href="sampling-imaginary.html#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="sampling-imaginary.html#cb10-10" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> posterior<span class="sc">/</span><span class="fu">sum</span>(posterior)</span></code></pre></div>
+</div>
+</div>
+<div id="m2-1" class="section level3 unnumbered">
+<h3>3M2</h3>
+<div id="question-23" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Draw 10,000 samples from the grid approximation from above. Then use the samples to calculate the 90% HPDI for p.</p>
+</blockquote>
+</div>
+<div id="answer-23" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="sampling-imaginary.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>) </span>
+<span id="cb11-2"><a href="sampling-imaginary.html#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="sampling-imaginary.html#cb11-3" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">sample</span>(p_grid, <span class="at">size=</span><span class="fl">1e4</span>, <span class="at">prob=</span> posterior, <span class="at">replace=</span><span class="cn">TRUE</span>)</span>
+<span id="cb11-4"><a href="sampling-imaginary.html#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="sampling-imaginary.html#cb11-5" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples,<span class="fl">0.9</span>)</span></code></pre></div>
+<pre><code>##      |0.9      0.9| 
+## 0.3379338 0.7208721</code></pre>
+<p>The interval (0.34 , 0.72) for p is the narrowest interval that contains 90% of the posterior probability.</p>
+</div>
+</div>
+<div id="m3-1" class="section level3 unnumbered">
+<h3>3M3</h3>
+<div id="question-24" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Construct a posterior predictive check for this model and data. This means simulate the distribution of samples, averaging over the posterior uncertainty in p. What is the probability of observing 8 water in 15 tosses?</p>
+</blockquote>
+</div>
+<div id="answer-24" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="sampling-imaginary.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>) </span>
+<span id="cb13-2"><a href="sampling-imaginary.html#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="sampling-imaginary.html#cb13-3" aria-hidden="true" tabindex="-1"></a>post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>, <span class="at">size=</span><span class="dv">15</span>, <span class="at">prob=</span>samples)</span>
+<span id="cb13-4"><a href="sampling-imaginary.html#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="sampling-imaginary.html#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(post_pred<span class="sc">==</span><span class="dv">8</span>)<span class="sc">/</span><span class="fu">length</span>(post_pred)</span></code></pre></div>
+<pre><code>## [1] 0.1473</code></pre>
+<p>There is a 14.7% chance of observing 8 water in 15 tosses.</p>
+</div>
+</div>
+<div id="m4-1" class="section level3 unnumbered">
+<h3>3M4</h3>
+<div id="question-25" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Using the posterior distribution constructed from the new (8/15) data, now calculate the probability of observing 6 water in 9 tosses.</p>
+</blockquote>
+</div>
+<div id="answer-25" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="sampling-imaginary.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb15-2"><a href="sampling-imaginary.html#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="sampling-imaginary.html#cb15-3" aria-hidden="true" tabindex="-1"></a>post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>, <span class="at">size=</span><span class="dv">9</span>, <span class="at">prob=</span>samples)</span>
+<span id="cb15-4"><a href="sampling-imaginary.html#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="sampling-imaginary.html#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(post_pred<span class="sc">==</span><span class="dv">6</span>)<span class="sc">/</span><span class="fu">length</span>(post_pred)</span></code></pre></div>
+<pre><code>## [1] 0.1804</code></pre>
+<p>There is a 18.0% chance of observing 6 water in 9 tosses.</p>
+</div>
+</div>
+<div id="m5-1" class="section level3 unnumbered">
+<h3>3M5</h3>
+<div id="question-26" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Start over at 3M1, but now use a prior that is zero below p = 0.5 and a constant above p = 0.5. This corresponds to prior information that a majority of the Earth’s surface is water. Repeat each problem above and compare the inferences. What difference does the better prior make? If it helps, compare inferences (using both priors) to the true value p = 0.7.</p>
+</blockquote>
+</div>
+<div id="answer-26" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="sampling-imaginary.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Recalculate the posterior distribution using the new prior</span></span>
+<span id="cb17-2"><a href="sampling-imaginary.html#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="sampling-imaginary.html#cb17-3" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out =</span> <span class="fl">1e4</span>)</span>
+<span id="cb17-4"><a href="sampling-imaginary.html#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="sampling-imaginary.html#cb17-5" aria-hidden="true" tabindex="-1"></a>new_prior <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="fu">sum</span>(p_grid<span class="sc">&lt;</span><span class="fl">0.5</span>)) , <span class="fu">rep</span>(<span class="dv">2</span>,<span class="fu">length</span>(p_grid) <span class="sc">-</span> <span class="fu">sum</span>(p_grid<span class="sc">&lt;</span><span class="fl">0.5</span>)) )</span>
+<span id="cb17-6"><a href="sampling-imaginary.html#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="sampling-imaginary.html#cb17-7" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">8</span>,<span class="at">size=</span><span class="dv">15</span>,<span class="at">prob=</span>p_grid)</span>
+<span id="cb17-8"><a href="sampling-imaginary.html#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="sampling-imaginary.html#cb17-9" aria-hidden="true" tabindex="-1"></a>new_posterior <span class="ot">&lt;-</span> new_prior <span class="sc">*</span> likelihood</span>
+<span id="cb17-10"><a href="sampling-imaginary.html#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="sampling-imaginary.html#cb17-11" aria-hidden="true" tabindex="-1"></a>new_posterior <span class="ot">&lt;-</span> new_posterior<span class="sc">/</span><span class="fu">sum</span>(new_posterior)</span>
+<span id="cb17-12"><a href="sampling-imaginary.html#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="sampling-imaginary.html#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="sampling-imaginary.html#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Draw 10,000 samples from the grid approximation. Then use the samples to calculate the 90% HPDI for p.</span></span>
+<span id="cb17-15"><a href="sampling-imaginary.html#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="sampling-imaginary.html#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb17-17"><a href="sampling-imaginary.html#cb17-17" aria-hidden="true" tabindex="-1"></a>new_samples <span class="ot">&lt;-</span> <span class="fu">sample</span>(p_grid, <span class="at">size=</span><span class="fl">1e4</span>, <span class="at">prob=</span> new_posterior, <span class="at">replace=</span><span class="cn">TRUE</span>)</span>
+<span id="cb17-18"><a href="sampling-imaginary.html#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="sampling-imaginary.html#cb17-19" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(new_samples,<span class="fl">0.9</span>)</span></code></pre></div>
+<pre><code>##      |0.9      0.9| 
+## 0.5000500 0.7152715</code></pre>
+<p>The 90% highest probability density interval for p was previously (0.34 , 0.72), now it is (0.5 , 0.72). The HDPI is narrower directly as a consequence of the prior eliminating estimates of p below 0.5.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="sampling-imaginary.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Construct a posterior predictive check for this model and data. This means simulate the distribution of samples, averaging over the posterior uncertainty in p. What is the probability of observing 8 water in 15 tosses?</span></span>
+<span id="cb19-2"><a href="sampling-imaginary.html#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="sampling-imaginary.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb19-4"><a href="sampling-imaginary.html#cb19-4" aria-hidden="true" tabindex="-1"></a>new_post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>, <span class="at">size=</span><span class="dv">15</span>, <span class="at">prob=</span>new_samples)</span>
+<span id="cb19-5"><a href="sampling-imaginary.html#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="sampling-imaginary.html#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(new_post_pred<span class="sc">==</span><span class="dv">8</span>)<span class="sc">/</span><span class="fu">length</span>(new_post_pred)</span></code></pre></div>
+<pre><code>## [1] 0.1567</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="sampling-imaginary.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#true probability of seeing water 8 times in 15 tosses</span></span>
+<span id="cb21-2"><a href="sampling-imaginary.html#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">8</span>,<span class="dv">15</span>,<span class="at">prob=</span><span class="fl">0.7</span>)</span></code></pre></div>
+<pre><code>## [1] 0.08113003</code></pre>
+<p>There was previously a 14.7% chance of observing 8 water in 15 tosses. Now that probability is 15.7%. The model is trained on data of 8 water observations in 15 tosses, and the probability of reproducing that data from the posterior doesn’t seem to change much with our new prior. The true probability is much lower, around 8% (setting p=70%).</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="sampling-imaginary.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Using the posterior distribution constructed from the new (8/15) data, now calculate the probability of observing 6 water in 9 tosses.</span></span>
+<span id="cb23-2"><a href="sampling-imaginary.html#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="sampling-imaginary.html#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb23-4"><a href="sampling-imaginary.html#cb23-4" aria-hidden="true" tabindex="-1"></a>new_post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>, <span class="at">size=</span><span class="dv">9</span>, <span class="at">prob=</span>new_samples)</span>
+<span id="cb23-5"><a href="sampling-imaginary.html#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="sampling-imaginary.html#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(new_post_pred<span class="sc">==</span><span class="dv">6</span>)<span class="sc">/</span><span class="fu">length</span>(new_post_pred)</span></code></pre></div>
+<pre><code>## [1] 0.2292</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="sampling-imaginary.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#true probability of seeing water 6 times in 9 tosses</span></span>
+<span id="cb25-2"><a href="sampling-imaginary.html#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">6</span>,<span class="dv">9</span>,<span class="at">prob=</span><span class="fl">0.7</span>)</span></code></pre></div>
+<pre><code>## [1] 0.2668279</code></pre>
+<p>There was previously a 18.0% chance of observing 6 water in 9 tosses. Now that probability is 22.9%. The model with the new prior does a slightly better job of approximating the true probability of 26.7%</p>
+</div>
+</div>
+<div id="m6-1" class="section level3 unnumbered">
+<h3>3M6</h3>
+<div id="question-27" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Suppose you want to estimate the Earth’s proportion of water very precisely. Specifically, you want the 99% percentile interval of the posterior distribution of p to be only 0.05 wide. This means the distance between the upper and lower bound of the interval should be 0.05. How many times will you have to toss the globe to do this?</p>
+</blockquote>
+</div>
+<div id="answer-27" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>I found this one to be quite tricky.</p>
+<p>I ended up just looping through sample sizes from 1 to 10000 and measuring the width of the 99% confidence interval for each size.</p>
+<p>One thing that’s unsatisfying about this approach is that I’ve had to assume a number of “successes” for each i number of trials. I’ve assumed that successes occur roughly in the 8 out of 15 proportion seen in the chapter example, but should it be the case that the number of trials required to get a percentile interval to a target width should be dependent on the proportion of successes?</p>
+<p>Also, you’d think there might be an analytical approach since we know the distribution is binomial, but I’ve just brute forced an answer using a loop.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="sampling-imaginary.html#cb27-1" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">0</span> , <span class="at">to=</span><span class="dv">1</span> , <span class="at">length.out=</span><span class="dv">1000</span> ) </span>
+<span id="cb27-2"><a href="sampling-imaginary.html#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="sampling-imaginary.html#cb27-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">rep</span>( <span class="dv">1</span> , <span class="dv">1000</span> ) </span>
+<span id="cb27-4"><a href="sampling-imaginary.html#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="sampling-imaginary.html#cb27-5" aria-hidden="true" tabindex="-1"></a>width <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb27-6"><a href="sampling-imaginary.html#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="sampling-imaginary.html#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">10000</span>)){</span>
+<span id="cb27-8"><a href="sampling-imaginary.html#cb27-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-9"><a href="sampling-imaginary.html#cb27-9" aria-hidden="true" tabindex="-1"></a>  likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>( <span class="fu">round</span>(i<span class="sc">*</span><span class="dv">8</span><span class="sc">/</span><span class="dv">15</span>,<span class="at">digits =</span> <span class="dv">0</span>) , <span class="at">size=</span>i , <span class="at">prob=</span>p_grid ) </span>
+<span id="cb27-10"><a href="sampling-imaginary.html#cb27-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-11"><a href="sampling-imaginary.html#cb27-11" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">&lt;-</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb27-12"><a href="sampling-imaginary.html#cb27-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-13"><a href="sampling-imaginary.html#cb27-13" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">&lt;-</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
+<span id="cb27-14"><a href="sampling-imaginary.html#cb27-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-15"><a href="sampling-imaginary.html#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">100</span>) </span>
+<span id="cb27-16"><a href="sampling-imaginary.html#cb27-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-17"><a href="sampling-imaginary.html#cb27-17" aria-hidden="true" tabindex="-1"></a>  samples <span class="ot">&lt;-</span> <span class="fu">sample</span>( p_grid , <span class="at">prob=</span>posterior , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> )</span>
+<span id="cb27-18"><a href="sampling-imaginary.html#cb27-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-19"><a href="sampling-imaginary.html#cb27-19" aria-hidden="true" tabindex="-1"></a>  interval <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">PI</span>(samples,<span class="fl">0.99</span>)</span>
+<span id="cb27-20"><a href="sampling-imaginary.html#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="sampling-imaginary.html#cb27-21" aria-hidden="true" tabindex="-1"></a>  width[i] <span class="ot">&lt;-</span> interval[<span class="dv">2</span>]<span class="sc">-</span>interval[<span class="dv">1</span>]</span>
+<span id="cb27-22"><a href="sampling-imaginary.html#cb27-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-23"><a href="sampling-imaginary.html#cb27-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-24"><a href="sampling-imaginary.html#cb27-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-25"><a href="sampling-imaginary.html#cb27-25" aria-hidden="true" tabindex="-1"></a> <span class="fu">which</span>(width<span class="sc">&lt;</span><span class="fl">0.05</span>)[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>## [1] 2731</code></pre>
+<p>This method suggests 2731 trials should be sufficient.</p>
+<p>This is one to revisit in the future.</p>
+</div>
+</div>
+<div id="h1-1" class="section level3 unnumbered">
+<h3>3H1</h3>
+<blockquote>
+<p>The Hard problems here all use the data below. These data indicate the gender (male=1, female=0) of officially reported first and second born children in 100 two-child families.</p>
+</blockquote>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="sampling-imaginary.html#cb29-1" aria-hidden="true" tabindex="-1"></a>birth1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>) </span>
+<span id="cb29-2"><a href="sampling-imaginary.html#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="sampling-imaginary.html#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="sampling-imaginary.html#cb29-4" aria-hidden="true" tabindex="-1"></a>birth2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)</span></code></pre></div>
+<blockquote>
+<p>So for example, the first family in the data reported a boy (1) and then a girl (0). The second family reported a girl (0) and then a boy (1). The third family reported two girls.</p>
+</blockquote>
+<div id="question-28" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Using grid approximation, compute the posterior distribution for the probability of a birth being a boy. Assume a uniform prior probability. Which parameter value maximizes the posterior probability?</p>
+</blockquote>
+</div>
+<div id="answer-28" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>We assume for the moment that gender is independent of birth order. Then we have a binomial distribution with an unknown parameter p, which is the target of our inference.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="sampling-imaginary.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#observations in our data - this will form our likelihood</span></span>
+<span id="cb30-2"><a href="sampling-imaginary.html#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="sampling-imaginary.html#cb30-3" aria-hidden="true" tabindex="-1"></a>births<span class="ot">=</span><span class="fu">length</span>(birth1)<span class="sc">+</span><span class="fu">length</span>(birth2)</span>
+<span id="cb30-4"><a href="sampling-imaginary.html#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="sampling-imaginary.html#cb30-5" aria-hidden="true" tabindex="-1"></a>boys<span class="ot">=</span><span class="fu">sum</span>(birth1)<span class="sc">+</span><span class="fu">sum</span>(birth2)</span>
+<span id="cb30-6"><a href="sampling-imaginary.html#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="sampling-imaginary.html#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">#standard grid approximation approach seen above</span></span>
+<span id="cb30-8"><a href="sampling-imaginary.html#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="sampling-imaginary.html#cb30-9" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">0</span> , <span class="at">to=</span><span class="dv">1</span> , <span class="at">length.out=</span><span class="dv">1000</span> ) </span>
+<span id="cb30-10"><a href="sampling-imaginary.html#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="sampling-imaginary.html#cb30-11" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">rep</span>( <span class="dv">1</span> , <span class="dv">1000</span> ) </span>
+<span id="cb30-12"><a href="sampling-imaginary.html#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="sampling-imaginary.html#cb30-13" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(boys , <span class="at">size=</span> births, <span class="at">prob=</span>p_grid ) </span>
+<span id="cb30-14"><a href="sampling-imaginary.html#cb30-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-15"><a href="sampling-imaginary.html#cb30-15" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb30-16"><a href="sampling-imaginary.html#cb30-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-17"><a href="sampling-imaginary.html#cb30-17" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">&lt;-</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
+<span id="cb30-18"><a href="sampling-imaginary.html#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="sampling-imaginary.html#cb30-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-20"><a href="sampling-imaginary.html#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Which parameter value maximizes the posterior probability?</span></span>
+<span id="cb30-21"><a href="sampling-imaginary.html#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-22"><a href="sampling-imaginary.html#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="co">#We sample from the posterior as before, and find the mode.</span></span>
+<span id="cb30-23"><a href="sampling-imaginary.html#cb30-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-24"><a href="sampling-imaginary.html#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>) </span>
+<span id="cb30-25"><a href="sampling-imaginary.html#cb30-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb30-26"><a href="sampling-imaginary.html#cb30-26" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">sample</span>( p_grid , <span class="at">prob=</span>posterior , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> )</span>
+<span id="cb30-27"><a href="sampling-imaginary.html#cb30-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-28"><a href="sampling-imaginary.html#cb30-28" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">chainmode</span>(samples)</span></code></pre></div>
+<pre><code>## [1] 0.5552446</code></pre>
+<p>The parameter value that maximises the posterior probability is 55.5%.</p>
+</div>
+</div>
+<div id="h2-1" class="section level3 unnumbered">
+<h3>3H2</h3>
+<div id="question-29" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Using the sample function, draw 10,000 random parameter values from the posterior distribution you calculated above. Use these samples to estimate the 50%, 89%, and 97% highest posterior density intervals.</p>
+</blockquote>
+</div>
+<div id="answer-29" class="section level4 unnumbered">
+<h4>Answer</h4>
+<p>I could have answered the last question analytically by using which.max(posterior)/1000, but since I used samples we’re well set up for this question.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="sampling-imaginary.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb32-2"><a href="sampling-imaginary.html#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="sampling-imaginary.html#cb32-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="fl">0.5</span>)</span></code></pre></div>
+<pre><code>##      |0.5      0.5| 
+## 0.5265265 0.5725726</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="sampling-imaginary.html#cb34-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="fl">0.89</span>)</span></code></pre></div>
+<pre><code>##     |0.89     0.89| 
+## 0.4994995 0.6076076</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="sampling-imaginary.html#cb36-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="fl">0.97</span>)</span></code></pre></div>
+<pre><code>##     |0.97     0.97| 
+## 0.4824825 0.6296296</code></pre>
+<p>The narrowest interval for p that contains 50% of the posterior distribution is (0.527 , 0.573).</p>
+<p>The narrowest interval for p that contains 89% of the posterior distribution is (0.499 , 0.608).</p>
+<p>The narrowest interval for p that contains 97% of the posterior distribution is (0.482 , 0.630).</p>
+</div>
+</div>
+<div id="h3-1" class="section level3 unnumbered">
+<h3>3H3</h3>
+<div id="question-30" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Use rbinom to simulate 10,000 replicates of 200 births. You should end up with 10,000 numbers, each one a count of boys out of 200 births. Compare the distribution of predicted numbers of boys to the actual count in the data (111 boys out of 200 births). There are many good ways to visualize the simulations, but the dens command (part of the rethinking package) is probably the easiest way in this case.</p>
+<p>Does it look like the model fits the data well? That is, does the distribution of predictions include the actual observation as a central, likely outcome?</p>
+</blockquote>
+</div>
+<div id="answer-30" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="sampling-imaginary.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb38-2"><a href="sampling-imaginary.html#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="sampling-imaginary.html#cb38-3" aria-hidden="true" tabindex="-1"></a>post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>,<span class="dv">200</span>, samples)</span>
+<span id="cb38-4"><a href="sampling-imaginary.html#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="sampling-imaginary.html#cb38-5" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">simplehist</span>(post_pred)</span></code></pre></div>
+<p><img src="03-sampling_imaginary_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="sampling-imaginary.html#cb39-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(post_pred)</span></code></pre></div>
+<p><img src="03-sampling_imaginary_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
+<p>The model appears to fit the data well, at least in the sense described: that the distribution of predictions includes the actual observation as a central, likely outcome.</p>
+</div>
+</div>
+<div id="h4-1" class="section level3 unnumbered">
+<h3>3H4</h3>
+<div id="question-31" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>Now compare 10,000 counts of boys from 100 simulated first borns only to the number of boys in the first births, birth1. How does the model look in this light?</p>
+</blockquote>
+</div>
+<div id="answer-31" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="sampling-imaginary.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(birth1)</span></code></pre></div>
+<pre><code>## [1] 51</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="sampling-imaginary.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb42-2"><a href="sampling-imaginary.html#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="sampling-imaginary.html#cb42-3" aria-hidden="true" tabindex="-1"></a>post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>,<span class="dv">100</span>, samples)</span>
+<span id="cb42-4"><a href="sampling-imaginary.html#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="sampling-imaginary.html#cb42-5" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">simplehist</span>(post_pred)</span></code></pre></div>
+<p><img src="03-sampling_imaginary_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="sampling-imaginary.html#cb43-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(post_pred)</span></code></pre></div>
+<p><img src="03-sampling_imaginary_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p>The model does a much worse job here. The true number of boys in birth1 is 51 out of 100, while the most likely outcomes expected by the model are closer to 55, 56.</p>
+</div>
+</div>
+<div id="h5" class="section level3 unnumbered">
+<h3>3H5</h3>
+<div id="question-32" class="section level4 unnumbered">
+<h4>Question</h4>
+<blockquote>
+<p>The model assumes that sex of first and second births are independent. To check this assumption, focus now on second births that followed female first borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of first borns who were girls and simulate that many births, 10,000 times.</p>
+<p>Compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?</p>
+</blockquote>
+</div>
+<div id="answer-32" class="section level4 unnumbered">
+<h4>Answer</h4>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="sampling-imaginary.html#cb44-1" aria-hidden="true" tabindex="-1"></a>after_girl <span class="ot">&lt;-</span> birth2[birth1<span class="sc">==</span><span class="dv">0</span>]</span>
+<span id="cb44-2"><a href="sampling-imaginary.html#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="sampling-imaginary.html#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(after_girl)</span></code></pre></div>
+<pre><code>## [1] 39</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="sampling-imaginary.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb46-2"><a href="sampling-imaginary.html#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="sampling-imaginary.html#cb46-3" aria-hidden="true" tabindex="-1"></a>post_pred <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fl">1e4</span>,<span class="fu">length</span>(after_girl), samples)</span>
+<span id="cb46-4"><a href="sampling-imaginary.html#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="sampling-imaginary.html#cb46-5" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">simplehist</span>(post_pred)</span></code></pre></div>
+<p><img src="03-sampling_imaginary_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>There were 49 girls born out of 100 births in the birth1 data. We know that these parents went on to have another child. Out of these 49 other children, our model expects the number of boys to be in the region of 27-28.</p>
+<p>In reality there were 39 boys born after the birth of a girl, well outside the central expectations of the model.</p>
+<p>No clue what’s happening in the data. There’s presumably some selection effect going on, but I can’t think of a plausible one.</p>
+</div>
+</div>
+</div>
+<div id="further-reading-2" class="section level2 unnumbered">
+<h2>Further Reading</h2>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="small-worlds.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="geocentric.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/03-sampling_imaginary.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,274 @@
+# Models With Memory {#models_memory}
+
+
+```{r echo=FALSE, warning=FALSE,message=FALSE}
+
+library(MASS)
+library(tidyverse)
+library(rethinking)
+library(GGally)
+library(dagitty)
+library(knitr)
+library(RColorBrewer)
+library(cowplot)
+
+inverse_logit <- function(x){
+  exp(x) / (1 + exp(x))
+}
+
+```
+
+## Chapter Notes
+
+This chapter introduces multi-level models, starting with an example using tadpole mortality data. Each row in the data set is a bucket that starts off with some number of tadpoles, each bucket has it's own experimental conditions (number of tadpoles, presence / absence of predators etc.) and at the end the number of surviving tadpoles are counted. 
+
+The chapter explains that we do not want to assign the same intercept estimate to each of the buckets - we don't want to accidentally mask any variation that may be due to some of our measured variables. But we also don't want to assign each bucket its own independent intercept - learning about one bucket should tell us something about the next. This is the motivation for multi-level models - in particular we start off with a *varying intercepts* model.
+
+Compare the kind of model we would try to fit in previous chapters:
+
+$$
+\begin{aligned}
+S_i &\sim \text{Binomial}(N_i,p_i) \\
+\text{logit}(p_i) &= \alpha_{\text{TANK}[i]} \\
+\alpha_j &\sim \text{Normal}(0,1.5)
+\end{aligned}
+$$
+
+With the varying intercepts model:
+
+$$
+\begin{aligned}
+S_i &\sim \text{Binomial}(N_i,p_i) \\
+\text{logit}(p_i) &= \alpha_{\text{TANK}[i]} \\
+\alpha_j &\sim \text{Normal}(\bar{\alpha},\sigma) \\
+\bar{\alpha} & \sim \text{Normal}(0,1.5) \\
+\sigma &\sim \text{Exponential}(1)
+\end{aligned}
+$$
+
+In the first model survival is modelled as binomial, each tank is assigned its own intercept, with each of these intercepts sharing the same fixed prior.
+
+In the multi-level model, the intercept prior is a function of two *hyperpriors*, $\bar{\alpha}$ and $\sigma$. The model updates both "levels" of the model as it sees the data. We fit both models and compare.
+
+```{r include = FALSE, cache = TRUE}
+
+data(reedfrogs) 
+
+data_frog <- as_tibble(reedfrogs)%>%
+  mutate(tank = 1:length(density))
+
+list_frog <- with(data_frog, list(S = surv, N = density, tank = tank))
+
+m13.1 <- ulam( alist( 
+  S ~ dbinom( N , p ) , 
+  logit(p) <- a[tank] , 
+  a[tank] ~ dnorm( 0 , 1.5 )
+), data=list_frog , chains=4 , cores = 4, log_lik=TRUE, cmdstan = TRUE )
+
+m13.2 <- ulam( alist( 
+  S ~ dbinom( N , p ) , 
+  logit(p) <- a[tank] , 
+  a[tank] ~ dnorm( a_bar , sigma ) ,
+  a_bar ~ dnorm( 0 , 1.5 ) , 
+  sigma ~ dexp( 1 ) 
+  ), data=list_frog , chains=4 , cores = 4, log_lik=TRUE, cmdstan = TRUE )
+```
+
+```{r}
+compare(m13.1,m13.2)
+
+```
+
+The measure of "effective parameters", pWAIC is lower for the multi-level model (m13.2), because of the stronger regularising effect of the hyperpriors.
+
+Here is a plot of the posterior of the multi-level model:
+
+```{r echo = FALSE, warning = FALSE}
+
+xt_frog <- extract.samples(m13.2)
+
+post_frog <- as_tibble(xt_frog$a)%>%
+  rename_with(function(x){x <- paste0("a",1:48)})%>%
+  bind_cols(tibble(a_bar = xt_frog$a_bar),tibble(sigma = xt_frog$sigma))
+
+vec_surv_est <- purrr::map_dbl(select(post_frog, -a_bar,-sigma),mean)
+
+mean_surv <- post_frog$a_bar%>%inverse_logit()%>%mean()
+
+plot_data_frog <- tibble(tank = 1:48, prop_surv = data_frog$propsurv,prop_surv_est = vec_surv_est)%>%
+  mutate(prop_surv_est = inverse_logit(prop_surv_est))
+
+ggplot(data = plot_data_frog)+
+  geom_point(aes(x=tank, y =prop_surv), colour = "blue")+
+  geom_point(aes(x=tank, y =prop_surv_est), shape = 1)+
+  geom_hline(aes(yintercept = mean_surv),linetype="dashed")+
+  geom_vline(xintercept = c(16.5,32.5))+
+  ylab("proportion survived")+
+  geom_text(data = tibble(x = c(8,24,40), y =0.1, label=c("small tanks","medium tanks","large tanks")),aes(x=x,y=y,label=label))
+
+```
+
+The blue points are the survival proportions in the raw data, the black circles are the survival proportions estimates by the model. The dashed line is the average survival proportion across all tanks. The survival estimates are pulled towards the mean, and this effect is particularly strong when:
+
+1. a point is far from the mean
+2. in small tanks, where there are fewer tadpoles and so the model is more sceptical of the data (in light of the experience of the other tanks).
+
+
+### More Than One Type of Cluster {-}
+
+The chapter reintroduces the chimpanzee example. We will add clustering according to actor (the chimp pulling levers) and experimental block. Here's the model:
+
+$$
+\begin{aligned}
+L_i &\sim \text{Binomial}(1,p_i) \\
+\text{logit}(p_i) &= \alpha_{\text{ACTOR}[i]} + \gamma_{\text{BLOCK}[i]} + \beta_{\text{TREATMENT}[i]} \\
+\beta_j &\sim \text{Normal}(0,0.5) && \text{for } j = 1 \dots 4 \\
+\alpha_j &\sim \text{Normal}(\bar{\alpha},\sigma_\alpha) && \text{for } j = 1 \dots 7\\
+\gamma_j &\sim \text{Normal}(0,\sigma_\gamma) && \text{for } j = 1 \dots 6\\
+\bar{\alpha} & \sim \text{Normal}(0,1.5) \\
+\sigma_\alpha &\sim \text{Exponential}(1) \\
+\sigma_\gamma &\sim \text{Exponential}(1)
+\end{aligned}
+$$
+
+What's happening here? The chapter explains:
+
+> "Each cluster gets its own vector of parameters. For actors, the vector is $\alpha$, and it has length 7, because there are 7 chimpanzees in the sample. For blocks, the vector is $\gamma$, and it has length 6, because there are 6 blocks. Each cluster variable needs its own standard deviation parameter that adapts the amount of pooling across units, be they actors or blocks. These are $\sigma_\alpha$ and $\sigma_\gamma$, respectively. Finally, note that there is only one global mean parameter $\bar{\alpha}$. We can’t identify a separate mean for each varying intercept type, because both intercepts are added to the same linear prediction."
+
+
+We fit the model and plot the posterior:
+```{r include = FALSE, cache = TRUE}
+data(chimpanzees)
+
+data_chimp <-  as_tibble(chimpanzees)%>%
+  mutate(treatment = 1 + prosoc_left+2*condition,
+         treatment = as.integer(treatment))
+
+list_chimp <- with(data_chimp, list(pulled_left = pulled_left, actor = actor, block_id = block, treatment = treatment))
+
+set.seed(13)
+m13.4 <- ulam( alist(
+pulled_left ~ dbinom( 1 , p ) , 
+logit(p) <- a[actor] + g[block_id] + b[treatment] , 
+b[treatment] ~ dnorm( 0 , 0.5 ),
+## adaptive priors 
+a[actor] ~ dnorm( a_bar , sigma_a ), 
+g[block_id] ~ dnorm( 0 , sigma_g ),
+## hyper-priors 
+a_bar ~ dnorm( 0 , 1.5 ), 
+sigma_a ~ dexp(1), 
+sigma_g ~ dexp(1)
+) , data=list_chimp , chains=4 , cores=4 , log_lik=TRUE, cmdstan = TRUE )
+```
+
+```{r echo = FALSE}
+ggplot(data=precis(m13.4,depth = 2))+
+  geom_pointrange(aes(x=rownames(precis(m13.4,depth = 2)),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
+  geom_hline(yintercept = 0,col="red")+
+  xlab("parameter")+
+  coord_flip()
+
+```
+
+We can see that there is much more variation among actors ($\sigma_\alpha$) than among blocks ($\sigma_\gamma$).
+
+### Divergent Transitions and Non-Centered Priors {-}
+
+Divergent transitions occur quite frequently in multi-level models. The chapter introduces two methods of dealing with these:
+
+1. Increasing Stan's target acceptance rate, which results in a smaller step size.
+2. Reparameterisation of the model, to use non-centered priors
+
+We start by increasing the target acceptance rate, to 99% compared to the ulam default 95%: 
+
+```{r eval = FALSE}
+set.seed(13) 
+m13.4b <- ulam( m13.4 , chains=4 , cores=4 , control=list(adapt_delta=0.99), cmdstan = TRUE )
+divergent(m13.4b)
+```
+
+Creating a non-centered version of the chimp models requires taking $\bar{\alpha}$, $\sigma_\alpha$ and $\sigma_\gamma$ out of the intercepts:
+
+$$
+\begin{aligned}
+\alpha_j &\sim \text{Normal}(\bar{\alpha},\sigma_\alpha)\\
+\gamma_j &\sim \text{Normal}(0,\sigma_\gamma)
+\end{aligned}
+$$
+
+Here's the non-centered parameterisation of the model:
+
+$$
+\begin{aligned}
+L_i &\sim \text{Binomial}(1,p_i) \\
+\text{logit}(p_i) &= \bar{\alpha} +  z_{\text{ACTOR}[i]} \sigma_\alpha + x_{\text{BLOCK}[i]} \sigma_\gamma + \beta_{\text{TREATMENT}[i]} \\
+\beta_j &\sim \text{Normal}(0,0.5) && \text{for } j = 1 \dots 4 \\
+z_j &\sim \text{Normal}(0,1)  \\
+x_j &\sim \text{Normal}(0,1) \\
+\bar{\alpha} & \sim \text{Normal}(0,1.5) \\
+\sigma_\alpha &\sim \text{Exponential}(1) \\
+\sigma_\gamma &\sim \text{Exponential}(1)
+\end{aligned}
+$$
+
+The actor and block intercepts have been standardised, and are now transformed in the linear model instead.
+
+We plot the effective number of parameters of the centred and non-centred models against each other:
+
+```{r include = FALSE, cache = TRUE}
+
+m13.4nc <- ulam( alist(
+pulled_left ~ dbinom( 1 , p ) , 
+logit(p) <- a_bar + z[actor]*sigma_a + # actor intercepts 
+  x[block_id]*sigma_g +  # block intercepts
+  b[treatment] ,
+b[treatment] ~ dnorm( 0 , 0.5 ), 
+z[actor] ~ dnorm( 0 , 1 ), 
+x[block_id] ~ dnorm( 0 , 1 ), 
+a_bar ~ dnorm( 0 , 1.5 ), 
+sigma_a ~ dexp(1), 
+sigma_g ~ dexp(1), 
+gq> vector[actor]:a <<- a_bar + z*sigma_a, 
+gq> vector[block_id]:g <<- x*sigma_g
+) , data=list_chimp , chains=4 , cores=4, cmdstan = TRUE )
+
+post_cen <- as_tibble(rownames(precis( m13.4 , depth=2 )))%>%
+  bind_cols(as_tibble(precis( m13.4 , depth=2 )))%>%
+  select(value,n_eff)%>%
+  rename(n_eff_cen = n_eff)
+
+plot_data_repar <- as_tibble(rownames(precis( m13.4nc , depth=2 )))%>%
+  bind_cols(as_tibble(precis( m13.4nc , depth=2 )))%>%
+  filter(str_sub(value,1,1)!="x" & str_sub(value,1,1)!="z")%>%
+    select(value,n_eff)%>%
+  rename(n_eff_non_cen = n_eff)%>%
+  left_join(post_cen, by = "value")%>%
+  arrange(value)
+```
+
+```{r echo = FALSE}
+ggplot(data = plot_data_repar)+
+  geom_point(aes(x = n_eff_cen, y = n_eff_non_cen))+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed")+
+  coord_cartesian( xlim = c(0, 2000), ylim = c(0, 2000))
+
+```
+
+Each point is a parameter. Points above the line suggest the non-centered model performed better.
+
+
+
+## Questions
+
+### 13E1 {-}
+
+#### Question {-}
+
+
+#### Answer {-}
+
+
+
+## Further Resources {-}
+
+
