@@ -482,11 +482,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb136-8"><a href="markov-chain.html#cb136-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-9"><a href="markov-chain.html#cb136-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m8<span class="fl">.3</span> , <span class="at">depth=</span><span class="dv">2</span> )</span></code></pre></div>
 <pre><code>##             mean          sd        5.5%       94.5%
-## a[1]   0.8866048 0.015678160  0.86154803  0.91166149
-## a[2]   1.0505802 0.009938140  1.03469711  1.06646324
-## b[1]   0.1324956 0.074215351  0.01388511  0.25110604
-## b[2]  -0.1426569 0.054757606 -0.23017011 -0.05514365
-## sigma  0.1095113 0.005937628  0.10002178  0.11900073</code></pre>
+## a[1]   0.8865640 0.015675726  0.86151120  0.91161687
+## a[2]   1.0505697 0.009936626  1.03468902  1.06645032
+## b[1]   0.1325054 0.074204581  0.01391214  0.25109865
+## b[2]  -0.1425763 0.054749508 -0.23007661 -0.05507604
+## sigma  0.1094943 0.005935329  0.10000853  0.11898014</code></pre>
 <p>Here is the same model using ulam:</p>
 <div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="markov-chain.html#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
 <span id="cb138-2"><a href="markov-chain.html#cb138-2" aria-hidden="true" tabindex="-1"></a>m9<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>(</span>
