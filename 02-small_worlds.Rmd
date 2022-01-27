@@ -2,6 +2,11 @@
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(knitr)
+library(tidygraph)
+library(ggraph)
+library(tibble)
+library(stringr)
+
 library(ggplot2)
 library(dplyr)
 library(rethinking)
@@ -9,7 +14,183 @@ library(rethinking)
 
 ## Chapter Notes
 
-I haven't written chapter notes for the first five chapters.
+Opens by drawing a distinction between the small world of the model and the large world of natural reality we are looking to make inferences about. The model is only a representation of the large world and it may exclude or misrepresent salient features, or fall apart outside of a narrow range of contexts.
+
+With that warning, the chapter begins to introduce inverse probability. Say we have four marbles in a bag, and the marbles can be either blue or white. We have five different hypotheses about how many blue and white marbles are in the bag:
+
+1. All marbles are white
+2. Three marbles are white, one is blue
+3. Two marbles are white, two are blue
+4. One marble is white, three are blue
+5. All marbles are blue
+
+Which of these is most likely? We want to answer this question by making a series of draws from the bag (with replacement) and using the results of these draws to estimate the relative plausibility of these hypotheses.
+
+Let's say we make three draws with replacement. We see a blue marble, a white marble, and then a blue marble. Call this "b-w-b". 
+
+To illustrate what's going on when we draw from the bag, let's assume temporarily that hypothesis 2 is correct. We want to display every possible result for a series of draws with replacement.
+
+In the code below, I use tidygraph and ggraph to allow this for up to three draws, although more draws could be performed with minor adjustments.
+
+```{r}
+
+# We first create a couple of data frames. One for the nodes - it will provide them labels 
+# and assign a colour to them. The other data frame specifies the edges - the connections 
+# between the nodes.
+
+# Create nodes - I've chosen to label the nodes so that the zero node is the start - 
+# no marbles have been drawn from the bag yet. The first four possible draws are then 
+# labelled 1-4. Then once the first draw has been made the nodes representing the second 
+# draw have two digits - the first represents the outcome of the first draw (1-4, for each 
+# of the four marbles that could have been drawn), and the second digit represents each 
+# of the four possible second draws (1-4). So node 34 means that the third marble was 
+# drawn on the first draw and the fourth marble on the second draw. The nodes for 
+# the third draw are labelled similarly - each with three digits 1 through 4.
+
+level1 <- 1:4 
+node <- c(0,level1) # these are the nodes for one draw
+
+for( i in 1:4){
+  intermediate <- c(i*10 + level1 )
+  node <- c(node,intermediate)
+} # this loop creates the nodes after a second draw. probably there is a cleaner way to do this
+
+level2 <- node[node>10]
+
+for( i in 1:4){
+  intermediate <- c(i*100 + level2 )
+  node <- c(node,intermediate)
+} # this loop creates the nodes after a third draw
+
+colour <- as.factor(ifelse(node %% 10 ==1,"blue","white")) # the first marble of each draw is blue, the rest white
+node <- as.character(node) # these are node names, not integers
+nodes <- tibble(node,colour)
+
+# We now draw the edges between the nodes. Potentially confusing since the integer 1 
+# here refers to the first node in the list above i.e. the node labelled "0", and so on. 
+# The integer 16 refers to the 16th node in the list above, i.e. to node labelled "33".
+
+from <- rep(1:21,each=4) # each of the first 21 nodes will have four connections
+to <- c(2:85)
+edges <- tibble(from,to)
+
+# we now create a tbl_graph object for the number of draws we want to display 
+
+draws_1 <- tbl_graph(edges=edges[1:4,], nodes=nodes[1:5,])
+draws_2 <- tbl_graph(edges=edges[1:20,], nodes=nodes[1:21,])
+draws_3 <- tbl_graph(edges=edges, nodes=nodes)
+
+# we will use this function to plot the tbl_graph objects above
+
+plot_draws <- function(data_frame, layout, circular){
+  ggraph(data_frame, layout, circular = circular) + 
+    geom_edge_link() + 
+    geom_node_point(shape = 21, colour = "black", size = 5, stroke = 1,
+                    aes(filter = node != "0", #we don't show the starting node
+                        fill=colour))+
+    scale_fill_manual(values = c("light blue","white"))+
+    theme(legend.position="none")
+  }
+
+```
+
+Here are all possible outcomes of one draw from the bag:
+
+```{r}
+plot_draws(draws_1,"tree", FALSE)+scale_y_reverse()
+```
+
+We have once chance to get a blue marble (there is only one in the bag under our hypothesis), and we have three chances to get a white marble.
+
+We then put the marble we drew back into the bag and draw again. All the possible outcomes  for our two draws are displayed below:
+
+```{r}
+plot_draws(draws_2,"tree", FALSE)+scale_y_reverse()
+```
+
+For example, the marble on the farthest left represents the situation where we first drew a blue marble, placed in back into the bag, and the drew it again on the second draw.
+
+All possible outcomes of three draws are shown in the below diagram. This time I've made it circular to avoid crowding in the graph. The nodes closest to the centre of the circle represent the first draw, and the nodes on the outside represent the third draw.
+
+```{r}
+plot_draws(draws_3,"dendrogram", TRUE)+coord_fixed()
+```
+
+How many ways of seeing the sequence "b-w-b" are there under our hypothesis 2?
+
+```{r}
+ggraph(draws_3, "dendrogram", circular = TRUE) + 
+    geom_edge_link() + 
+    geom_node_point(shape = 21, colour = "black", size = 5, stroke = 1,
+                    aes(filter = 
+                          str_sub(node, 1, 1) == "1" & # criteria for displaying nodes
+                          str_sub(node, 2, 2) != "1" &
+                          (str_sub(node, -1, -1) == "1" | str_length(node)==2), 
+                        fill=colour))+
+    scale_fill_manual(values = c("light blue","white"))+
+    theme(legend.position="none")+
+    coord_fixed()
+```
+
+There are three ways of seeing this sequence, displayed above.
+
+By conducting this exercise for each of the five hypotheses above, we are part way to an answer of how plausible each hypothesis is given the sequence of draws we observed.
+
+E.g. for hypothesis 1, there are 0 ways of seeing the observed sequence, since there are no blue marbles in the hypothesis. Similarly for hypothesis 5. The table in the chapter summarises:
+
+![](images\\Ch02Img01.png)
+
+The other information we need to assess the relative plausibility of each hypothesis given the data we need is a measure of the relative plausibility of each hypothesis *before seeing the data*. It might make sense in this case to say that each hypothesis is as likely as any other, but in other circumstances we might believe one of our hypotheses carries a lot more initial plausibility.
+
+We're most of the way to Bayes' rule now, and the next section of the chapter introduces it - moving from the language of counting to the language of probability.
+
+Afterwards, a simple model is introduced. Here's my attempt at recreating figure 2.5:
+
+
+```{r}
+
+df_plot <- tibble(title=character(),p_grid = numeric(),posterior = numeric(),.rows=0)
+
+grid_length <- 100
+num_water <- c(1,1,2,3,4,4,5,6,6)   
+num_toss <- c(1,2,3,4,5,6,7,8,9)
+toss_results <- c("W","L","W","W","W","L","W","L","W") 
+
+# define grid 
+p_grid <- seq( from=0 , to=1 , length.out=grid_length )
+
+# define prior 
+prior <- rep( 1 , grid_length )
+
+#loop through each of the three options
+for (i in 1:length(num_water)){
+
+  # compute likelihood at each value in grid 
+  likelihood <- dbinom( num_water[i] , size=num_toss[i] , prob=p_grid )
+  
+  # compute product of likelihood and prior 
+  unstd_posterior <- likelihood * prior
+  
+  # standardize the posterior, so it sums to 1
+  posterior <- unstd_posterior / sum(unstd_posterior)
+  
+  df_plot <- df_plot %>% bind_rows(tibble(
+                    title = paste(toss_results[1:i], collapse =" "),
+                    p_grid = p_grid,
+                    posterior = posterior))
+}
+
+ggplot(df_plot, aes(x=p_grid, y=posterior)) +
+  geom_line()+
+  facet_wrap(~title, ncol = 3)+
+  xlab("proportion of water")+
+  ylab("posterior probability density")
+
+```
+
+What's shown here is the posterior distributions of a globe-tossing model after 9 tosses. At each step, we take a globe and throw it into the air. We catch it, and note where our index finger ends up on the globe - either on water (W) or land (L). We do this nine times and in this way build up an estimate of the proportion of the Earth's surface that is covered by water. The titles of each of the plots above show the sequence that we have observed to that point. We start off by assuming that each proportion is as likely as any other - flat priors.
+
+I've used grid approximation to plot the posteriors in the figure above. Quadratic approximation and Markov chain Monte Carlo are briefly outlined at the end of the chapter.
 
 ## Questions
 

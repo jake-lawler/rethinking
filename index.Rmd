@@ -29,15 +29,17 @@ These are my notes on Richard McElreath's 'Statistical Rethinking'. They are cur
 * Until chapter 9 the chapter notes are just implementations of the models, and recreations of the graphs in tidyverse, rather than summaries of the chapter material.
 * I haven't done the question sets of the final few chapters yet.
 
-My plan is to split my time after work between completing these notes, and working through Larry Wasserman's 'All of Statistics'.
-
 If you are a student working through Rethinking and happen to stumble across these notes, please be careful! I am not a statistician, and this book was my first exposure to a lot of this material - my summaries and answers to end-of-chapter questions are probably wrong in many places (!)
 
 This is also my first use of the bookdown package. I've really enjoyed using it as a way of structuring textbook notes, and plan to keep using it in the future. Thank you to Yihui Xie for his work on the package and for the very helpful guide 'bookdown: Authoring Books and Technical Documents with R Markdown'.
 
-I've hidden a lot of the code used to train the models, create the graphs etc. It's all available at <https://github.com/jake-lawler>.
+I've hidden a lot of the code used to train the models, create the graphs etc. It's all available at <https://github.com/jake-lawler>. The code is a little muddled because I'm trying to use tidyverse-oriented R and the rethinking package is not built with that in mind. I think once I move on to e.g. 'Bayesian Data Analysis' I'll try to use brms, or just raw Stan.
 
 Also, thanks to Richard McElreath. I had a lot of fun working my way through the book, and have collected a long list of interesting further reading that I'm only just beginning to get started on.
+
+Items to revisit:
+
+* Chapter Four - Revisit the spline section once I'm better at using tidybayes to extract draws from more complicated models.
 
 
 

@@ -6,11 +6,187 @@ library(knitr)
 library(ggplot2)
 library(dplyr)
 library(rethinking)
+library(tidybayes)
+library(tidybayes.rethinking)
+library(modelr)
+library(ggdist)
+library(magrittr)
+library(dagitty)
+library(forcats)
 ```
 
 ## Chapter Notes
 
-I haven't written chapter notes for the first five chapters.
+This chapter introduces multiple regression and causal models. Will try to race through it, just getting some practice visualising priors, using tidybayes to display model uncertainty etc.
+
+Model 5.1: Modelling divorce rate on age at marriage.
+
+$$
+\begin{aligned}
+D_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_A A_i \\
+\alpha &\sim \text{Normal}(0, 0.2) \\ 
+\beta_A &\sim \text{Normal}(0, 0.5) \\
+\sigma &\sim \text{Exponential}(1) \\
+\end{aligned}
+$$
+Here are the variables we'll use in this model and later on:
+
+* $D_i$ - the 2009 divorce rate per 1,000 adults for each U.S. state.
+* $A_i$ - The 2005-2010 median age at marriage for each state
+
+Plot of these priors:
+
+```{r}
+# we generate 100 samples from our prior distributions
+prior_sim_5_1 <- tibble(a=rnorm(100, mean = 0, sd=0.2),
+                    bA = rnorm(100, mean = 0, sd = 0.5))
+
+# and plot the lines they imply
+ggplot(prior_sim_5_1)+
+  geom_abline(aes(slope = bA,
+                  intercept = a))+
+  xlim(-3,3)+
+  ylim(-3,3)+
+  xlab("Median Age of Marriage (std)")+
+  ylab("Divorce Rate (std)")
+```
+Here's the model and the posterior mean/expected divorce rate:
+
+```{r}
+data(WaffleDivorce) 
+data_divorce <- WaffleDivorce%>%as_tibble()
+
+data_divorce %<>% mutate(
+  divorce_s = (Divorce - mean(Divorce))/sd(Divorce),
+  marriage_s = (Marriage - mean(Marriage))/sd(Marriage),
+  age_s = (MedianAgeMarriage - mean(MedianAgeMarriage))/sd(MedianAgeMarriage),
+)
+
+m5_1 <- quap( 
+  alist( 
+    divorce_s ~ dnorm( mu , sigma ) , 
+    mu <- a + bA * age_s , 
+    a ~ dnorm( 0 , 0.2 ) , 
+    bA ~ dnorm( 0 , 0.5 ) , 
+    sigma ~ dexp( 1 )
+) , data = data_divorce )
+
+summary_5_1 <- m5_1 %>%
+  gather_draws(a, bA, sigma) %>%
+  median_qi(.width=0.89)%>%
+  mutate(model = "m5_1")
+
+data_grid(data_divorce,age_s=seq_range(age_s, n = 51)) %>% 
+  add_linpred_draws(m5_1) %>% # add draws for mean divorce rate
+  mutate(MedianAgeMarriage= age_s * sd(data_divorce$MedianAgeMarriage) + mean(data_divorce$MedianAgeMarriage),
+         Divorce = .linpred * sd(data_divorce$Divorce) + mean(data_divorce$Divorce))%>% 
+  ggplot(aes(x = MedianAgeMarriage, y=Divorce)) +
+  stat_lineribbon() +
+  geom_point(data = data_divorce, colour = "light blue") +
+  scale_fill_brewer(palette = "Greys")
+
+```
+
+Here's the same plot for model 5.2 - which uses marriage rate as a predictor instead of age at marriage:
+
+```{r}
+m5_2 <- quap( 
+  alist( 
+    divorce_s ~ dnorm( mu , sigma ) , 
+    mu <- a + bM * marriage_s , 
+    a ~ dnorm( 0 , 0.2 ) , 
+    bM ~ dnorm( 0 , 0.5 ) , 
+    sigma ~ dexp( 1 )
+) , data = data_divorce )
+
+summary_5_2 <- m5_2 %>%
+  gather_draws(a, bM, sigma) %>%
+  median_qi(.width=0.89)%>%
+  mutate(model = "m5_2")
+
+data_grid(data_divorce,marriage_s=seq_range(marriage_s, n = 51)) %>% 
+  add_linpred_draws(m5_2) %>% # add draws for mean divorce rate
+  mutate(Marriage= marriage_s * sd(data_divorce$Marriage) + mean(data_divorce$Marriage),
+         Divorce = .linpred * sd(data_divorce$Divorce) + mean(data_divorce$Divorce))%>% 
+  ggplot(aes(x = Marriage, y=Divorce)) +
+  stat_lineribbon() +
+  geom_point(data = data_divorce, colour = "light blue") +
+  scale_fill_brewer(palette = "Greys")
+```
+
+The chapter goes on to introduce DAGs and causal reasoning, before coming back to define a regression model that uses both marriage rate and median age at marriage as predictors.
+
+Here are a couple of possible DAGs for how marriage rate and median age of marriage influence the divorce rate:
+
+```{r, figures-side, fig.show="hold", out.width="50%"}
+
+par(mar = c(4, 4, .1, .1))
+
+dag_div1 <- dagitty("dag{A -> M; M -> D; A -> D }")
+coordinates(dag_div1) <- list( x=c(A=0,D=0.5,M=1) , y=c(A=0,M=0,D=1))
+drawdag(dag_div1)
+
+dag_div2 <- dagitty("dag{A -> M; A -> D }")
+coordinates(dag_div2) <- list( x=c(A=0,D=0.5,M=1) , y=c(A=0,M=0,D=1))
+drawdag(dag_div2)
+
+```
+
+We can use our data to test these proposed causal models, because they make different predictions. The first has no conditional independencies:
+
+```{r}
+impliedConditionalIndependencies(dag_div1)
+```
+The second predicts that D is independent from M, conditional on A:
+
+```{r}
+impliedConditionalIndependencies(dag_div2)
+```
+
+Here's our statistical model:
+
+$$
+\begin{aligned}
+D_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_M M_i + \beta_A A_i \\
+\alpha &\sim \text{Normal}(0, 0.2) \\ 
+\beta_M &\sim \text{Normal}(0, 0.5) \\
+\beta_A &\sim \text{Normal}(0, 0.5) \\
+\sigma &\sim \text{Exponential}(1) \\
+\end{aligned}
+$$
+
+```{r}
+m5_3 <- quap( 
+  alist( 
+    divorce_s ~ dnorm( mu , sigma ) , 
+    mu <- a + bM * marriage_s + bA * age_s , 
+    a ~ dnorm( 0 , 0.2 ) , 
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) , 
+    sigma ~ dexp( 1 )
+) , data = data_divorce )
+
+summary_5_3 <- m5_3 %>%
+  gather_draws(a, bM, bA, sigma) %>%
+  median_qi(.width=0.89)%>%
+  mutate(model = "m5_3")
+
+summary_5_3
+```
+
+Here's a plot for the three models:
+
+```{r}
+
+bind_rows(summary_5_1, summary_5_2,summary_5_3) %>%
+  ggplot(aes(y = fct_rev(.variable), x = .value, xmin = .lower, xmax = .upper, color = model)) +
+  geom_pointinterval(position = position_dodge(width = -0.3))+
+  ylab("parameters")
+
+```
+As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.
 
 ## Questions
 
@@ -106,11 +282,13 @@ S - size of laboratory
 Now which of the following linear models are inferentially equivalent ways to include the categorical variable in a regression? Models are inferentially equivalent when it’s possible to compute one posterior distribution from the posterior distribution of another model.
 >
 $$
-(1) \mu_i = \alpha + \beta_A A_i + \beta_B B_i + \beta_D D_i  \\
-(2) \mu_i = \alpha + \beta_A A_i + \beta_B B_i + \beta_C C_i + \beta_D D_i \\ 
-(3) \mu_i = \alpha + \beta_B B_i + \beta_C C_i + \beta_D D_i \\
-(4) \mu_i = \alpha_A A_i + α_B B_i + α_C C_i + α_D D_i \\
-(5) \mu_i = \alpha_A(1 − B_i − C_i −D_i) + \alpha_B B_i + \alpha_C C_i + \alpha_D D_i
+\begin{aligned}
+(1) \mu_i &= \alpha + \beta_A A_i + \beta_B B_i + \beta_D D_i  \\
+(2) \mu_i &= \alpha + \beta_A A_i + \beta_B B_i + \beta_C C_i + \beta_D D_i \\ 
+(3) \mu_i &= \alpha + \beta_B B_i + \beta_C C_i + \beta_D D_i \\
+(4) \mu_i &= \alpha_A A_i + α_B B_i + α_C C_i + α_D D_i \\
+(5) \mu_i &= \alpha_A(1 − B_i − C_i −D_i) + \alpha_B B_i + \alpha_C C_i + \alpha_D D_i
+\end{aligned}
 $$
 
 #### Answer {-}

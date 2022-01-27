@@ -7,3 +7,5 @@
 *.md
 _bookdown_files/
 data/
+code_snippets/
+images/

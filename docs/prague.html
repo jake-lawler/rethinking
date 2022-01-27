@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 1 The Golem of Prague | Statistical Rethinking Notes</title>
   <meta name="description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
-  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 1 The Golem of Prague | Statistical Rethinking Notes" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2021-04-24" />
+<meta name="date" content="2022-01-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,9 +32,10 @@
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="small-worlds.html"/>
-<script src="libs/header-attrs-2.7/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link rel="next" href="small_worlds.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,7 +51,8 @@
 
 
 
-
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -118,6 +120,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -138,58 +141,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2" data-path="prague.html"><a href="prague.html#questions"><i class="fa fa-check"></i><b>1.2</b> Questions</a></li>
 <li class="chapter" data-level="" data-path="prague.html"><a href="prague.html#further-reading"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="small-worlds.html"><a href="small-worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
+<li class="chapter" data-level="2" data-path="small_worlds.html"><a href="small_worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="small-worlds.html"><a href="small-worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="2.2" data-path="small-worlds.html"><a href="small-worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
+<li class="chapter" data-level="2.1" data-path="small_worlds.html"><a href="small_worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="2.2" data-path="small_worlds.html"><a href="small_worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
+<li class="chapter" data-level="3" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="3.2" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
+<li class="chapter" data-level="3.1" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="3.2" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="geocentric.html"><a href="geocentric.html"><i class="fa fa-check"></i><b>4</b> Geocentric Models</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="geocentric.html"><a href="geocentric.html#model-using-grid-approximation"><i class="fa fa-check"></i><b>4.1.1</b> Model Using Grid Approximation</a></li>
+<li class="chapter" data-level="4.1.2" data-path="geocentric.html"><a href="geocentric.html#model-using-quadratic-approximation"><i class="fa fa-check"></i><b>4.1.2</b> Model Using Quadratic Approximation</a></li>
+<li class="chapter" data-level="4.1.3" data-path="geocentric.html"><a href="geocentric.html#adding-predictors"><i class="fa fa-check"></i><b>4.1.3</b> Adding Predictors</a></li>
+<li class="chapter" data-level="4.1.4" data-path="geocentric.html"><a href="geocentric.html#polynomial-regression"><i class="fa fa-check"></i><b>4.1.4</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.5" data-path="geocentric.html"><a href="geocentric.html#b-splines"><i class="fa fa-check"></i><b>4.1.5</b> B-Splines</a></li>
+</ul></li>
 <li class="chapter" data-level="4.2" data-path="geocentric.html"><a href="geocentric.html#questions-3"><i class="fa fa-check"></i><b>4.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e1-2"><i class="fa fa-check"></i>4E1</a></li>
@@ -207,36 +217,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#further-reading-3"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="many-variables.html"><a href="many-variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
+<li class="chapter" data-level="5" data-path="many_variables.html"><a href="many_variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="many-variables.html"><a href="many-variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="5.2" data-path="many-variables.html"><a href="many-variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
+<li class="chapter" data-level="5.1" data-path="many_variables.html"><a href="many_variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="5.2" data-path="many_variables.html"><a href="many_variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="haunted-dag.html"><a href="haunted-dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
+<li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted-dag.html"><a href="haunted-dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="6.2" data-path="haunted-dag.html"><a href="haunted-dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="ulysses.html"><a href="ulysses.html"><i class="fa fa-check"></i><b>7</b> Ulysses’ Compass</a>
 <ul>
@@ -282,84 +292,84 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m3-5"><i class="fa fa-check"></i>8M3</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="markov-chain.html"><a href="markov-chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
+<li class="chapter" data-level="9" data-path="markov_chain.html"><a href="markov_chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="markov-chain.html"><a href="markov-chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
+<li class="chapter" data-level="9.1" data-path="markov_chain.html"><a href="markov_chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
 </ul></li>
-<li class="chapter" data-level="9.2" data-path="markov-chain.html"><a href="markov-chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
+<li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="big-entropy.html"><a href="big-entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
+<li class="chapter" data-level="10" data-path="big_entropy.html"><a href="big_entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="big-entropy.html"><a href="big-entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
+<li class="chapter" data-level="10.1" data-path="big_entropy.html"><a href="big_entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2" data-path="big-entropy.html"><a href="big-entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="10.2" data-path="big_entropy.html"><a href="big_entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="god-spiked.html"><a href="god-spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
+<li class="chapter" data-level="11" data-path="god_spiked.html"><a href="god_spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="god-spiked.html"><a href="god-spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
+<li class="chapter" data-level="11.1" data-path="god_spiked.html"><a href="god_spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
-<li class="chapter" data-level="11.1.1" data-path="god-spiked.html"><a href="god-spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
+<li class="chapter" data-level="11.1.1" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
 </ul></li>
-<li class="chapter" data-level="11.2" data-path="god-spiked.html"><a href="god-spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
+<li class="chapter" data-level="11.2" data-path="god_spiked.html"><a href="god_spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="12" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
+<li class="chapter" data-level="12" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
 <ul>
-<li class="chapter" data-level="12.1" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
+<li class="chapter" data-level="12.1" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
 </ul></li>
-<li class="chapter" data-level="12.2" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
+<li class="chapter" data-level="12.2" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="13" data-path="models-memory.html"><a href="models-memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
+<li class="chapter" data-level="13" data-path="models_memory.html"><a href="models_memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
 <ul>
-<li class="chapter" data-level="13.1" data-path="models-memory.html"><a href="models-memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
+<li class="chapter" data-level="13.1" data-path="models_memory.html"><a href="models_memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
 </ul></li>
-<li class="chapter" data-level="13.2" data-path="models-memory.html"><a href="models-memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
+<li class="chapter" data-level="13.2" data-path="models_memory.html"><a href="models_memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="covariance.html"><a href="covariance.html"><i class="fa fa-check"></i><b>14</b> Adventures in Covariance</a>
 <ul>
@@ -375,15 +385,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#further-resources-4"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
+<li class="chapter" data-level="15" data-path="missing_data.html"><a href="missing_data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
 <ul>
-<li class="chapter" data-level="15.1" data-path="missing-data.html"><a href="missing-data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
+<li class="chapter" data-level="15.1" data-path="missing_data.html"><a href="missing_data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
 </ul></li>
-<li class="chapter" data-level="15.2" data-path="missing-data.html"><a href="missing-data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="15.2" data-path="missing_data.html"><a href="missing_data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="16" data-path="generalized.html"><a href="generalized.html"><i class="fa fa-check"></i><b>16</b> Generalized Linear Madness</a>
 <ul>
@@ -421,7 +431,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 1</span> The Golem of Prague</h1>
 <div id="chapter-notes" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Chapter Notes</h2>
-<p>I haven’t written chapter notes for the first five chapters.</p>
+<p>The book opens with an analogy between statistical models and the Golem of Prague. Both are powerful, but lack wisdowm of their own. They thoughtlessly follow instructions and are therefore dangerous unless great care is taken.</p>
+<p>The chapter stresses the distinction between scientific hypotheses, process models, and statistical models. A hypothesis is described as an informal, natural language statement about the world - “evolution is neutral” is one example given.</p>
+<p>Hypotheses are vague, and can have many different interpretations. A process model is one instantiation of a hypothesis - it is more precise about the kinds of entities that are being posited, and the logical (including causal) relations between them. For example, in the case of the “evolution is neutral” hypothesis, whether you assume that population size has reached an equilibrium, or whether you assume that it fluctuates over time, will lead to two different process models for the same hypothesis.</p>
+<p>Finally, in order for a process model to interact with evidence, it must be formed into a statistical model. For example one process model for the hypothesis that evolution is neutral might imply a particular frequency distribution of alleles. A statistical model can be constructed to test whether, for some data collected, this frequency is observed.</p>
+<p>The chapter describes some concerns with a purely falsificationist approach to inference, and outlines the Bayesian modelling approach the book will pursue. However it emphasises that almost all of the book could be rewritten to remove the Bayesian aspects.</p>
+<p>Finally the chapter ends with a brief summary of a topic that will be very important throughout the book - graphical causal models (e.g. DAGs) for causal inference.</p>
 </div>
 <div id="questions" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> Questions</h2>
@@ -429,6 +444,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="further-reading" class="section level2 unnumbered">
 <h2>Further Reading</h2>
+<p>A lot of the endnotes in this chapter concern philosophy of science.</p>
+<p>There’s a fun paper on scientists’ conception of Popper:</p>
+<p>Mulkay, M. J. and Gilbert, N. (1981) <em>Putting Philosophy to Work: Karl Popper’s Influence on Scientific Practice</em></p>
+<p>A lot of Popper is recommended. I’m current about a third of the way through <em>The Logic of Scientific Discovery</em>. The chapter emphasises that although Popper deployed falsification as a demarcation criterion, he did not believe that falsification should or could be the only method used in scientific inference. However I find it difficult to think of what other methods Popper could allow, since he does not believe in induction. Will need to read on to find out.</p>
+<p>I want to read the Daston and Galison book on objectivity because I enjoyed Daston’s book on classical probability so much.</p>
+<p>Both of the following also sound intriguing:</p>
+<p>Kitcher, P. (2011) <em>Science in a Democratic Society</em></p>
+<p>Collins and Pinch (1998) <em>The Golem: What You Should Know About Science</em></p>
 
 </div>
 </div>
@@ -438,11 +461,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="small-worlds.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="small_worlds.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -461,6 +483,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
@@ -481,6 +504,10 @@ gitbook.start({
 "text": null
 },
 "download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }

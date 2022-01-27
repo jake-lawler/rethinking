@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 14 Adventures in Covariance | Statistical Rethinking Notes</title>
   <meta name="description" content="My notes on Richard McElreath’s ‘Statistical Rethinking.’" />
-  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 14 Adventures in Covariance | Statistical Rethinking Notes" />
   <meta property="og:type" content="book" />
@@ -24,17 +24,18 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2021-04-24" />
+<meta name="date" content="2022-01-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="models-memory.html"/>
-<link rel="next" href="missing-data.html"/>
-<script src="libs/header-attrs-2.7/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link rel="prev" href="models_memory.html"/>
+<link rel="next" href="missing_data.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,7 +51,8 @@
 
 
 
-
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -118,6 +120,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -138,58 +141,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2" data-path="prague.html"><a href="prague.html#questions"><i class="fa fa-check"></i><b>1.2</b> Questions</a></li>
 <li class="chapter" data-level="" data-path="prague.html"><a href="prague.html#further-reading"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="small-worlds.html"><a href="small-worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
+<li class="chapter" data-level="2" data-path="small_worlds.html"><a href="small_worlds.html"><i class="fa fa-check"></i><b>2</b> Small Worlds and Large Worlds</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="small-worlds.html"><a href="small-worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="2.2" data-path="small-worlds.html"><a href="small-worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
+<li class="chapter" data-level="2.1" data-path="small_worlds.html"><a href="small_worlds.html#chapter-notes-1"><i class="fa fa-check"></i><b>2.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="2.2" data-path="small_worlds.html"><a href="small_worlds.html#questions-1"><i class="fa fa-check"></i><b>2.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e1"><i class="fa fa-check"></i>2E1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e2"><i class="fa fa-check"></i>2E2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e3"><i class="fa fa-check"></i>2E3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#e4"><i class="fa fa-check"></i>2E4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m1"><i class="fa fa-check"></i>2M1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m2"><i class="fa fa-check"></i>2M2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m3"><i class="fa fa-check"></i>2M3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m4"><i class="fa fa-check"></i>2M4</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m5"><i class="fa fa-check"></i>2M5</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m6"><i class="fa fa-check"></i>2M6</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#m7"><i class="fa fa-check"></i>2M7</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h1"><i class="fa fa-check"></i>2H1</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h2"><i class="fa fa-check"></i>2H2</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h3"><i class="fa fa-check"></i>2H3</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#h4"><i class="fa fa-check"></i>2H4</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="small-worlds.html"><a href="small-worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="small_worlds.html"><a href="small_worlds.html#further-reading-1"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
+<li class="chapter" data-level="3" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html"><i class="fa fa-check"></i><b>3</b> Sampling the Imaginary</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="3.2" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
+<li class="chapter" data-level="3.1" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#chapter-notes-2"><i class="fa fa-check"></i><b>3.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="3.2" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#questions-2"><i class="fa fa-check"></i><b>3.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e1-1"><i class="fa fa-check"></i>3E1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e2-1"><i class="fa fa-check"></i>3E2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e3-1"><i class="fa fa-check"></i>3E3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e4-1"><i class="fa fa-check"></i>3E4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e5"><i class="fa fa-check"></i>3E5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e6"><i class="fa fa-check"></i>3E6</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#e7"><i class="fa fa-check"></i>3E7</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m1-1"><i class="fa fa-check"></i>3M1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m2-1"><i class="fa fa-check"></i>3M2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m3-1"><i class="fa fa-check"></i>3M3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m4-1"><i class="fa fa-check"></i>3M4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m5-1"><i class="fa fa-check"></i>3M5</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#m6-1"><i class="fa fa-check"></i>3M6</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h1-1"><i class="fa fa-check"></i>3H1</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h2-1"><i class="fa fa-check"></i>3H2</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h3-1"><i class="fa fa-check"></i>3H3</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h4-1"><i class="fa fa-check"></i>3H4</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#h5"><i class="fa fa-check"></i>3H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="sampling-imaginary.html"><a href="sampling-imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="sampling_imaginary.html"><a href="sampling_imaginary.html#further-reading-2"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="geocentric.html"><a href="geocentric.html"><i class="fa fa-check"></i><b>4</b> Geocentric Models</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="4.1" data-path="geocentric.html"><a href="geocentric.html#chapter-notes-3"><i class="fa fa-check"></i><b>4.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="geocentric.html"><a href="geocentric.html#model-using-grid-approximation"><i class="fa fa-check"></i><b>4.1.1</b> Model Using Grid Approximation</a></li>
+<li class="chapter" data-level="4.1.2" data-path="geocentric.html"><a href="geocentric.html#model-using-quadratic-approximation"><i class="fa fa-check"></i><b>4.1.2</b> Model Using Quadratic Approximation</a></li>
+<li class="chapter" data-level="4.1.3" data-path="geocentric.html"><a href="geocentric.html#adding-predictors"><i class="fa fa-check"></i><b>4.1.3</b> Adding Predictors</a></li>
+<li class="chapter" data-level="4.1.4" data-path="geocentric.html"><a href="geocentric.html#polynomial-regression"><i class="fa fa-check"></i><b>4.1.4</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="4.1.5" data-path="geocentric.html"><a href="geocentric.html#b-splines"><i class="fa fa-check"></i><b>4.1.5</b> B-Splines</a></li>
+</ul></li>
 <li class="chapter" data-level="4.2" data-path="geocentric.html"><a href="geocentric.html#questions-3"><i class="fa fa-check"></i><b>4.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#e1-2"><i class="fa fa-check"></i>4E1</a></li>
@@ -207,36 +217,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="geocentric.html"><a href="geocentric.html#further-reading-3"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="many-variables.html"><a href="many-variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
+<li class="chapter" data-level="5" data-path="many_variables.html"><a href="many_variables.html"><i class="fa fa-check"></i><b>5</b> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="many-variables.html"><a href="many-variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="5.2" data-path="many-variables.html"><a href="many-variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
+<li class="chapter" data-level="5.1" data-path="many_variables.html"><a href="many_variables.html#chapter-notes-4"><i class="fa fa-check"></i><b>5.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="5.2" data-path="many_variables.html"><a href="many_variables.html#questions-4"><i class="fa fa-check"></i><b>5.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e1-3"><i class="fa fa-check"></i>5E1</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e2-3"><i class="fa fa-check"></i>5E2</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e3-3"><i class="fa fa-check"></i>5E3</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#e4-3"><i class="fa fa-check"></i>5E4</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="many-variables.html"><a href="many-variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="many_variables.html"><a href="many_variables.html#further-reading-4"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="haunted-dag.html"><a href="haunted-dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
+<li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted-dag.html"><a href="haunted-dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
-<li class="chapter" data-level="6.2" data-path="haunted-dag.html"><a href="haunted-dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e3-4"><i class="fa fa-check"></i>6E3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e4-4"><i class="fa fa-check"></i>6E4</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m1-3"><i class="fa fa-check"></i>6M1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m2-3"><i class="fa fa-check"></i>6M2</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#m3-3"><i class="fa fa-check"></i>6M3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h1-2"><i class="fa fa-check"></i>6H1</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h2-2"><i class="fa fa-check"></i>6H2</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h3-2"><i class="fa fa-check"></i>6H3</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h4-2"><i class="fa fa-check"></i>6H4</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#h5-1"><i class="fa fa-check"></i>6H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="haunted-dag.html"><a href="haunted-dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#further-reading-5"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="ulysses.html"><a href="ulysses.html"><i class="fa fa-check"></i><b>7</b> Ulysses’ Compass</a>
 <ul>
@@ -282,84 +292,84 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="conditional.html"><a href="conditional.html#m3-5"><i class="fa fa-check"></i>8M3</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="markov-chain.html"><a href="markov-chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
+<li class="chapter" data-level="9" data-path="markov_chain.html"><a href="markov_chain.html"><i class="fa fa-check"></i><b>9</b> Markov Chain Monte Carlo</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="markov-chain.html"><a href="markov-chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
+<li class="chapter" data-level="9.1" data-path="markov_chain.html"><a href="markov_chain.html#chapter-notes-8"><i class="fa fa-check"></i><b>9.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#simulating-king-markovs-journey-a-metropolis-algorithm"><i class="fa fa-check"></i>Simulating King Markov’s Journey (A Metropolis Algorithm)</a></li>
 </ul></li>
-<li class="chapter" data-level="9.2" data-path="markov-chain.html"><a href="markov-chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
+<li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#e1-7"><i class="fa fa-check"></i>9E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="markov-chain.html"><a href="markov-chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#further-reading-7"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="big-entropy.html"><a href="big-entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
+<li class="chapter" data-level="10" data-path="big_entropy.html"><a href="big_entropy.html"><i class="fa fa-check"></i><b>10</b> Big Entropy and the Generalized Linear Model</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="big-entropy.html"><a href="big-entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
+<li class="chapter" data-level="10.1" data-path="big_entropy.html"><a href="big_entropy.html#chapter-notes-9"><i class="fa fa-check"></i><b>10.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#maximum-entropy"><i class="fa fa-check"></i>Maximum Entropy</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#generalized-linear-models"><i class="fa fa-check"></i>Generalized Linear Models</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2" data-path="big-entropy.html"><a href="big-entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
-<li class="chapter" data-level="" data-path="big-entropy.html"><a href="big-entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="10.2" data-path="big_entropy.html"><a href="big_entropy.html#questions-9"><i class="fa fa-check"></i><b>10.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="big_entropy.html"><a href="big_entropy.html#further-resources"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="god-spiked.html"><a href="god-spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
+<li class="chapter" data-level="11" data-path="god_spiked.html"><a href="god_spiked.html"><i class="fa fa-check"></i><b>11</b> God Spiked the Integers</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="god-spiked.html"><a href="god-spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
+<li class="chapter" data-level="11.1" data-path="god_spiked.html"><a href="god_spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
-<li class="chapter" data-level="11.1.1" data-path="god-spiked.html"><a href="god-spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
+<li class="chapter" data-level="11.1.1" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
 </ul></li>
-<li class="chapter" data-level="11.2" data-path="god-spiked.html"><a href="god-spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
+<li class="chapter" data-level="11.2" data-path="god_spiked.html"><a href="god_spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e1-8"><i class="fa fa-check"></i>11E1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e2-6"><i class="fa fa-check"></i>11E2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e3-7"><i class="fa fa-check"></i>11E3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#e4-6"><i class="fa fa-check"></i>11E4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m1-6"><i class="fa fa-check"></i>11M1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m2-6"><i class="fa fa-check"></i>11M2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m3-6"><i class="fa fa-check"></i>11M3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m4-4"><i class="fa fa-check"></i>11M4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m5-4"><i class="fa fa-check"></i>11M5</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m6-4"><i class="fa fa-check"></i>11M6</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m7-2"><i class="fa fa-check"></i>11M7</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#m8"><i class="fa fa-check"></i>11M8</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h1-4"><i class="fa fa-check"></i>11H1</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h2-4"><i class="fa fa-check"></i>11H2</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h3-4"><i class="fa fa-check"></i>11H3</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h4-4"><i class="fa fa-check"></i>11H4</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#h5-3"><i class="fa fa-check"></i>11H5</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="god-spiked.html"><a href="god-spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#further-resources-1"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="12" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
+<li class="chapter" data-level="12" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html"><i class="fa fa-check"></i><b>12</b> Monsters and Mixtures</a>
 <ul>
-<li class="chapter" data-level="12.1" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
+<li class="chapter" data-level="12.1" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#chapter-notes-11"><i class="fa fa-check"></i><b>12.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#over-dispersed-counts"><i class="fa fa-check"></i>Over-Dispersed Counts</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#zero-inflated-outcomes"><i class="fa fa-check"></i>Zero-Inflated Outcomes</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#ordered-categorical-outcomes"><i class="fa fa-check"></i>Ordered Categorical Outcomes</a></li>
 </ul></li>
-<li class="chapter" data-level="12.2" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
+<li class="chapter" data-level="12.2" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#questions-11"><i class="fa fa-check"></i><b>12.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#e1-9"><i class="fa fa-check"></i>12E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="monsters-mixtures.html"><a href="monsters-mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="monsters_mixtures.html"><a href="monsters_mixtures.html#further-resources-2"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="13" data-path="models-memory.html"><a href="models-memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
+<li class="chapter" data-level="13" data-path="models_memory.html"><a href="models_memory.html"><i class="fa fa-check"></i><b>13</b> Models With Memory</a>
 <ul>
-<li class="chapter" data-level="13.1" data-path="models-memory.html"><a href="models-memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
+<li class="chapter" data-level="13.1" data-path="models_memory.html"><a href="models_memory.html#chapter-notes-12"><i class="fa fa-check"></i><b>13.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#more-than-one-type-of-cluster"><i class="fa fa-check"></i>More Than One Type of Cluster</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#divergent-transitions-and-non-centered-priors"><i class="fa fa-check"></i>Divergent Transitions and Non-Centered Priors</a></li>
 </ul></li>
-<li class="chapter" data-level="13.2" data-path="models-memory.html"><a href="models-memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
+<li class="chapter" data-level="13.2" data-path="models_memory.html"><a href="models_memory.html#questions-12"><i class="fa fa-check"></i><b>13.2</b> Questions</a>
 <ul>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#e1-10"><i class="fa fa-check"></i>13E1</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="models-memory.html"><a href="models-memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
+<li class="chapter" data-level="" data-path="models_memory.html"><a href="models_memory.html#further-resources-3"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="covariance.html"><a href="covariance.html"><i class="fa fa-check"></i><b>14</b> Adventures in Covariance</a>
 <ul>
@@ -375,15 +385,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="covariance.html"><a href="covariance.html#further-resources-4"><i class="fa fa-check"></i>Further Resources</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
+<li class="chapter" data-level="15" data-path="missing_data.html"><a href="missing_data.html"><i class="fa fa-check"></i><b>15</b> Missing Data and Other Opportunities</a>
 <ul>
-<li class="chapter" data-level="15.1" data-path="missing-data.html"><a href="missing-data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
+<li class="chapter" data-level="15.1" data-path="missing_data.html"><a href="missing_data.html#chapter-notes-14"><i class="fa fa-check"></i><b>15.1</b> Chapter Notes</a>
 <ul>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#measurement-error"><i class="fa fa-check"></i>Measurement Error</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#missing-data"><i class="fa fa-check"></i>Missing Data</a></li>
 </ul></li>
-<li class="chapter" data-level="15.2" data-path="missing-data.html"><a href="missing-data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
-<li class="chapter" data-level="" data-path="missing-data.html"><a href="missing-data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
+<li class="chapter" data-level="15.2" data-path="missing_data.html"><a href="missing_data.html#questions-14"><i class="fa fa-check"></i><b>15.2</b> Questions</a></li>
+<li class="chapter" data-level="" data-path="missing_data.html"><a href="missing_data.html#further-reading-8"><i class="fa fa-check"></i>Further Reading</a></li>
 </ul></li>
 <li class="chapter" data-level="16" data-path="generalized.html"><a href="generalized.html"><i class="fa fa-check"></i><b>16</b> Generalized Linear Madness</a>
 <ul>
@@ -426,13 +436,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The chapter introduces a simulation exercise to explain varying effects models. We have a population of cafes, and are interested in waiting times. As in the previous chapter, we’ll allow intercepts to vary, with partial pooling across cafes. But we’re also interested in the effect of the predictor afternoon (i.e. whether you are getting coffee in the morning or afternoon). We want to also allow the slopes to vary, and to pool across cafes. This is a <em>varying effects</em> strategy.</p>
 <p>More than this, the key addition here is that we also want to allow our intercepts and slopes to covary, pooling information across intercepts and slopes.</p>
 <p>We’re going to use a multi-variate normal distribution to generate a population of cafes. We need a vector of means and a variance-covariance matrix:</p>
-<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="covariance.html#cb168-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">3.5</span> </span>
-<span id="cb168-2"><a href="covariance.html#cb168-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb168-3"><a href="covariance.html#cb168-3" aria-hidden="true" tabindex="-1"></a>sigma_a <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
-<span id="cb168-4"><a href="covariance.html#cb168-4" aria-hidden="true" tabindex="-1"></a>sigma_b <span class="ot">&lt;-</span> <span class="fl">0.5</span> </span>
-<span id="cb168-5"><a href="covariance.html#cb168-5" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="fl">0.7</span>)</span>
-<span id="cb168-6"><a href="covariance.html#cb168-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb168-7"><a href="covariance.html#cb168-7" aria-hidden="true" tabindex="-1"></a>Mu <span class="ot">&lt;-</span> <span class="fu">c</span>(a,b)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="covariance.html#cb229-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">3.5</span> </span>
+<span id="cb229-2"><a href="covariance.html#cb229-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb229-3"><a href="covariance.html#cb229-3" aria-hidden="true" tabindex="-1"></a>sigma_a <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb229-4"><a href="covariance.html#cb229-4" aria-hidden="true" tabindex="-1"></a>sigma_b <span class="ot">&lt;-</span> <span class="fl">0.5</span> </span>
+<span id="cb229-5"><a href="covariance.html#cb229-5" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="fl">0.7</span>)</span>
+<span id="cb229-6"><a href="covariance.html#cb229-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-7"><a href="covariance.html#cb229-7" aria-hidden="true" tabindex="-1"></a>Mu <span class="ot">&lt;-</span> <span class="fu">c</span>(a,b)</span></code></pre></div>
 <p>Where</p>
 <ul>
 <li><span class="math inline">\(a\)</span> is average morning wait time</li>
@@ -449,11 +459,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \end{pmatrix}
 \]</span></p>
 <p>Instead we decompose it, in a way that treats the standard deviations and correlations separately, because this will become useful in setting priors</p>
-<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="covariance.html#cb169-1" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">c</span>(sigma_a,sigma_b)  </span>
-<span id="cb169-2"><a href="covariance.html#cb169-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb169-3"><a href="covariance.html#cb169-3" aria-hidden="true" tabindex="-1"></a>Rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>( <span class="fu">c</span>(<span class="dv">1</span>,rho,rho,<span class="dv">1</span>) , <span class="at">nrow=</span><span class="dv">2</span> ) </span>
-<span id="cb169-4"><a href="covariance.html#cb169-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb169-5"><a href="covariance.html#cb169-5" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sigmas) <span class="sc">%*%</span> Rho <span class="sc">%*%</span> <span class="fu">diag</span>(sigmas)</span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="covariance.html#cb230-1" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">c</span>(sigma_a,sigma_b)  </span>
+<span id="cb230-2"><a href="covariance.html#cb230-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb230-3"><a href="covariance.html#cb230-3" aria-hidden="true" tabindex="-1"></a>Rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>( <span class="fu">c</span>(<span class="dv">1</span>,rho,rho,<span class="dv">1</span>) , <span class="at">nrow=</span><span class="dv">2</span> ) </span>
+<span id="cb230-4"><a href="covariance.html#cb230-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb230-5"><a href="covariance.html#cb230-5" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sigmas) <span class="sc">%*%</span> Rho <span class="sc">%*%</span> <span class="fu">diag</span>(sigmas)</span></code></pre></div>
 <p>i.e.</p>
 <p><span class="math display">\[
 \begin{pmatrix}
@@ -475,30 +485,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \end{pmatrix}
 \]</span></p>
 <p>That’s the setup, here’s the simulation part, with a plot of the data, that shows how the intercepts and slopes covary.</p>
-<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="covariance.html#cb170-1" aria-hidden="true" tabindex="-1"></a>N_cafes <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb170-2"><a href="covariance.html#cb170-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb170-3"><a href="covariance.html#cb170-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
-<span id="cb170-4"><a href="covariance.html#cb170-4" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">mvrnorm</span>(N_cafes, Mu, Sigma))<span class="sc">%&gt;%</span></span>
-<span id="cb170-5"><a href="covariance.html#cb170-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">intercepts =</span> V1, <span class="at">slopes =</span> V2)</span>
-<span id="cb170-6"><a href="covariance.html#cb170-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb170-7"><a href="covariance.html#cb170-7" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span>N_cafes,vary_effects)</span>
-<span id="cb170-8"><a href="covariance.html#cb170-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb170-9"><a href="covariance.html#cb170-9" aria-hidden="true" tabindex="-1"></a>plot_cafe_data <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> vary_effects, <span class="fu">aes</span>(<span class="at">x =</span> intercepts, <span class="at">y =</span> slopes))<span class="sc">+</span></span>
-<span id="cb170-10"><a href="covariance.html#cb170-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>)</span>
-<span id="cb170-11"><a href="covariance.html#cb170-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb170-12"><a href="covariance.html#cb170-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (l <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.8</span>,<span class="fl">0.99</span>)){</span>
-<span id="cb170-13"><a href="covariance.html#cb170-13" aria-hidden="true" tabindex="-1"></a>  plot_cafe_data <span class="ot">&lt;-</span> plot_cafe_data <span class="sc">+</span> </span>
-<span id="cb170-14"><a href="covariance.html#cb170-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>,<span class="at">level =</span> l)}</span>
-<span id="cb170-15"><a href="covariance.html#cb170-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb170-16"><a href="covariance.html#cb170-16" aria-hidden="true" tabindex="-1"></a>plot_cafe_data</span></code></pre></div>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="covariance.html#cb231-1" aria-hidden="true" tabindex="-1"></a>N_cafes <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb231-2"><a href="covariance.html#cb231-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-3"><a href="covariance.html#cb231-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb231-4"><a href="covariance.html#cb231-4" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">mvrnorm</span>(N_cafes, Mu, Sigma))<span class="sc">%&gt;%</span></span>
+<span id="cb231-5"><a href="covariance.html#cb231-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">intercepts =</span> V1, <span class="at">slopes =</span> V2)</span>
+<span id="cb231-6"><a href="covariance.html#cb231-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-7"><a href="covariance.html#cb231-7" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span>N_cafes,vary_effects)</span>
+<span id="cb231-8"><a href="covariance.html#cb231-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-9"><a href="covariance.html#cb231-9" aria-hidden="true" tabindex="-1"></a>plot_cafe_data <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> vary_effects, <span class="fu">aes</span>(<span class="at">x =</span> intercepts, <span class="at">y =</span> slopes))<span class="sc">+</span></span>
+<span id="cb231-10"><a href="covariance.html#cb231-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>)</span>
+<span id="cb231-11"><a href="covariance.html#cb231-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-12"><a href="covariance.html#cb231-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (l <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.8</span>,<span class="fl">0.99</span>)){</span>
+<span id="cb231-13"><a href="covariance.html#cb231-13" aria-hidden="true" tabindex="-1"></a>  plot_cafe_data <span class="ot">&lt;-</span> plot_cafe_data <span class="sc">+</span> </span>
+<span id="cb231-14"><a href="covariance.html#cb231-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>,<span class="at">level =</span> l)}</span>
+<span id="cb231-15"><a href="covariance.html#cb231-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-16"><a href="covariance.html#cb231-16" aria-hidden="true" tabindex="-1"></a>plot_cafe_data</span></code></pre></div>
 <p><img src="14-covariance_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Each point is a cafe.</p>
 <p>We now simulate 10 visits to each cafe:</p>
-<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="covariance.html#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>) </span>
-<span id="cb171-2"><a href="covariance.html#cb171-2" aria-hidden="true" tabindex="-1"></a>data_cafe <span class="ot">&lt;-</span> <span class="fu">tibble</span>( <span class="at">cafe=</span> <span class="fu">rep</span>( <span class="dv">1</span><span class="sc">:</span>N_cafes , <span class="at">each=</span><span class="dv">10</span> ), </span>
-<span id="cb171-3"><a href="covariance.html#cb171-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">afternoon=</span><span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="dv">10</span><span class="sc">*</span>N_cafes<span class="sc">/</span><span class="dv">2</span>))<span class="sc">%&gt;%</span></span>
-<span id="cb171-4"><a href="covariance.html#cb171-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vary_effects, <span class="at">by =</span> <span class="st">&quot;cafe&quot;</span>)<span class="sc">%&gt;%</span></span>
-<span id="cb171-5"><a href="covariance.html#cb171-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wait =</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="at">mean  =</span> intercepts <span class="sc">+</span> slopes <span class="sc">*</span> afternoon , <span class="at">sd =</span> <span class="fl">0.5</span> ))</span></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="covariance.html#cb232-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>) </span>
+<span id="cb232-2"><a href="covariance.html#cb232-2" aria-hidden="true" tabindex="-1"></a>data_cafe <span class="ot">&lt;-</span> <span class="fu">tibble</span>( <span class="at">cafe=</span> <span class="fu">rep</span>( <span class="dv">1</span><span class="sc">:</span>N_cafes , <span class="at">each=</span><span class="dv">10</span> ), </span>
+<span id="cb232-3"><a href="covariance.html#cb232-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">afternoon=</span><span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="dv">10</span><span class="sc">*</span>N_cafes<span class="sc">/</span><span class="dv">2</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb232-4"><a href="covariance.html#cb232-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vary_effects, <span class="at">by =</span> <span class="st">&quot;cafe&quot;</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb232-5"><a href="covariance.html#cb232-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wait =</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="at">mean  =</span> intercepts <span class="sc">+</span> slopes <span class="sc">*</span> afternoon , <span class="at">sd =</span> <span class="fl">0.5</span> ))</span></code></pre></div>
 <p>Now we fit a model to see if we can get back the data generating process. The model looks like this:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -555,15 +565,15 @@ R &amp;\sim \text{LKJcorr}(2) &amp;&amp; \text{prior for correlation matrix}
 <p>Assuming we have an instrumental variable, our DAG now looks like:</p>
 <p><img src="14-covariance_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>How do we use <span class="math inline">\(Q\)</span>. The book suggesting thinking of Q in this example as the quarter of the year a person is born in, which has an influence on how much education a person receives. The chapter simulates some data:</p>
-<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="covariance.html#cb172-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">73</span>) </span>
-<span id="cb172-2"><a href="covariance.html#cb172-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span> </span>
-<span id="cb172-3"><a href="covariance.html#cb172-3" aria-hidden="true" tabindex="-1"></a>U_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N ) </span>
-<span id="cb172-4"><a href="covariance.html#cb172-4" aria-hidden="true" tabindex="-1"></a>Q_sim <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> , <span class="at">size=</span>N , <span class="at">replace=</span><span class="cn">TRUE</span> ) </span>
-<span id="cb172-5"><a href="covariance.html#cb172-5" aria-hidden="true" tabindex="-1"></a>E_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> Q_sim ) </span>
-<span id="cb172-6"><a href="covariance.html#cb172-6" aria-hidden="true" tabindex="-1"></a>W_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> <span class="dv">0</span><span class="sc">*</span>E_sim ) </span>
-<span id="cb172-7"><a href="covariance.html#cb172-7" aria-hidden="true" tabindex="-1"></a>data_edu_sim <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">W=</span><span class="fu">standardize</span>(W_sim) , </span>
-<span id="cb172-8"><a href="covariance.html#cb172-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">E=</span><span class="fu">standardize</span>(E_sim) ,</span>
-<span id="cb172-9"><a href="covariance.html#cb172-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">Q=</span><span class="fu">standardize</span>(Q_sim) )</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="covariance.html#cb233-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">73</span>) </span>
+<span id="cb233-2"><a href="covariance.html#cb233-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span> </span>
+<span id="cb233-3"><a href="covariance.html#cb233-3" aria-hidden="true" tabindex="-1"></a>U_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N ) </span>
+<span id="cb233-4"><a href="covariance.html#cb233-4" aria-hidden="true" tabindex="-1"></a>Q_sim <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> , <span class="at">size=</span>N , <span class="at">replace=</span><span class="cn">TRUE</span> ) </span>
+<span id="cb233-5"><a href="covariance.html#cb233-5" aria-hidden="true" tabindex="-1"></a>E_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> Q_sim ) </span>
+<span id="cb233-6"><a href="covariance.html#cb233-6" aria-hidden="true" tabindex="-1"></a>W_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> <span class="dv">0</span><span class="sc">*</span>E_sim ) </span>
+<span id="cb233-7"><a href="covariance.html#cb233-7" aria-hidden="true" tabindex="-1"></a>data_edu_sim <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">W=</span><span class="fu">standardize</span>(W_sim) , </span>
+<span id="cb233-8"><a href="covariance.html#cb233-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">E=</span><span class="fu">standardize</span>(E_sim) ,</span>
+<span id="cb233-9"><a href="covariance.html#cb233-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">Q=</span><span class="fu">standardize</span>(Q_sim) )</span></code></pre></div>
 <p>You can see that in the simulated data, education has no causal effect on wages. The first model attempted is a straightforward regression of wages on education:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -575,10 +585,10 @@ W &amp;\sim N(\mu_i, \sigma)\\
 \end{aligned}
 \]</span></p>
 <p>The model believes that education leads to higher wages (you can see that <span class="math inline">\(b_{EW}\)</span> is very far from 0):</p>
-<pre><code>##                mean         sd        5.5%      94.5%    n_eff     Rhat4
-## aW    -0.0005288119 0.03972125 -0.06551111 0.06268503 4420.966 0.9998203
-## bEW    0.3969786620 0.04207471  0.32912801 0.46241297 4023.615 0.9995759
-## sigma  0.9177689387 0.02926500  0.87166634 0.96589663 4274.570 0.9998091</code></pre>
+<pre><code>##               mean         sd       5.5%     94.5%    n_eff     Rhat4
+## aW    -0.001419763 0.04103712 -0.0668210 0.0614210 2058.644 0.9999916
+## bEW    0.397312055 0.04067676  0.3330058 0.4587898 1922.806 1.0005218
+## sigma  0.918514205 0.02924823  0.8724036 0.9659672 1900.922 1.0034956</code></pre>
 <p>Next we add <span class="math inline">\(Q\)</span> as a predictor:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -591,11 +601,11 @@ W &amp;\sim N(\mu_i, \sigma)\\
 \end{aligned}
 \]</span></p>
 <p>And the results are worse:</p>
-<pre><code>##               mean         sd        5.5%       94.5%    n_eff    Rhat4
-## aW     0.001225136 0.03729397 -0.05886653  0.05983202 3832.831 1.001327
-## bEW    0.634945642 0.04612737  0.56244349  0.70667009 2673.269 1.000318
-## bQW   -0.404044928 0.04540413 -0.47634060 -0.33201980 2716.394 1.000414
-## sigma  0.857273180 0.02738017  0.81479490  0.90206280 3654.169 1.000256</code></pre>
+<pre><code>##                mean         sd        5.5%       94.5%    n_eff     Rhat4
+## aW    -0.0002878362 0.03732442 -0.05972346  0.05953473 1940.322 0.9988731
+## bEW    0.6355551170 0.04867284  0.55926847  0.71532664 1195.392 1.0002084
+## bQW   -0.4058662475 0.04678752 -0.47877007 -0.33126016 1205.308 0.9991839
+## sigma  0.8575132195 0.02795544  0.81467929  0.90481446 1552.985 1.0008698</code></pre>
 <p>The estimated effect of education on wages is even larger, and the model also thinks that <span class="math inline">\(Q\)</span> is correlated with wages even when <span class="math inline">\(E\)</span> is included in the model. We know from the simulation that <span class="math inline">\(Q\)</span> has no effect on wages except through E; the error comes from the fact that E is a collider of <span class="math inline">\(Q\)</span> and <span class="math inline">\(U\)</span>.</p>
 <p>The chapter goes on to describe how <span class="math inline">\(Q\)</span> should be used, starting by writing the generative version of the model (assuming the DAG).</p>
 <p>According to the DAG, wages are a function of education, and our unobserved confound:</p>
@@ -630,17 +640,17 @@ U_i \sim N(0,1)
 \]</span>
 What’s happening here is that wages and education are both simultaneously outcomes of our regression. The <span class="math inline">\(S\)</span> here is analogous to <span class="math inline">\(\sigma\)</span> in the above simple linear regressions - it’s meant to capture residual correlations between pairs of <span class="math inline">\(W\)</span> and <span class="math inline">\(E\)</span> (e.g. from the action of our unobserved confound).</p>
 <p>Here are the results:</p>
-<pre><code>##                   mean         sd        5.5%      94.5%    n_eff     Rhat4
-## aE        0.0010056517 0.03553324 -0.05496976 0.05860987 2883.136 1.0003532
-## aW        0.0007991066 0.04487617 -0.07018863 0.07286133 2687.905 1.0005700
-## bQE       0.5886988233 0.03526074  0.53321709 0.64673715 2420.864 0.9997788
-## bEW      -0.0472580413 0.07614137 -0.16898210 0.07509664 2065.612 1.0002730
-## Rho[1,1]  1.0000000000 0.00000000  1.00000000 1.00000000      NaN       NaN
-## Rho[1,2]  0.5395469192 0.05337246  0.45012197 0.62061797 2051.787 0.9996464
-## Rho[2,1]  0.5395469192 0.05337246  0.45012197 0.62061797 2051.787 0.9996464
-## Rho[2,2]  1.0000000000 0.00000000  1.00000000 1.00000000      NaN       NaN
-## Sigma[1]  1.0224607505 0.04648751  0.95180275 1.10091265 2279.323 0.9996041
-## Sigma[2]  0.8086648767 0.02530651  0.77065219 0.85006606 3275.550 0.9995571</code></pre>
+<pre><code>##                   mean         sd        5.5%      94.5%     n_eff     Rhat4
+## aE        0.0008915069 0.03433353 -0.05523862 0.05541958 1480.0990 0.9996156
+## aW        0.0006545851 0.04377868 -0.07079820 0.07273627 1401.6666 1.0010062
+## bQE       0.5891858335 0.03498143  0.53501613 0.64443475 1411.4764 0.9993527
+## bEW      -0.0463663122 0.07308362 -0.16794360 0.06406582  777.4085 1.0020241
+## Rho[1,1]  1.0000000000 0.00000000  1.00000000 1.00000000       NaN       NaN
+## Rho[1,2]  0.5402627720 0.05073347  0.45610957 0.62018750  750.5671 1.0018643
+## Rho[2,1]  0.5402627720 0.05073347  0.45610957 0.62018750  750.5671 1.0018643
+## Rho[2,2]  1.0000000000 0.00000000  1.00000000 1.00000000       NaN       NaN
+## Sigma[1]  1.0241176895 0.04590810  0.95699685 1.10006935  767.6010 1.0025145
+## Sigma[2]  0.8085983475 0.02547070  0.76929886 0.85086392 1633.9111 1.0003105</code></pre>
 <p>The model now correctly believes that the causal effect of education on wages is close to zero. The residual correlation between wages and education, <span class="math inline">\(\rho_{1,2}\)</span>, is positive, which reflects the influence of <span class="math inline">\(U\)</span>.</p>
 <p>Endnotes 208 and 209 point to some real-world attempts to use instrumental variables for inference.</p>
 <p>Revisit: The chapter includes a short discussion of the front-door criterion, which I first read about in Judea Pearl’s <em>Book of Why</em>. Then there is a second example that uses a custom covariance matrix. This time to make inferences about social relations in a community in Nicaragua.</p>
@@ -694,22 +704,22 @@ Here the <span class="math inline">\(\lambda_i\)</span> term is the model from c
 <li>In the <span class="math inline">\(\delta_{ij}\sigma^2\)</span> term, <span class="math inline">\(\delta_{ij}\)</span> is the Kronecker delta. This term would be used if we had more than one observation for society and wanted to allow for additional covariance when <span class="math inline">\(i=j\)</span>.</li>
 </ul>
 <p>Here are the parameter results:</p>
-<pre><code>##              mean         sd        5.5%      94.5%     n_eff    Rhat4
-## k[1]  -0.16088405 0.31526404 -0.67045860 0.31894576  987.0526 1.001144
-## k[2]  -0.01697647 0.30479761 -0.49987212 0.45799395  949.2456 1.001370
-## k[3]  -0.06666622 0.29111097 -0.52920464 0.37975397  896.6437 1.001253
-## k[4]   0.35446322 0.26996443 -0.03412487 0.78706341  904.3119 1.001902
-## k[5]   0.07795147 0.26439746 -0.31677036 0.50827782  905.7486 1.001346
-## k[6]  -0.38133184 0.28069063 -0.84888874 0.02314573 1057.9603 1.000483
-## k[7]   0.14319340 0.26276852 -0.25247955 0.56156311  895.0096 1.001791
-## k[8]  -0.21157799 0.27077059 -0.64582998 0.19112627  953.6216 1.000780
-## k[9]   0.26370387 0.25213222 -0.11737149 0.66382836  983.8960 1.001907
-## k[10] -0.16787512 0.35862526 -0.74310009 0.37899101 1451.0006 1.002150
-## g      0.60664983 0.58415728  0.06663160 1.70592420 3032.0289 1.001418
-## b      0.27839146 0.08925179  0.13740195 0.42366237 1866.9741 1.001771
-## a      1.39347170 1.07005061  0.21890241 3.37432905 4253.9771 1.000381
-## etasq  0.19929679 0.22148924  0.02698265 0.54926219 1645.4633 1.001446
-## rhosq  1.34619796 1.70331345  0.07966262 4.68532515 3806.0575 1.000336</code></pre>
+<pre><code>##               mean         sd        5.5%      94.5%     n_eff    Rhat4
+## k[1]  -0.148402659 0.30998543 -0.63955874 0.33646864  709.9680 1.005093
+## k[2]   0.002684859 0.30056597 -0.45053691 0.49759916  633.2755 1.004251
+## k[3]  -0.050550296 0.28174896 -0.47895698 0.40597849  598.4924 1.004261
+## k[4]   0.366865490 0.26729507 -0.02193611 0.81699311  657.3474 1.005273
+## k[5]   0.094786551 0.26006232 -0.28204444 0.53608437  697.9420 1.002621
+## k[6]  -0.360295041 0.27160317 -0.80016738 0.03490379  818.9144 1.003139
+## k[7]   0.157534273 0.25409633 -0.20737781 0.56643565  678.2727 1.003498
+## k[8]  -0.192210414 0.25940191 -0.58630755 0.22291150  748.3814 1.003753
+## k[9]   0.277474804 0.24967771 -0.08590088 0.69005578  705.6751 1.003134
+## k[10] -0.150614677 0.34512273 -0.70713486 0.39019117 1112.6261 1.000693
+## g      0.602461754 0.57198391  0.07419879 1.71741660 1607.5003 1.003247
+## b      0.278706970 0.08672352  0.14322593 0.42380396 1306.5750 1.002605
+## a      1.390190386 1.10746784  0.21896477 3.40762055 2166.0644 1.000575
+## etasq  0.193184148 0.20287420  0.02551770 0.55632958  989.9122 1.001779
+## rhosq  1.387124588 1.72623165  0.08278087 4.67127800 1864.7903 1.001385</code></pre>
 <p>These are a little difficult to interpret, but we can plot the Gaussian process function to get a sense of how the model expects covariance to change with increasing distance:</p>
 <p><img src="14-covariance_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>I’ve drawn 250 lines for each plot. The bold line in the right hand plot is the posterior mean. Because each society is assigned a parameter, and the model includes a covariance matrix, we can also make inferences about which societies are correlated. The chapter produces a matrix of correlations and plots them.</p>
@@ -745,12 +755,11 @@ Here the <span class="math inline">\(\lambda_i\)</span> term is the model from c
           </div>
         </div>
       </div>
-<a href="models-memory.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="missing-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="models_memory.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="missing_data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -769,6 +778,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
@@ -789,6 +799,10 @@ gitbook.start({
 "text": null
 },
 "download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }

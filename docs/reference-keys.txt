@@ -9,6 +9,11 @@ chapter-notes-2
 questions-2
 geocentric
 chapter-notes-3
+model-using-grid-approximation
+model-using-quadratic-approximation
+adding-predictors
+polynomial-regression
+b-splines
 questions-3
 answer-40
 many_variables

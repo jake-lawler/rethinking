@@ -35,7 +35,7 @@ plot_grid(plot_waf1,plot_waf2)
 
 ```
 
-The plot on the left is meant to demonstrate that the standard error is much larger for states with small populations as you'd expect. This is important, because variation in the size of the error among states is likely to introduce biases.
+The plot on the right is meant to demonstrate that the standard error is much larger for states with small populations as you'd expect. This is important, because variation in the size of the error among states is likely to introduce biases.
 
 In order to motivate the approach to incorporating measurement data, the chapter draws the following graph of the data generating processes:
 

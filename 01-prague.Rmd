@@ -2,11 +2,37 @@
 
 ## Chapter Notes
 
-I haven't written chapter notes for the first five chapters.
+The book opens with an analogy between statistical models and the Golem of Prague. Both are powerful, but lack wisdowm of their own. They thoughtlessly follow instructions and are therefore dangerous unless great care is taken.
+
+The chapter stresses the distinction between scientific hypotheses, process models, and statistical models. A hypothesis is described as an informal, natural language statement about the world - "evolution is neutral" is one example given.
+
+Hypotheses are vague, and can have many different interpretations. A process model is one instantiation of a hypothesis - it is more precise about the kinds of entities that are being posited, and the logical (including causal) relations between them. For example, in the case of the "evolution is neutral" hypothesis, whether you assume that population size has reached an equilibrium, or whether you assume that it fluctuates over time, will lead to two different process models for the same hypothesis.
+
+Finally, in order for a process model to interact with evidence, it must be formed into a statistical model. For example one process model for the hypothesis that evolution is neutral might imply a particular frequency distribution of alleles. A statistical model can be constructed to test whether, for some data collected, this frequency is observed.
+
+The chapter describes some concerns with a purely falsificationist approach to inference, and outlines the Bayesian modelling approach the book will pursue. However it emphasises that almost all of the book could be rewritten to remove the Bayesian aspects. 
+
+Finally the chapter ends with a brief summary of a topic that will be very important throughout the book - graphical causal models (e.g. DAGs) for causal inference.
 
 ## Questions
-
 
 There are no questions at the end of this chapter.
 
 ## Further Reading {-}
+
+A lot of the endnotes in this chapter concern philosophy of science. 
+
+There's a fun paper on scientists' conception of Popper:
+
+Mulkay, M. J. and Gilbert, N. (1981) *Putting Philosophy to Work: Karl Popper's Influence on Scientific Practice*
+
+A lot of Popper is recommended. I'm current about a third of the way through *The Logic of Scientific Discovery*. The chapter emphasises that although Popper deployed falsification as a demarcation criterion, he did not believe that falsification should or could be the only method used in scientific inference. However I find it difficult to think of what other methods Popper could allow, since he does not believe in induction. Will need to read on to find out.
+
+I want to read the Daston and Galison book on objectivity because I enjoyed Daston's book on classical probability so much.
+
+Both of the following also sound intriguing:
+
+Kitcher, P. (2011) *Science in a Democratic Society*
+
+Collins and Pinch (1998) *The Golem: What You Should Know About Science*
+

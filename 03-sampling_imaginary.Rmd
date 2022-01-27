@@ -9,7 +9,65 @@ library(rethinking)
 
 ## Chapter Notes
 
-I haven't written chapter notes for the first five chapters.
+This chapter introduces the concept of sampling from the posterior distribution. The first example is the globe tossing model from the previous chapter - this model is straightforward enough to calculate the posterior analytically (or with simple grid approximation), and so when we take samples we can see how well they do at reproducing the expected results.
+
+The chapter walks through summary statistics of the posterior distribution, comparing the results found by grid approximation to the results we can get by sampling from the posterior. For example, we can ask how much of the posterior probability lies within some given boundary, or we can ask for confidence intervals (or 'compatibility intervals', which is the term McElreath prefers).
+
+There's a nice description of the difference between percentile intervals (usually defined so that equal probability mass remains in each tail) and the highest posterior density interval (the narrowest interval that contains the specified probability mass). For highly skewed distributions these can be quite different.
+
+There's a discussion of point estimates - should you choose to report the mean, median, or mode of your posterior distribution? Some other single value? You lose a lot of information by throwing away the posterior in favour of a single value to summarise it. If you have to report a point value, using a loss function is a principled way to determine which point value is most appropriate to your needs.
+
+In the next section a big theme of the book is introduced: simulation as a tool in model design and checking. As an example, the chapter simulates observations from the globe tossing model using rbinom():
+
+```{r}
+
+# using the proportion of water p = 0.7, and assuming nine tosses
+
+set.seed(21)
+sim_single <- rbinom(1e4, size = 9, prob = 0.7)
+
+ggplot()+
+  geom_histogram(aes(sim_single), binwidth = 0.3)+
+  xlab("simulated water count")+
+  ggtitle("simulating from a single parameter value")
+
+```
+
+In the above example, we just picked a single parameter value p=0.7. In this case we know that this is close to the true value of the proportion of the Earth's surface that is covered in water. However we won't know the true parameter value in most practical cases. What we should do is sample parameter values from the posterior distribution, and then simulate from the model using those sampled parameter values.
+
+Here's a nice image summarising the process of simulating predictions from the posterior:
+
+![](images\\Ch03Img01.png)
+
+```{r}
+
+# sampling from the posterior. code from the book.
+
+p_grid <- seq( from=0 , to=1 , length.out=1000 ) 
+prior <- rep(1,1000) 
+likelihood <- dbinom( 6 , size=9 , prob=p_grid ) # assuming we've observed 6 water in 9 tosses
+posterior <- likelihood * prior 
+posterior <- posterior / sum(posterior)
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+
+# instead of prob =0.7, we use values sampled from the posterior
+
+set.seed(21)
+sim_post <- rbinom(1e4, size = 9, prob = samples)
+
+ggplot()+
+  geom_histogram(aes(sim_post), binwidth = 0.3)+
+  xlab("simulated water count")+
+  ggtitle("simulating from parameter values sampled from the posterior")
+
+```
+
+There's a lot more uncertainty in the distribution, reflecting the uncertainty in the parameter value p. Picking a single parameter value and simulating from that can lead to overconfidence. The posterior is a distribution, not a point estimate, and the uncertainty it embodies should not be thoughtlessly discarded.
+
+To close out the chapter there is a section on looking at different statistics from our 9 tosses. We've so far looked at the number of waters observed, but we could also look at the longest run of water or land, or the number of switches between them. Doing this can help uncover some ways in which our model may be mis-specified. For example the binomial model we use assumes independence between tosses, but we could imagine that there is correlation between the tosses.
+
+We can use the same posterior predictive distribution to see how well our model retrodicts the data for these new measures, as well as the water count shown above.
+
 
 ## Questions
 
@@ -641,3 +699,5 @@ In reality there were 39 boys born after the birth of a girl, well outside the c
 No clue what's happening in the data. There's presumably some selection effect going on, but I can't think of a plausible one. 
 
 ## Further Reading {-}
+
+Compatibility intervals - Greenland & Gelman, quick discussion paper

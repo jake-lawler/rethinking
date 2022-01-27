@@ -4,10 +4,14 @@
 %
 \documentclass[
 ]{book}
+\title{Statistical Rethinking Notes}
+\author{Jake Lawler}
+\date{2022-01-27}
+
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -116,15 +120,11 @@
   \thm@postskip=\thm@preskip
 }
 \makeatother
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{apalike}
-
-\title{Statistical Rethinking Notes}
-\author{Jake Lawler}
-\date{2021-04-24}
 
 \begin{document}
 \maketitle
@@ -137,7 +137,7 @@
 \chapter*{Preface}\label{preface}}
 \addcontentsline{toc}{chapter}{Preface}
 
-These are my notes on Richard McElreath's `Statistical Rethinking'. They are currently incomplete, in particular:
+These are my notes on Richard McElreath's `Statistical Rethinking'. They are currently incomplete. In particular:
 
 \begin{itemize}
 \tightlist
@@ -149,15 +149,21 @@ These are my notes on Richard McElreath's `Statistical Rethinking'. They are cur
   I haven't done the question sets of the final few chapters yet.
 \end{itemize}
 
-My plan is to split my time after work between completing these notes, and working through Larry Wasserman's `All of Statistics'.
-
 If you are a student working through Rethinking and happen to stumble across these notes, please be careful! I am not a statistician, and this book was my first exposure to a lot of this material - my summaries and answers to end-of-chapter questions are probably wrong in many places (!)
 
-This is also my first use of the bookdown package. I've really enjoyed using it as a way of structuring textbook notes, and plan to keep using it in the future. Thank you to Yihui Xie for his work on the package and for the very hepful guide `bookdown: Authoring Books and Technical Documents with R Markdown'.
+This is also my first use of the bookdown package. I've really enjoyed using it as a way of structuring textbook notes, and plan to keep using it in the future. Thank you to Yihui Xie for his work on the package and for the very helpful guide `bookdown: Authoring Books and Technical Documents with R Markdown'.
 
-I've hidden a lot of the code used to train the models, create the graphs etc. It's all available at \url{https://github.com/jake-lawler}.
+I've hidden a lot of the code used to train the models, create the graphs etc. It's all available at \url{https://github.com/jake-lawler}. The code is a little muddled because I'm trying to use tidyverse-oriented R and the rethinking package is not built with that in mind. I think once I move on to e.g.~`Bayesian Data Analysis' I'll try to use brms, or just raw Stan.
 
 Also, thanks to Richard McElreath. I had a lot of fun working my way through the book, and have collected a long list of interesting further reading that I'm only just beginning to get started on.
+
+Items to revisit:
+
+\begin{itemize}
+\tightlist
+\item
+  Chapter Four - Revisit the spline section once I'm better at using tidybayes to extract draws from more complicated models.
+\end{itemize}
 
 \hypertarget{prague}{%
 \chapter{The Golem of Prague}\label{prague}}
@@ -165,7 +171,17 @@ Also, thanks to Richard McElreath. I had a lot of fun working my way through the
 \hypertarget{chapter-notes}{%
 \section{Chapter Notes}\label{chapter-notes}}
 
-I haven't written chapter notes for the first five chapters.
+The book opens with an analogy between statistical models and the Golem of Prague. Both are powerful, but lack wisdowm of their own. They thoughtlessly follow instructions and are therefore dangerous unless great care is taken.
+
+The chapter stresses the distinction between scientific hypotheses, process models, and statistical models. A hypothesis is described as an informal, natural language statement about the world - ``evolution is neutral'' is one example given.
+
+Hypotheses are vague, and can have many different interpretations. A process model is one instantiation of a hypothesis - it is more precise about the kinds of entities that are being posited, and the logical (including causal) relations between them. For example, in the case of the ``evolution is neutral'' hypothesis, whether you assume that population size has reached an equilibrium, or whether you assume that it fluctuates over time, will lead to two different process models for the same hypothesis.
+
+Finally, in order for a process model to interact with evidence, it must be formed into a statistical model. For example one process model for the hypothesis that evolution is neutral might imply a particular frequency distribution of alleles. A statistical model can be constructed to test whether, for some data collected, this frequency is observed.
+
+The chapter describes some concerns with a purely falsificationist approach to inference, and outlines the Bayesian modelling approach the book will pursue. However it emphasises that almost all of the book could be rewritten to remove the Bayesian aspects.
+
+Finally the chapter ends with a brief summary of a topic that will be very important throughout the book - graphical causal models (e.g.~DAGs) for causal inference.
 
 \hypertarget{questions}{%
 \section{Questions}\label{questions}}
@@ -176,13 +192,231 @@ There are no questions at the end of this chapter.
 \section*{Further Reading}\label{further-reading}}
 \addcontentsline{toc}{section}{Further Reading}
 
+A lot of the endnotes in this chapter concern philosophy of science.
+
+There's a fun paper on scientists' conception of Popper:
+
+Mulkay, M. J. and Gilbert, N. (1981) \emph{Putting Philosophy to Work: Karl Popper's Influence on Scientific Practice}
+
+A lot of Popper is recommended. I'm current about a third of the way through \emph{The Logic of Scientific Discovery}. The chapter emphasises that although Popper deployed falsification as a demarcation criterion, he did not believe that falsification should or could be the only method used in scientific inference. However I find it difficult to think of what other methods Popper could allow, since he does not believe in induction. Will need to read on to find out.
+
+I want to read the Daston and Galison book on objectivity because I enjoyed Daston's book on classical probability so much.
+
+Both of the following also sound intriguing:
+
+Kitcher, P. (2011) \emph{Science in a Democratic Society}
+
+Collins and Pinch (1998) \emph{The Golem: What You Should Know About Science}
+
 \hypertarget{small_worlds}{%
 \chapter{Small Worlds and Large Worlds}\label{small_worlds}}
 
 \hypertarget{chapter-notes-1}{%
 \section{Chapter Notes}\label{chapter-notes-1}}
 
-I haven't written chapter notes for the first five chapters.
+Opens by drawing a distinction between the small world of the model and the large world of natural reality we are looking to make inferences about. The model is only a representation of the large world and it may exclude or misrepresent salient features, or fall apart outside of a narrow range of contexts.
+
+With that warning, the chapter begins to introduce inverse probability. Say we have four marbles in a bag, and the marbles can be either blue or white. We have five different hypotheses about how many blue and white marbles are in the bag:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  All marbles are white
+\item
+  Three marbles are white, one is blue
+\item
+  Two marbles are white, two are blue
+\item
+  One marble is white, three are blue
+\item
+  All marbles are blue
+\end{enumerate}
+
+Which of these is most likely? We want to answer this question by making a series of draws from the bag (with replacement) and using the results of these draws to estimate the relative plausibility of these hypotheses.
+
+Let's say we make three draws with replacement. We see a blue marble, a white marble, and then a blue marble. Call this ``b-w-b''.
+
+To illustrate what's going on when we draw from the bag, let's assume temporarily that hypothesis 2 is correct. We want to display every possible result for a series of draws with replacement.
+
+In the code below, I use tidygraph and ggraph to allow this for up to three draws, although more draws could be performed with minor adjustments.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# We first create a couple of data frames. One for the nodes {-} it will provide them labels }
+\CommentTok{\# and assign a colour to them. The other data frame specifies the edges {-} the connections }
+\CommentTok{\# between the nodes.}
+
+\CommentTok{\# Create nodes {-} I\textquotesingle{}ve chosen to label the nodes so that the zero node is the start {-} }
+\CommentTok{\# no marbles have been drawn from the bag yet. The first four possible draws are then }
+\CommentTok{\# labelled 1{-}4. Then once the first draw has been made the nodes representing the second }
+\CommentTok{\# draw have two digits {-} the first represents the outcome of the first draw (1{-}4, for each }
+\CommentTok{\# of the four marbles that could have been drawn), and the second digit represents each }
+\CommentTok{\# of the four possible second draws (1{-}4). So node 34 means that the third marble was }
+\CommentTok{\# drawn on the first draw and the fourth marble on the second draw. The nodes for }
+\CommentTok{\# the third draw are labelled similarly {-} each with three digits 1 through 4.}
+
+\NormalTok{level1 }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4} 
+\NormalTok{node }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,level1) }\CommentTok{\# these are the nodes for one draw}
+
+\ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)\{}
+\NormalTok{  intermediate }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(i}\SpecialCharTok{*}\DecValTok{10} \SpecialCharTok{+}\NormalTok{ level1 )}
+\NormalTok{  node }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(node,intermediate)}
+\NormalTok{\} }\CommentTok{\# this loop creates the nodes after a second draw. probably there is a cleaner way to do this}
+
+\NormalTok{level2 }\OtherTok{\textless{}{-}}\NormalTok{ node[node}\SpecialCharTok{\textgreater{}}\DecValTok{10}\NormalTok{]}
+
+\ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)\{}
+\NormalTok{  intermediate }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(i}\SpecialCharTok{*}\DecValTok{100} \SpecialCharTok{+}\NormalTok{ level2 )}
+\NormalTok{  node }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(node,intermediate)}
+\NormalTok{\} }\CommentTok{\# this loop creates the nodes after a third draw}
+
+\NormalTok{colour }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{ifelse}\NormalTok{(node }\SpecialCharTok{\%\%} \DecValTok{10} \SpecialCharTok{==}\DecValTok{1}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"white"}\NormalTok{)) }\CommentTok{\# the first marble of each draw is blue, the rest white}
+\NormalTok{node }\OtherTok{\textless{}{-}} \FunctionTok{as.character}\NormalTok{(node) }\CommentTok{\# these are node names, not integers}
+\NormalTok{nodes }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(node,colour)}
+
+\CommentTok{\# We now draw the edges between the nodes. Potentially confusing since the integer 1 }
+\CommentTok{\# here refers to the first node in the list above i.e. the node labelled "0", and so on. }
+\CommentTok{\# The integer 16 refers to the 16th node in the list above, i.e. to node labelled "33".}
+
+\NormalTok{from }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{,}\AttributeTok{each=}\DecValTok{4}\NormalTok{) }\CommentTok{\# each of the first 21 nodes will have four connections}
+\NormalTok{to }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\SpecialCharTok{:}\DecValTok{85}\NormalTok{)}
+\NormalTok{edges }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(from,to)}
+
+\CommentTok{\# we now create a tbl\_graph object for the number of draws we want to display }
+
+\NormalTok{draws\_1 }\OtherTok{\textless{}{-}} \FunctionTok{tbl\_graph}\NormalTok{(}\AttributeTok{edges=}\NormalTok{edges[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{,], }\AttributeTok{nodes=}\NormalTok{nodes[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,])}
+\NormalTok{draws\_2 }\OtherTok{\textless{}{-}} \FunctionTok{tbl\_graph}\NormalTok{(}\AttributeTok{edges=}\NormalTok{edges[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{20}\NormalTok{,], }\AttributeTok{nodes=}\NormalTok{nodes[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{,])}
+\NormalTok{draws\_3 }\OtherTok{\textless{}{-}} \FunctionTok{tbl\_graph}\NormalTok{(}\AttributeTok{edges=}\NormalTok{edges, }\AttributeTok{nodes=}\NormalTok{nodes)}
+
+\CommentTok{\# we will use this function to plot the tbl\_graph objects above}
+
+\NormalTok{plot\_draws }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data\_frame, layout, circular)\{}
+  \FunctionTok{ggraph}\NormalTok{(data\_frame, layout, }\AttributeTok{circular =}\NormalTok{ circular) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_edge\_link}\NormalTok{() }\SpecialCharTok{+} 
+    \FunctionTok{geom\_node\_point}\NormalTok{(}\AttributeTok{shape =} \DecValTok{21}\NormalTok{, }\AttributeTok{colour =} \StringTok{"black"}\NormalTok{, }\AttributeTok{size =} \DecValTok{5}\NormalTok{, }\AttributeTok{stroke =} \DecValTok{1}\NormalTok{,}
+                    \FunctionTok{aes}\NormalTok{(}\AttributeTok{filter =}\NormalTok{ node }\SpecialCharTok{!=} \StringTok{"0"}\NormalTok{, }\CommentTok{\#we don\textquotesingle{}t show the starting node}
+                        \AttributeTok{fill=}\NormalTok{colour))}\SpecialCharTok{+}
+    \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"light blue"}\NormalTok{,}\StringTok{"white"}\NormalTok{))}\SpecialCharTok{+}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position=}\StringTok{"none"}\NormalTok{)}
+\NormalTok{  \}}
+\end{Highlighting}
+\end{Shaded}
+
+Here are all possible outcomes of one draw from the bag:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_draws}\NormalTok{(draws\_1,}\StringTok{"tree"}\NormalTok{, }\ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{scale\_y\_reverse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+We have once chance to get a blue marble (there is only one in the bag under our hypothesis), and we have three chances to get a white marble.
+
+We then put the marble we drew back into the bag and draw again. All the possible outcomes for our two draws are displayed below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_draws}\NormalTok{(draws\_2,}\StringTok{"tree"}\NormalTok{, }\ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{scale\_y\_reverse}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+For example, the marble on the farthest left represents the situation where we first drew a blue marble, placed in back into the bag, and the drew it again on the second draw.
+
+All possible outcomes of three draws are shown in the below diagram. This time I've made it circular to avoid crowding in the graph. The nodes closest to the centre of the circle represent the first draw, and the nodes on the outside represent the third draw.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_draws}\NormalTok{(draws\_3,}\StringTok{"dendrogram"}\NormalTok{, }\ConstantTok{TRUE}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{coord\_fixed}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+How many ways of seeing the sequence ``b-w-b'' are there under our hypothesis 2?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggraph}\NormalTok{(draws\_3, }\StringTok{"dendrogram"}\NormalTok{, }\AttributeTok{circular =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+} 
+    \FunctionTok{geom\_edge\_link}\NormalTok{() }\SpecialCharTok{+} 
+    \FunctionTok{geom\_node\_point}\NormalTok{(}\AttributeTok{shape =} \DecValTok{21}\NormalTok{, }\AttributeTok{colour =} \StringTok{"black"}\NormalTok{, }\AttributeTok{size =} \DecValTok{5}\NormalTok{, }\AttributeTok{stroke =} \DecValTok{1}\NormalTok{,}
+                    \FunctionTok{aes}\NormalTok{(}\AttributeTok{filter =} 
+                          \FunctionTok{str\_sub}\NormalTok{(node, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{==} \StringTok{"1"} \SpecialCharTok{\&} \CommentTok{\# criteria for displaying nodes}
+                          \FunctionTok{str\_sub}\NormalTok{(node, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{) }\SpecialCharTok{!=} \StringTok{"1"} \SpecialCharTok{\&}
+\NormalTok{                          (}\FunctionTok{str\_sub}\NormalTok{(node, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{==} \StringTok{"1"} \SpecialCharTok{|} \FunctionTok{str\_length}\NormalTok{(node)}\SpecialCharTok{==}\DecValTok{2}\NormalTok{), }
+                        \AttributeTok{fill=}\NormalTok{colour))}\SpecialCharTok{+}
+    \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"light blue"}\NormalTok{,}\StringTok{"white"}\NormalTok{))}\SpecialCharTok{+}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position=}\StringTok{"none"}\NormalTok{)}\SpecialCharTok{+}
+    \FunctionTok{coord\_fixed}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+There are three ways of seeing this sequence, displayed above.
+
+By conducting this exercise for each of the five hypotheses above, we are part way to an answer of how plausible each hypothesis is given the sequence of draws we observed.
+
+E.g. for hypothesis 1, there are 0 ways of seeing the observed sequence, since there are no blue marbles in the hypothesis. Similarly for hypothesis 5. The table in the chapter summarises:
+
+\includegraphics{images/Ch02Img01.png}
+
+The other information we need to assess the relative plausibility of each hypothesis given the data we need is a measure of the relative plausibility of each hypothesis \emph{before seeing the data}. It might make sense in this case to say that each hypothesis is as likely as any other, but in other circumstances we might believe one of our hypotheses carries a lot more initial plausibility.
+
+We're most of the way to Bayes' rule now, and the next section of the chapter introduces it - moving from the language of counting to the language of probability.
+
+Afterwards, a simple model is introduced. Here's my attempt at recreating figure 2.5:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_plot }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{title=}\FunctionTok{character}\NormalTok{(),}\AttributeTok{p\_grid =} \FunctionTok{numeric}\NormalTok{(),}\AttributeTok{posterior =} \FunctionTok{numeric}\NormalTok{(),}\AttributeTok{.rows=}\DecValTok{0}\NormalTok{)}
+
+\NormalTok{grid\_length }\OtherTok{\textless{}{-}} \DecValTok{100}
+\NormalTok{num\_water }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{6}\NormalTok{)   }
+\NormalTok{num\_toss }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{8}\NormalTok{,}\DecValTok{9}\NormalTok{)}
+\NormalTok{toss\_results }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"W"}\NormalTok{,}\StringTok{"L"}\NormalTok{,}\StringTok{"W"}\NormalTok{,}\StringTok{"W"}\NormalTok{,}\StringTok{"W"}\NormalTok{,}\StringTok{"L"}\NormalTok{,}\StringTok{"W"}\NormalTok{,}\StringTok{"L"}\NormalTok{,}\StringTok{"W"}\NormalTok{) }
+
+\CommentTok{\# define grid }
+\NormalTok{p\_grid }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{( }\AttributeTok{from=}\DecValTok{0}\NormalTok{ , }\AttributeTok{to=}\DecValTok{1}\NormalTok{ , }\AttributeTok{length.out=}\NormalTok{grid\_length )}
+
+\CommentTok{\# define prior }
+\NormalTok{prior }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{( }\DecValTok{1}\NormalTok{ , grid\_length )}
+
+\CommentTok{\#loop through each of the three options}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(num\_water))\{}
+
+  \CommentTok{\# compute likelihood at each value in grid }
+\NormalTok{  likelihood }\OtherTok{\textless{}{-}} \FunctionTok{dbinom}\NormalTok{( num\_water[i] , }\AttributeTok{size=}\NormalTok{num\_toss[i] , }\AttributeTok{prob=}\NormalTok{p\_grid )}
+  
+  \CommentTok{\# compute product of likelihood and prior }
+\NormalTok{  unstd\_posterior }\OtherTok{\textless{}{-}}\NormalTok{ likelihood }\SpecialCharTok{*}\NormalTok{ prior}
+  
+  \CommentTok{\# standardize the posterior, so it sums to 1}
+\NormalTok{  posterior }\OtherTok{\textless{}{-}}\NormalTok{ unstd\_posterior }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(unstd\_posterior)}
+  
+\NormalTok{  df\_plot }\OtherTok{\textless{}{-}}\NormalTok{ df\_plot }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{bind\_rows}\NormalTok{(}\FunctionTok{tibble}\NormalTok{(}
+                    \AttributeTok{title =} \FunctionTok{paste}\NormalTok{(toss\_results[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{i], }\AttributeTok{collapse =}\StringTok{" "}\NormalTok{),}
+                    \AttributeTok{p\_grid =}\NormalTok{ p\_grid,}
+                    \AttributeTok{posterior =}\NormalTok{ posterior))}
+\NormalTok{\}}
+
+\FunctionTok{ggplot}\NormalTok{(df\_plot, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{p\_grid, }\AttributeTok{y=}\NormalTok{posterior)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{title, }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"proportion of water"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"posterior probability density"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+What's shown here is the posterior distributions of a globe-tossing model after 9 tosses. At each step, we take a globe and throw it into the air. We catch it, and note where our index finger ends up on the globe - either on water (W) or land (L). We do this nine times and in this way build up an estimate of the proportion of the Earth's surface that is covered by water. The titles of each of the plots above show the sequence that we have observed to that point. We start off by assuming that each proportion is as likely as any other - flat priors.
+
+I've used grid approximation to plot the posteriors in the figure above. Quadratic approximation and Markov chain Monte Carlo are briefly outlined at the end of the chapter.
 
 \hypertarget{questions-1}{%
 \section{Questions}\label{questions-1}}
@@ -331,7 +565,7 @@ Recall the globe tossing model from the chapter. Compute and plot the grid appro
 \subsubsection*{Answer}\label{answer-4}}
 \addcontentsline{toc}{subsubsection}{Answer}
 
-\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-2-1.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-2-2.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-2-3.pdf}
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-8-1.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-8-2.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-8-3.pdf}
 
 \hypertarget{m2}{%
 \subsection*{2M2}\label{m2}}
@@ -349,7 +583,7 @@ Now assume a prior for p that is equal to zero when p \textless{} 0.5 and is a p
 \subsubsection*{Answer}\label{answer-5}}
 \addcontentsline{toc}{subsubsection}{Answer}
 
-\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-3-1.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-3-2.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-3-3.pdf}
+\includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-9-1.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-9-2.pdf} \includegraphics{02-small_worlds_files/figure-latex/unnamed-chunk-9-3.pdf}
 
 \hypertarget{m3}{%
 \subsection*{2M3}\label{m3}}
@@ -653,7 +887,68 @@ Species B & 1 & 2 & 8 & 2 & 32 & 0.31\\
 \hypertarget{chapter-notes-2}{%
 \section{Chapter Notes}\label{chapter-notes-2}}
 
-I haven't written chapter notes for the first five chapters.
+This chapter introduces the concept of sampling from the posterior distribution. The first example is the globe tossing model from the previous chapter - this model is straightforward enough to calculate the posterior analytically (or with simple grid approximation), and so when we take samples we can see how well they do at reproducing the expected results.
+
+The chapter walks through summary statistics of the posterior distribution, comparing the results found by grid approximation to the results we can get by sampling from the posterior. For example, we can ask how much of the posterior probability lies within some given boundary, or we can ask for confidence intervals (or `compatibility intervals', which is the term McElreath prefers).
+
+There's a nice description of the difference between percentile intervals (usually defined so that equal probability mass remains in each tail) and the highest posterior density interval (the narrowest interval that contains the specified probability mass). For highly skewed distributions these can be quite different.
+
+There's a discussion of point estimates - should you choose to report the mean, median, or mode of your posterior distribution? Some other single value? You lose a lot of information by throwing away the posterior in favour of a single value to summarise it. If you have to report a point value, using a loss function is a principled way to determine which point value is most appropriate to your needs.
+
+In the next section a big theme of the book is introduced: simulation as a tool in model design and checking. As an example, the chapter simulates observations from the globe tossing model using rbinom():
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# using the proportion of water p = 0.7, and assuming nine tosses}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{21}\NormalTok{)}
+\NormalTok{sim\_single }\OtherTok{\textless{}{-}} \FunctionTok{rbinom}\NormalTok{(}\FloatTok{1e4}\NormalTok{, }\AttributeTok{size =} \DecValTok{9}\NormalTok{, }\AttributeTok{prob =} \FloatTok{0.7}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(sim\_single), }\AttributeTok{binwidth =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"simulated water count"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"simulating from a single parameter value"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+In the above example, we just picked a single parameter value p=0.7. In this case we know that this is close to the true value of the proportion of the Earth's surface that is covered in water. However we won't know the true parameter value in most practical cases. What we should do is sample parameter values from the posterior distribution, and then simulate from the model using those sampled parameter values.
+
+Here's a nice image summarising the process of simulating predictions from the posterior:
+
+\includegraphics{images/Ch03Img01.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# sampling from the posterior. code from the book.}
+
+\NormalTok{p\_grid }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{( }\AttributeTok{from=}\DecValTok{0}\NormalTok{ , }\AttributeTok{to=}\DecValTok{1}\NormalTok{ , }\AttributeTok{length.out=}\DecValTok{1000}\NormalTok{ ) }
+\NormalTok{prior }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1000}\NormalTok{) }
+\NormalTok{likelihood }\OtherTok{\textless{}{-}} \FunctionTok{dbinom}\NormalTok{( }\DecValTok{6}\NormalTok{ , }\AttributeTok{size=}\DecValTok{9}\NormalTok{ , }\AttributeTok{prob=}\NormalTok{p\_grid ) }\CommentTok{\# assuming we\textquotesingle{}ve observed 6 water in 9 tosses}
+\NormalTok{posterior }\OtherTok{\textless{}{-}}\NormalTok{ likelihood }\SpecialCharTok{*}\NormalTok{ prior }
+\NormalTok{posterior }\OtherTok{\textless{}{-}}\NormalTok{ posterior }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(posterior)}
+\NormalTok{samples }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{( p\_grid , }\AttributeTok{size=}\FloatTok{1e4}\NormalTok{ , }\AttributeTok{replace=}\ConstantTok{TRUE}\NormalTok{ , }\AttributeTok{prob=}\NormalTok{posterior )}
+
+\CommentTok{\# instead of prob =0.7, we use values sampled from the posterior}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{21}\NormalTok{)}
+\NormalTok{sim\_post }\OtherTok{\textless{}{-}} \FunctionTok{rbinom}\NormalTok{(}\FloatTok{1e4}\NormalTok{, }\AttributeTok{size =} \DecValTok{9}\NormalTok{, }\AttributeTok{prob =}\NormalTok{ samples)}
+
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(sim\_post), }\AttributeTok{binwidth =} \FloatTok{0.3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"simulated water count"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"simulating from parameter values sampled from the posterior"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+There's a lot more uncertainty in the distribution, reflecting the uncertainty in the parameter value p.~Picking a single parameter value and simulating from that can lead to overconfidence. The posterior is a distribution, not a point estimate, and the uncertainty it embodies should not be thoughtlessly discarded.
+
+To close out the chapter there is a section on looking at different statistics from our 9 tosses. We've so far looked at the number of waters observed, but we could also look at the longest run of water or land, or the number of switches between them. Doing this can help uncover some ways in which our model may be mis-specified. For example the binomial model we use assumes independence between tosses, but we could imagine that there is correlation between the tosses.
+
+We can use the same posterior predictive distribution to see how well our model retrodicts the data for these new measures, as well as the water count shown above.
 
 \hypertarget{questions-2}{%
 \section{Questions}\label{questions-2}}
@@ -1346,7 +1641,7 @@ Does it look like the model fits the data well? That is, does the distribution o
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-21-1.pdf}
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-23-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1354,7 +1649,7 @@ Does it look like the model fits the data well? That is, does the distribution o
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-21-2.pdf}
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-23-2.pdf}
 
 The model appears to fit the data well, at least in the sense described: that the distribution of predictions includes the actual observation as a central, likely outcome.
 
@@ -1394,7 +1689,7 @@ Now compare 10,000 counts of boys from 100 simulated first borns only to the num
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-22-1.pdf}
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-24-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1402,7 +1697,7 @@ Now compare 10,000 counts of boys from 100 simulated first borns only to the num
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-22-2.pdf}
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-24-2.pdf}
 
 The model does a much worse job here. The true number of boys in birth1 is 51 out of 100, while the most likely outcomes expected by the model are closer to 55, 56.
 
@@ -1446,7 +1741,7 @@ Compare the counts of boys in your simulations to the actual observed count of b
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-23-1.pdf}
+\includegraphics{03-sampling_imaginary_files/figure-latex/unnamed-chunk-25-1.pdf}
 
 There were 49 girls born out of 100 births in the birth1 data. We know that these parents went on to have another child. Out of these 49 other children, our model expects the number of boys to be in the region of 27-28.
 
@@ -1458,13 +1753,803 @@ No clue what's happening in the data. There's presumably some selection effect g
 \section*{Further Reading}\label{further-reading-2}}
 \addcontentsline{toc}{section}{Further Reading}
 
+Compatibility intervals - Greenland \& Gelman, quick discussion paper
+
 \hypertarget{geocentric}{%
 \chapter{Geocentric Models}\label{geocentric}}
 
 \hypertarget{chapter-notes-3}{%
 \section{Chapter Notes}\label{chapter-notes-3}}
 
-I haven't written chapter notes for the first five chapters.
+The chapter opens with an analogy between the geocentric model of the solar system and linear regression - both are useful tools to describe certain natural phenomena, but we should be wary about taking the causal structure they imply literally.
+
+The chapter is going to introduce linear regression with uncertainty described using a normal distribution. I.e. models like this:
+
+\[
+\begin{aligned}
+y_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta x_i \\
+\alpha &\sim \text{Normal}(0, 10) \\ 
+\beta &\sim \text{Normal}(0, 1) \\
+\sigma &\sim \text{Exponential}(2) \\
+\end{aligned}
+\]
+
+There is a section justifying the use of the normal distribution here by noting how many different ways we might see this pattern in nature - through additive or multiplicative processes. There is also reference to a maximum entropy argument for the normal curve: if all we have are a mean and a variance, the normal distribution is the most appropriate fit with our assumptions.
+
+Maximum entropy arguments are described later on in Chapter 10.
+
+There is then a section on notation, before the chapter introduces the first linear regression model of the book, a model of human height based on some data on the !Kung San collected by Nancy Howell in the 1960s.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(Howell1) }
+
+\NormalTok{data\_howell }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(Howell1)}
+
+\FunctionTok{head}\NormalTok{(data\_howell)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 4
+##   height weight   age  male
+##    <dbl>  <dbl> <dbl> <int>
+## 1   152.   47.8    63     1
+## 2   140.   36.5    63     0
+## 3   137.   31.9    65     0
+## 4   157.   53.0    41     1
+## 5   145.   41.3    51     0
+## 6   164.   63.0    35     1
+\end{verbatim}
+
+We keep only data on the adult population, and plot the heights:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_adults }\OtherTok{\textless{}{-}}\NormalTok{ data\_howell }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(age}\SpecialCharTok{\textgreater{}=}\DecValTok{18}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(data\_adults)}\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{height), }\AttributeTok{bins =} \DecValTok{25}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+Here's a nice bit about choosing modelling assumptions:
+
+\begin{quote}
+These data look rather Gaussian in shape, as is typical of height data. This may be because height is a sum of many
+small growth factors. As you saw at the start of the chapter, a distribution of sums tends to converge to a Gaussian distribution. Whatever the reason, adult heights from a single population are nearly always approximately normal.
+
+So it's reasonable for the moment to adopt the stance that the model should use a Gaussian distribution for the probability distribution of the data. But be careful about choosing the Gaussian distribution only when the plotted outcome variable looks Gaussian to you. Gawking at the raw data, to try to decide how tomodel them, is usually not a good idea. The data could be a mixture of different Gaussian distributions, for example, and in that case you won't be able to detect the underlying normality just by eyeballing the outcome distribution. Furthermore, as mentioned earlier in this chapter, the empirical distribution needn't be actually Gaussian in order to justify using a Gaussian probability distribution.
+\end{quote}
+
+We start building up our model:
+
+\[
+h_i \sim \text{Normal}(\mu, \sigma)
+\]
+We are assuming here that every one of the 352 adult heights in the data set \(h_i\) can be modelled as if it came from the same normal distribution with mean \(\mu\) and standard deviation \(\sigma\). A box in the chapter explains that this is a epistemological assumption, not one about the physical world. We know for example that height is correlated within family units. In making the assumption that all the heights are independent and identically distributed we are not claiming that these in-family correlations don't exist, we are only claiming that if we don't know the correlations, the i.i.d. assumption is a reasonable approximation.
+
+In our model, \(\mu\) and \(\sigma\) are the parameters we want to estimate, but we start off with some priors:
+
+\[
+\begin{aligned}
+\mu &\sim \text{Normal}(178, 20) \\
+\sigma &\sim \text{Uniform}(0,50)
+\end{aligned}
+\]
+
+The prior for \(\sigma\) here is very flat, and the prior for \(\mu\) is a normal distribution centred on 178cm, with a fairly large standard deviation of 20cm.
+
+Here's a plot of our prior for the average height parameter \(\mu\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{xlim}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{250}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_function}\NormalTok{(}\AttributeTok{fun =}\NormalTok{ dnorm, }\AttributeTok{args =} \FunctionTok{list}\NormalTok{(}\AttributeTok{mean =} \DecValTok{178}\NormalTok{, }\AttributeTok{sd =} \DecValTok{20}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Density"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"Prior for Average Height"} \SpecialCharTok{\textasciitilde{}}\NormalTok{ mu))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+Here's a plot of the prior for the standard deviation \(\sigma\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{xlim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{,}\DecValTok{60}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_function}\NormalTok{(}\AttributeTok{fun =}\NormalTok{ dunif, }\AttributeTok{args =} \FunctionTok{list}\NormalTok{(}\AttributeTok{min =} \DecValTok{0}\NormalTok{, }\AttributeTok{max =} \DecValTok{50}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Density"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"Prior for Standard Deviation"} \SpecialCharTok{\textasciitilde{}}\NormalTok{ sigma))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+We now simulate from our priors to see what they imply about height. This is called prior predictive simulation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sample\_mu }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\AttributeTok{mean =} \DecValTok{178}\NormalTok{, }\AttributeTok{sd =} \DecValTok{20}\NormalTok{)}
+
+\NormalTok{sample\_sigma }\OtherTok{\textless{}{-}} \FunctionTok{runif}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\AttributeTok{min=}\DecValTok{0}\NormalTok{, }\AttributeTok{max=}\DecValTok{50}\NormalTok{)  }
+  
+\NormalTok{sample\_height }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\AttributeTok{mean=}\NormalTok{sample\_mu, }\AttributeTok{sd=}\NormalTok{sample\_sigma)}
+
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_density}\NormalTok{(}\FunctionTok{aes}\NormalTok{(sample\_height))}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Height(cm)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Density"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Model Expectations Before Seeing the Data"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+Most of the probability mass here is in the range of plausible human heights, but some is not. The tallest person ever measured, for example, was Robert Wadlow at 272cm. We could justify tightening up our priors, but in this case we have enough data to overwhelm the priors anyway.
+
+Here is the model, using Bayes' rule:
+
+\[
+\text{Pr}(\mu, \sigma | h) = \frac{\prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) }{\int \int \prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) d\mu d\sigma}
+\]
+To get the probability of the parameters given the data, we compute the probability of the parameters on each \(h_i\) and then multiply them all together. This is what the product symbol is doing in the top row.
+
+\hypertarget{model-using-grid-approximation}{%
+\subsection{Model Using Grid Approximation}\label{model-using-grid-approximation}}
+
+The chapter then uses grid approximation to get an estimate of the posterior. I think attempting to recreate this will be a useful exercise to understand conceptually the aim of later calculation methods (quadratic approximation and Markov chain Monte Carlo).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# The calculation begins by defining a sequence over the parameter values}
+
+\CommentTok{\# I assume 150 to 160 are chosen because McElreath knows that this range will contain almost all}
+\CommentTok{\# of the probability mass for the average height parameter mu}
+\NormalTok{seq\_mu }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{( }\AttributeTok{from=}\DecValTok{150}\NormalTok{, }\AttributeTok{to=}\DecValTok{160}\NormalTok{ , }\AttributeTok{length.out=}\DecValTok{100}\NormalTok{ )}
+
+\CommentTok{\# Similarly for sigma}
+\NormalTok{seq\_sigma }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{( }\AttributeTok{from=}\DecValTok{7}\NormalTok{ , }\AttributeTok{to=}\DecValTok{9}\NormalTok{ , }\AttributeTok{length.out=}\DecValTok{100}\NormalTok{ )}
+
+\CommentTok{\# expand.grid gives essentially the Cartesian product of the two sequences in a data frame}
+\CommentTok{\# they each have 100 entries, so the data frame has 100 x 100 = 10,000 rows}
+\NormalTok{post\_grid }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{expand.grid}\NormalTok{( }\AttributeTok{mu=}\NormalTok{seq\_mu , }\AttributeTok{sigma=}\NormalTok{seq\_sigma ))}
+
+\CommentTok{\# The code in the chapter then uses sapply to produce the log likelihood.}
+\CommentTok{\# I\textquotesingle{}m going to try to recreate  this using purrr.}
+\CommentTok{\# For each point in the grid we produce a sum of the log likelihoods of the heights.}
+\CommentTok{\# Summing log likelihoods is equivalent to multiplying likelihoods.}
+\CommentTok{\# I.e. For each mu and sigma combination, create a vector length 352 (the number of heights in the data set) }
+\CommentTok{\# of log likelihoods, sum that vector, and assign it to that point on the grid}
+\NormalTok{post\_ll }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pmap\_dbl}\NormalTok{(}\AttributeTok{.f =} \ControlFlowTok{function}\NormalTok{(mu,sigma)\{}\FunctionTok{sum}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{height,}\AttributeTok{mean=}\NormalTok{mu, }\AttributeTok{sd =}\NormalTok{ sigma, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{))\})}
+
+\NormalTok{post\_grid }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{log\_likelihood =}\NormalTok{ post\_ll)}
+
+\CommentTok{\# Then weight by the priors by adding the log probability of seeing each mu, sigma combination}
+
+\NormalTok{post\_grid }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{product =}\NormalTok{ log\_likelihood }\SpecialCharTok{+} 
+           \FunctionTok{dnorm}\NormalTok{( post\_grid}\SpecialCharTok{$}\NormalTok{mu , }\DecValTok{178}\NormalTok{ , }\DecValTok{20}\NormalTok{ , }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{ ) }\SpecialCharTok{+}
+           \FunctionTok{dunif}\NormalTok{( post\_grid}\SpecialCharTok{$}\NormalTok{sigma , }\DecValTok{0}\NormalTok{ , }\DecValTok{50}\NormalTok{ , }\ConstantTok{TRUE}\NormalTok{ ))}
+
+\CommentTok{\# Finally, we normalise by subtracting the maximum product of likelihoods and priors.}
+\CommentTok{\# This is equivalent to division because we are still working at the log scale.}
+\CommentTok{\# Finally we exponentiate to get to raw probabilities again.}
+
+\NormalTok{post\_grid }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{post\_prob =} \FunctionTok{exp}\NormalTok{( product }\SpecialCharTok{{-}} \FunctionTok{max}\NormalTok{(product) ))}
+\end{Highlighting}
+\end{Shaded}
+
+The only part I don't get yet is why simply using the maximum of the product works to get us to posterior probabilities. Here's what the chapter end note says on this:
+
+\begin{quote}
+Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( post\(prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post\)prob are not all zero, but they also aren't exactly probabilities. Instead they are relative posterior probabilities. But that's good enough for what we wish to do with these values.
+\end{quote}
+
+Makes sense. We have a list of numbers between 0 and 1 that are correct in proportion to each other, but we don't have posterior probabilities.
+
+I wonder how we would get the actual posterior probabilities. Why wouldn't we be able to sum up all of the likelihood-prior products at each grid point and subtract that? Well we don't have the likelihood-prior products. We have the log versions. And if we try to exponentiate them before scaling they all get set to zero.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(}\FunctionTok{exp}\NormalTok{(post\_grid}\SpecialCharTok{$}\NormalTok{product))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0 0 0 0 0 0
+\end{verbatim}
+
+So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
+
+I'm sure there's a solution to this but for now I'll continue on using the relative posterior ``probabilities'' we've already calculated. Here's a glimpse of our posterior probabilities for the paramters mu and sigma:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(post\_grid[,}\SpecialCharTok{{-}}\DecValTok{3}\SpecialCharTok{:{-}}\DecValTok{4}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 3
+##      mu sigma post_prob
+##   <dbl> <dbl>     <dbl>
+## 1  150      7  1.96e-35
+## 2  150.     7  5.35e-34
+## 3  150.     7  1.36e-32
+## 4  150.     7  3.20e-31
+## 5  150.     7  7.00e-30
+## 6  151.     7  1.42e-28
+\end{verbatim}
+
+We sample the mu and sigma parameters from the posterior, sampling each in proportion to it's posterior probability. Since each posterior probability represents the relative plausibility of the \emph{combination} of mu and sigma, we shouldn't sample them independently. We sample a row number using the probabilities in column post\_prob and then sample the posterior mu and sigma from that row:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sample\_rows }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(post\_grid),}\FloatTok{1e4}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{prob =}\NormalTok{ post\_grid}\SpecialCharTok{$}\NormalTok{post\_prob)}
+
+\NormalTok{sample\_mu }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid}\SpecialCharTok{$}\NormalTok{mu[sample\_rows]}
+
+\NormalTok{sample\_sigma }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid}\SpecialCharTok{$}\NormalTok{sigma[sample\_rows]}
+
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_bin\_2d}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{sample\_mu,}\AttributeTok{y=}\NormalTok{sample\_sigma), }\AttributeTok{bins=}\DecValTok{30}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Parameters Sampled from the Posterior"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\hypertarget{model-using-quadratic-approximation}{%
+\subsection{Model Using Quadratic Approximation}\label{model-using-quadratic-approximation}}
+
+So that was grid approximation. It was useful to be forced to work through the calculation in detail. The chapter now reproduces this model, this time using quadratic approximation instead. The quap function in the Rethinking package takes a model definition in the form of an alist.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{list\_height }\OtherTok{\textless{}{-}} \FunctionTok{alist}\NormalTok{( }\CommentTok{\#alist(), unlike list(), does not try to evaluate its entries}
+\NormalTok{  height }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{  mu }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{178}\NormalTok{ , }\DecValTok{20}\NormalTok{ ) , }
+\NormalTok{  sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dunif}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{50}\NormalTok{ )}
+\NormalTok{)}
+
+\NormalTok{m4\_1 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( list\_height , }\AttributeTok{data=}\NormalTok{data\_adults )}
+\end{Highlighting}
+\end{Shaded}
+
+One of my goals in working through the book in this way is to become familiar with using Stan and tidybayes. The book won't introduce Markov chain Monte Carlo until later, but I can start working with tidybayes from this point, because the tidybayes.rethinking package works with models created with the Rethinking package, which is where the function quap comes from.
+
+\href{https://mjskay.github.io/tidybayes.rethinking/articles/tidy-rethinking.html}{Here's} the rethinking vignette for tidybayes.
+
+From the vignette:
+
+\begin{quote}
+The {[}tidybayes::{]}spread\_draws() function yields a common format for all model types supported by tidybayes. It lets us instead extract draws into a data frame in tidy format, with a .chain and .iteration column storing the chain and iteration for each row (if available --- these columns are NA for rethinking::quap() and rethinking::map() models), a .draw column that uniquely indexes each draw, and the remaining columns corresponding to model variables or variable indices. The spread\_draws() function accepts any number of column specifications, which can include names for variables and names for variable indices.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{post\_quap }\OtherTok{\textless{}{-}}\NormalTok{ m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{spread\_draws}\NormalTok{(mu,sigma)}
+
+\FunctionTok{head}\NormalTok{(post\_quap,}\DecValTok{10}\NormalTok{) }\CommentTok{\# displays the first 10 of 5,000 rows}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 10 x 5
+##    .chain .iteration .draw    mu sigma
+##     <int>      <int> <int> <dbl> <dbl>
+##  1     NA         NA     1  155.  7.74
+##  2     NA         NA     2  154.  8.07
+##  3     NA         NA     3  154.  7.93
+##  4     NA         NA     4  154.  7.91
+##  5     NA         NA     5  155.  7.64
+##  6     NA         NA     6  154.  7.25
+##  7     NA         NA     7  154.  7.63
+##  8     NA         NA     8  154.  7.74
+##  9     NA         NA     9  155.  7.93
+## 10     NA         NA    10  155.  7.82
+\end{verbatim}
+
+Here's a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{74}\NormalTok{)}
+\NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 7
+##   .variable .value .lower .upper .width .point .interval
+##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 mu        155.   154.   155.     0.89 median qi       
+## 2 sigma       7.74   7.27   8.20   0.89 median qi
+\end{verbatim}
+
+Here we return the parameter median in the .value column, and an 89\% equi-tailed interval for our two parameters, in the .lower and .higher columns.
+
+We can instead return the mean or mode in the .value column:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{74}\NormalTok{)}
+\NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mode\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 7
+##   .variable .value .lower .upper .width .point .interval
+##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 mu        155.   154.   155.     0.89 mode   qi       
+## 2 sigma       7.72   7.27   8.20   0.89 mode   qi
+\end{verbatim}
+
+The .value column has changed, but the .lower and .higher columns still specify the same 89\% equi-tailed interval.
+
+If we instead want to return the highest density interval we can do that by replacing ``qi'' in the function with ``hdi'':
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{74}\NormalTok{)}
+\NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_hdi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 7
+##   .variable .value .lower .upper .width .point .interval
+##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 mu        155.   154.   155.     0.89 median hdi      
+## 2 sigma       7.74   7.27   8.20   0.89 median hdi
+\end{verbatim}
+
+The summary function names are really intuitive, but if we don't want to remember them we can use the point\_interval() function only with arguments .point = mean/mode/median and .interval = qi/hdi.
+
+The posterior figures above are those produced by quadratic approximation. This means that they represent Gaussian approximations for the marginal distribution of each parameter. This works fine when the posterior is broadly Gaussian.
+
+Here we compare the results from quap:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 7
+##   .variable .value .lower .upper .width .point .interval
+##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 mu        155.   154.   155.     0.89 median qi       
+## 2 sigma       7.73   7.26   8.18   0.89 median qi
+\end{verbatim}
+
+To the results from grid approximation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\StringTok{"mu"}\NormalTok{, }\AttributeTok{quote =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] mu
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{quantile}\NormalTok{(sample\_mu, }\AttributeTok{probs=}\FunctionTok{c}\NormalTok{(}\FloatTok{0.055}\NormalTok{,}\FloatTok{0.945}\NormalTok{)) }\CommentTok{\# the lower and upper values of an 89\% interval}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     5.5%    94.5% 
+## 153.9394 155.2525
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\StringTok{"sigma"}\NormalTok{, }\AttributeTok{quote =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] sigma
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{quantile}\NormalTok{(sample\_sigma, }\AttributeTok{probs=}\FunctionTok{c}\NormalTok{(}\FloatTok{0.055}\NormalTok{,}\FloatTok{0.945}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     5.5%    94.5% 
+## 7.303030 8.252525
+\end{verbatim}
+
+These are very close, especially for mu. We would expect this since mu is the outcome of a Gaussian likelihood and prior, whereas sigma was given a uniform prior with lower bound at zero. We might expect then that it would have a longer right tail than the quadratic approximation allows.
+
+\hypertarget{adding-predictors}{%
+\subsection{Adding Predictors}\label{adding-predictors}}
+
+We are going to use the weights in our data set to predict heights:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(data\_adults)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{weight, }\AttributeTok{y=}\NormalTok{height))}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"!Kung San Adults"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-18-1.pdf}
+\textgreater{} The strategy is to make the parameter for the mean of a Gaussian distribution, \(\mu\), into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.
+
+Here's the previous model:
+
+\[
+\begin{aligned}
+h_i &\sim \text{Normal}(\mu, \sigma)\\
+\mu &\sim \text{Normal}(178, 20) \\
+\sigma &\sim \text{Uniform}(0,50)
+\end{aligned}
+\]
+
+And here's the model including weight as a predictor:
+
+\[
+\begin{aligned}
+h_i &= \text{Normal}(\mu_i, \sigma)\\
+\mu_i &= \alpha + \beta(x_i - \bar{x}) \\
+\alpha &\sim \text{Normal}(178, 20) \\
+\beta &\sim \text{Normal}(0, 10) \\
+\sigma &\sim \text{Uniform}(0,50)
+\end{aligned}
+\]
+Where each \(x_i\) is the predictor (weight) associated with each observed height \(h_i\).
+
+We have new parameters \(\alpha\) and \(\beta\). The intercept and slope of our linear model. What do our priors imply about them? We use prior predictive simulation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we generate 100 samples from our prior distributions}
+\NormalTok{prior\_sim }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{a=}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{178}\NormalTok{, }\AttributeTok{sd=}\DecValTok{20}\NormalTok{),}
+                    \AttributeTok{b =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{10}\NormalTok{))}
+
+\CommentTok{\# we plot the lines they imply}
+\FunctionTok{ggplot}\NormalTok{(prior\_sim)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{slope =}\NormalTok{ b,}
+                  \AttributeTok{intercept =}\NormalTok{ a }\SpecialCharTok{{-}}\NormalTok{ b}\SpecialCharTok{*}\FunctionTok{mean}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight) ))}\SpecialCharTok{+} \CommentTok{\# explained below}
+  \FunctionTok{xlim}\NormalTok{(}\FunctionTok{min}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight),}\FunctionTok{max}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight))}\SpecialCharTok{+}
+  \FunctionTok{ylim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{, }\DecValTok{300}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{272}\NormalTok{, }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\# 272cm is Robert Wadlow\textquotesingle{}s height}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"weight (kg)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"average height (cm)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"b \textasciitilde{} Normal(0,10)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+For the slope of each line I've used the slope we generated from the prior. For the intercept I used
+
+\[
+\text{intercept = a - b*mean(weight)}
+\]
+The reason for this is that I want the x-axis to vary over a natural range of the parameter weight to be more interpretable. And so instead of considering
+
+\[
+\mu_i = \alpha + \beta(x_i - \bar{x}) 
+\]
+over the range \((\min( x_i) - \bar{x},\max( x_i) - \bar{x})\), I've looked at the equivalent line
+
+\[
+\mu_i = (\alpha - \beta\bar{x}) + \beta(x_i ) 
+\]
+
+over the range \((\min( x_i),\max( x_i)\).
+
+The plot makes clear that our priors are very permissive. They allow impossible (e.g.~negative) heights to be associated with observed weights. Also, just as many lines suggest that height may be negatively correlated with height as suggest a positive correlation.
+
+The chapter also trials the more informative prior
+
+\[
+\beta \sim \text{Log-Normal}(0,1)
+\]
+
+This forces the relationship between weight and height to be positive. It also clusters the range of expected average height more tightly - limiting them for the most part to the range of plausible values. Here's the same plot as before with the new prior:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we generate 100 samples from our prior distributions}
+\NormalTok{prior\_sim\_log }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{a=}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{178}\NormalTok{, }\AttributeTok{sd=}\DecValTok{20}\NormalTok{),}
+                    \AttributeTok{b =} \FunctionTok{rlnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{meanlog =} \DecValTok{0}\NormalTok{, }\AttributeTok{sdlog =} \DecValTok{1}\NormalTok{))}
+
+\CommentTok{\# we plot the lines they imply}
+\FunctionTok{ggplot}\NormalTok{(prior\_sim\_log)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{slope =}\NormalTok{ b,}
+                  \AttributeTok{intercept =}\NormalTok{ a }\SpecialCharTok{{-}}\NormalTok{ b}\SpecialCharTok{*}\FunctionTok{mean}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight) ))}\SpecialCharTok{+} \CommentTok{\# explained above}
+  \FunctionTok{xlim}\NormalTok{(}\FunctionTok{min}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight),}\FunctionTok{max}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight))}\SpecialCharTok{+}
+  \FunctionTok{ylim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{, }\DecValTok{300}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{272}\NormalTok{, }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\# 272cm is Robert Wadlow\textquotesingle{}s height}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"weight (kg)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"average height (cm)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"b \textasciitilde{} Log{-}Normal(0,1)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+Here's the model we'll use:
+
+\[
+\begin{aligned}
+h_i &= \text{Normal}(\mu_i, \sigma)\\
+\mu_i &= \alpha + \beta(x_i - \bar{x}) \\
+\alpha &\sim \text{Normal}(178, 20) \\
+\beta &\sim \text{Log-Normal}(0, 1) \\
+\sigma &\sim \text{Uniform}(0,50)
+\end{aligned}
+\]
+We feed it to quap and create a table of the parameters using tidybayes:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{xbar }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight)}
+
+\NormalTok{m4\_3 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{  height }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{  mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ b}\SpecialCharTok{*}\NormalTok{( weight }\SpecialCharTok{{-}}\NormalTok{ xbar ) , }
+\NormalTok{  a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{178}\NormalTok{ , }\DecValTok{20}\NormalTok{ ) , }
+\NormalTok{  b }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dlnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ ) , }
+\NormalTok{  sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dunif}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{50}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{ data\_adults)}
+
+\NormalTok{m4\_3 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, b, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 7
+##   .variable  .value  .lower  .upper .width .point .interval
+##   <chr>       <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>    
+## 1 a         155.    154.    155.      0.89 median qi       
+## 2 b           0.902   0.835   0.969   0.89 median qi       
+## 3 sigma       5.07    4.76    5.38    0.89 median qi
+\end{verbatim}
+
+Interpreting these:
+
+\begin{itemize}
+\tightlist
+\item
+  An \(\alpha\) of 154.6cm means that a person of average weight is expected to be 154.6cm tall
+\item
+  A \(\beta\) of 0.9 means that an increase in weight of 1kg is associated with a increase in height of 0.9cm
+\end{itemize}
+
+We plot draws from the posterior (black lines) over the data (blue dots):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#extract 20 draws from the posterior}
+\NormalTok{post\_m4\_3 }\OtherTok{\textless{}{-}}\NormalTok{ m4\_3}\SpecialCharTok{\%\textgreater{}\%}\FunctionTok{spread\_draws}\NormalTok{(a,b,}\AttributeTok{ndraws =} \DecValTok{20}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data=}\NormalTok{data\_adults, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{weight, }\AttributeTok{y=}\NormalTok{height), }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{data=}\NormalTok{post\_m4\_3,}\FunctionTok{aes}\NormalTok{(}
+                  \AttributeTok{slope =}\NormalTok{ b,}
+                  \AttributeTok{intercept =}\NormalTok{ a }\SpecialCharTok{{-}}\NormalTok{ b}\SpecialCharTok{*}\FunctionTok{mean}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{weight) ),}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Posterior Samples Drawn over the Data"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+How can we display the uncertainty in our model? In the plot above, I've used 20 draws of \(\alpha\) and \(\beta\) to manually plot the \emph{expected} height over the range of weights seen in the data. There is uncertainty about this mean height, and we can display that by plotting many lines as above, or we can use the following, more flexible approach using tidybayes. This doesn't require the manual calculation of the \(\mu\)s that is implicit in the code for the graph above. This will be helpful when we move on to more complicated models.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# use modelr::data\_grid to create a grid of 51 weights over the range found in the data }
+\FunctionTok{data\_grid}\NormalTok{(data\_adults,}\AttributeTok{weight=}\FunctionTok{seq\_range}\NormalTok{(weight, }\AttributeTok{n =} \DecValTok{51}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{add\_linpred\_draws}\NormalTok{(m4\_3) }\SpecialCharTok{\%\textgreater{}\%}\CommentTok{\# add draws from the posterior link{-}level predictor {-} the expected heights}
+\CommentTok{\# 5,000 draws x 51 weights = 255,000 rows in this tibble}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ weight, }\AttributeTok{y=}\NormalTok{height)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ .linpred)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_adults, }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-23-1.pdf}
+The shaded regions display the uncertainty in the expected heights for each weight.
+
+However this is not the only source of uncertainty in our model. We also have uncertainty \emph{around} the mean heights, represented by \(\sigma\) in the model specification:
+
+\[
+h_i = \text{Normal}(\mu_i, \sigma)
+\]
+We can display this in a similar way:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data\_grid}\NormalTok{(data\_adults,}\AttributeTok{weight=}\FunctionTok{seq\_range}\NormalTok{(weight, }\AttributeTok{n =} \DecValTok{51}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{add\_predicted\_draws}\NormalTok{(m4\_3) }\SpecialCharTok{\%\textgreater{}\%}\CommentTok{\# add draws from the posterior predictive {-} the posterior distribution of heights}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ weight, }\AttributeTok{y=}\NormalTok{height)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ .prediction)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_adults, }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-24-1.pdf}
+
+There is a lot more uncertainty here. The key difference in the above two chunks of code is which tidybayes function is used to create the draws, linpred\_draws() or predicted\_draws(). The function linpred\_draws() draws from the posterior distribution of the linear predictor. I.e. it draws from the distribution of \emph{expected heights} in the model. Whereas predicted\_draws() draws from the entire posterior distribution.
+
+To do the same with Stan models later, we'll need to use the tidybayes function add\_draws() along with rstantools functions like posterior\_epred() and posterior\_predict().
+
+\href{https://mjskay.github.io/tidybayes/reference/add_draws.html}{Documentation for tidybayes::add\_draws}
+
+\href{https://mc-stan.org/rstantools/reference/index.html}{Documentation for rstantools functions}
+
+\hypertarget{polynomial-regression}{%
+\subsection{Polynomial Regression}\label{polynomial-regression}}
+
+Here's a model from the chapter that uses a quadratic link function. It is used to fit the height on weight model over the whole dataset, not just the adults:
+
+\[
+\begin{aligned}
+h_i &= \text{Normal}(\mu_i, \sigma)\\
+\mu_i &= \alpha + \beta_1x_i + \beta_1x_i^2\\
+\alpha &\sim \text{Normal}(178, 20) \\
+\beta_1 &\sim \text{Log-Normal}(0, 1) \\
+\beta_2 &\sim \text{Normal}(0, 1) \\
+\sigma &\sim \text{Uniform}(0,50)
+\end{aligned}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_howell }\OtherTok{\textless{}{-}}\NormalTok{ data\_howell}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{weight\_s =}\NormalTok{ (weight }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(weight))}\SpecialCharTok{/}\FunctionTok{sd}\NormalTok{(weight),}
+         \AttributeTok{weight\_s2 =}\NormalTok{ weight\_s}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+
+\NormalTok{m4\_5 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{(}
+    \FunctionTok{alist}\NormalTok{(}
+\NormalTok{        height }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) ,}
+\NormalTok{        mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ b1}\SpecialCharTok{*}\NormalTok{weight\_s }\SpecialCharTok{+}\NormalTok{ b2}\SpecialCharTok{*}\NormalTok{weight\_s2 ,}
+\NormalTok{        a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{178}\NormalTok{ , }\DecValTok{20}\NormalTok{ ) ,}
+\NormalTok{        b1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dlnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ ) ,}
+\NormalTok{        b2 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ ) ,}
+\NormalTok{        sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dunif}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{50}\NormalTok{ )}
+\NormalTok{    ) , }\AttributeTok{data=}\NormalTok{data\_howell )}
+
+\NormalTok{m4\_5 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, b1, b2, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 7
+##   .variable .value .lower .upper .width .point .interval
+##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 a         146.   145.   147.     0.89 median qi       
+## 2 b1         21.7   21.3   22.2    0.89 median qi       
+## 3 b2         -7.80  -8.25  -7.37   0.89 median qi       
+## 4 sigma       5.77   5.49   6.06   0.89 median qi
+\end{verbatim}
+
+Here's a plot of draws from the posterior:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data\_grid}\NormalTok{(data\_howell,}\AttributeTok{weight\_s=}\FunctionTok{seq\_range}\NormalTok{(weight\_s, }\AttributeTok{n =} \DecValTok{51}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# grid of standardised weights to range over}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{weight\_s2 =}\NormalTok{ weight\_s}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# the add\_predicted\_draws() function expects both weight\_s and weight\_s2}
+  \FunctionTok{add\_predicted\_draws}\NormalTok{(m4\_5) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{weight =}\NormalTok{ weight\_s }\SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(data\_howell}\SpecialCharTok{$}\NormalTok{weight) }\SpecialCharTok{+} \FunctionTok{mean}\NormalTok{(data\_howell}\SpecialCharTok{$}\NormalTok{weight) )}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# reversing the standardisation}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ weight, }\AttributeTok{y=}\NormalTok{height)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ .prediction)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_howell, }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\hypertarget{b-splines}{%
+\subsection{B-Splines}\label{b-splines}}
+
+The ``B'' stands for ``basis''.
+
+Here's the data for the cherry blossom example used in this section:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(cherry\_blossoms) }
+\NormalTok{data\_blossoms }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(cherry\_blossoms)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(doy)}\SpecialCharTok{==}\ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Creating knots for the splines:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{num\_knots }\OtherTok{\textless{}{-}} \DecValTok{15} \CommentTok{\# number of knots}
+
+\NormalTok{knot\_list }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(data\_blossoms}\SpecialCharTok{$}\NormalTok{year , }\AttributeTok{probs=}\FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\AttributeTok{length.out=}\NormalTok{num\_knots) )}
+\end{Highlighting}
+\end{Shaded}
+
+Constructing the basis functions for a cubic spline using the splines package:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{basis }\OtherTok{\textless{}{-}} \FunctionTok{bs}\NormalTok{(data\_blossoms}\SpecialCharTok{$}\NormalTok{year, }\AttributeTok{knots=}\NormalTok{knot\_list[}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,num\_knots)] , }\CommentTok{\# function for generating the basis matrix}
+\AttributeTok{degree=}\DecValTok{3}\NormalTok{ , }\AttributeTok{intercept=}\ConstantTok{TRUE}\NormalTok{ ) }\CommentTok{\# we don\textquotesingle{}t want this as a tibble. We\textquotesingle{}ll do matrix multiplication with it later on.}
+\end{Highlighting}
+\end{Shaded}
+
+Here's the model for the day in the year when the cherry blossoms appear over time:
+
+\[
+\begin{aligned}
+D &= \text{Normal}(\mu_i, \sigma)\\
+\mu_i &= \alpha + \sum^K_{k=1}w_kB_{k,i}\\
+\alpha &\sim \text{Normal}(100, 10) \\
+w_j &\sim \text{Normal}(0, 10) \\
+\sigma &\sim \text{Exponential}(1)
+\end{aligned}
+\]
+A description from the chapter:
+
+\begin{quote}
+That linear model might look weird. But all it is doing is multiplying each basis value by a corresponding parameter wk and then adding up all K of those products. This is just a compact way of writing a linear model. The rest should be familiar.
+\end{quote}
+
+Using the quap engine:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m4\_7 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{( }
+\NormalTok{    D }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ B }\SpecialCharTok{\%*\%}\NormalTok{ w , }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{10}\NormalTok{), }
+\NormalTok{    w }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{), }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{), }\AttributeTok{data=}\FunctionTok{list}\NormalTok{( }\AttributeTok{D=}\NormalTok{data\_blossoms}\SpecialCharTok{$}\NormalTok{doy , }\AttributeTok{B=}\NormalTok{basis ) ,}
+\AttributeTok{start=}\FunctionTok{list}\NormalTok{( }\AttributeTok{w=}\FunctionTok{rep}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FunctionTok{ncol}\NormalTok{(basis) ) ) )}
+\end{Highlighting}
+\end{Shaded}
+
+I'm not familiar enough with tidybayes yet to figure out how to get draws out of this model. I could use the tools in the rethinking package, but these wouldn't transfer as well to the Stan models later in the book. Will revisit this once I know tidybayes better.
 
 \hypertarget{questions-3}{%
 \section{Questions}\label{questions-3}}
@@ -1539,7 +2624,7 @@ P(\hat\mu,\hat\sigma | y_i) &= \frac{P(y_i | \hat\mu, \hat\sigma)P(\hat\mu)P(\ha
 \end{aligned}
 \]
 
-I mean \(N(y_i | \mu, \sigma)\) to be read "the probability of observing \(y_i\) given that it is normally distributed with parameters \(\mu\) \& \(\sigma\). That notation is copied from page 78.
+I mean \(N(y_i | \mu, \sigma)\) to be read ``the probability of observing \(y_i\) given that it is normally distributed with parameters \(\mu\) \& \(\sigma\). That notation is copied from page 78.
 
 \hypertarget{e4-2}{%
 \subsection*{4E4}\label{e4-2}}
@@ -1626,7 +2711,7 @@ y_i &\sim \text{Normal}(\mu, \sigma) \\
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-2-1.pdf}
+\includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 \hypertarget{m2-2}{%
 \subsection*{4M2}\label{m2-2}}
@@ -1811,13 +2896,225 @@ Chapter questions unfinished.
 \section*{Further Reading}\label{further-reading-3}}
 \addcontentsline{toc}{section}{Further Reading}
 
+This is the first chapter that really refers to E. T. Jaynes in detail. I really want to read \emph{Probability Theory: The Logic of Science}. I'm not sure how mathematically dense it is but will maybe hold off until summer, once I've seen some measure theory and worked through MacKay's book on information theory.
+
 \hypertarget{many_variables}{%
 \chapter{The Many Variables \& The Spurious Waffles}\label{many_variables}}
 
 \hypertarget{chapter-notes-4}{%
 \section{Chapter Notes}\label{chapter-notes-4}}
 
-I haven't written chapter notes for the first five chapters.
+This chapter introduces multiple regression and causal models. Will try to race through it, just getting some practice visualising priors, using tidybayes to display model uncertainty etc.
+
+Model 5.1: Modelling divorce rate on age at marriage.
+
+\[
+\begin{aligned}
+D_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_A A_i \\
+\alpha &\sim \text{Normal}(0, 0.2) \\ 
+\beta_A &\sim \text{Normal}(0, 0.5) \\
+\sigma &\sim \text{Exponential}(1) \\
+\end{aligned}
+\]
+Here are the variables we'll use in this model and later on:
+
+\begin{itemize}
+\tightlist
+\item
+  \(D_i\) - the 2009 divorce rate per 1,000 adults for each U.S. state.
+\item
+  \(A_i\) - The 2005-2010 median age at marriage for each state
+\end{itemize}
+
+Plot of these priors:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we generate 100 samples from our prior distributions}
+\NormalTok{prior\_sim\_5\_1 }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{a=}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd=}\FloatTok{0.2}\NormalTok{),}
+                    \AttributeTok{bA =} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \FloatTok{0.5}\NormalTok{))}
+
+\CommentTok{\# and plot the lines they imply}
+\FunctionTok{ggplot}\NormalTok{(prior\_sim\_5\_1)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{slope =}\NormalTok{ bA,}
+                  \AttributeTok{intercept =}\NormalTok{ a))}\SpecialCharTok{+}
+  \FunctionTok{xlim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{3}\NormalTok{,}\DecValTok{3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylim}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{3}\NormalTok{,}\DecValTok{3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Median Age of Marriage (std)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Divorce Rate (std)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-2-1.pdf}
+Here's the model and the posterior mean/expected divorce rate:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(WaffleDivorce) }
+\NormalTok{data\_divorce }\OtherTok{\textless{}{-}}\NormalTok{ WaffleDivorce}\SpecialCharTok{\%\textgreater{}\%}\FunctionTok{as\_tibble}\NormalTok{()}
+
+\NormalTok{data\_divorce }\SpecialCharTok{\%\textless{}\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}
+  \AttributeTok{divorce\_s =}\NormalTok{ (Divorce }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(Divorce))}\SpecialCharTok{/}\FunctionTok{sd}\NormalTok{(Divorce),}
+  \AttributeTok{marriage\_s =}\NormalTok{ (Marriage }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(Marriage))}\SpecialCharTok{/}\FunctionTok{sd}\NormalTok{(Marriage),}
+  \AttributeTok{age\_s =}\NormalTok{ (MedianAgeMarriage }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(MedianAgeMarriage))}\SpecialCharTok{/}\FunctionTok{sd}\NormalTok{(MedianAgeMarriage),}
+\NormalTok{)}
+
+\NormalTok{m5\_1 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{( }
+\NormalTok{    divorce\_s }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bA }\SpecialCharTok{*}\NormalTok{ age\_s , }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ) , }
+\NormalTok{    bA }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ) , }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data =}\NormalTok{ data\_divorce )}
+
+\NormalTok{summary\_5\_1 }\OtherTok{\textless{}{-}}\NormalTok{ m5\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, bA, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"m5\_1"}\NormalTok{)}
+
+\FunctionTok{data\_grid}\NormalTok{(data\_divorce,}\AttributeTok{age\_s=}\FunctionTok{seq\_range}\NormalTok{(age\_s, }\AttributeTok{n =} \DecValTok{51}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{add\_linpred\_draws}\NormalTok{(m5\_1) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# add draws for mean divorce rate}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{MedianAgeMarriage=}\NormalTok{ age\_s }\SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{MedianAgeMarriage) }\SpecialCharTok{+} \FunctionTok{mean}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{MedianAgeMarriage),}
+         \AttributeTok{Divorce =}\NormalTok{ .linpred }\SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Divorce) }\SpecialCharTok{+} \FunctionTok{mean}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Divorce))}\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ MedianAgeMarriage, }\AttributeTok{y=}\NormalTok{Divorce)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_divorce, }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+Here's the same plot for model 5.2 - which uses marriage rate as a predictor instead of age at marriage:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m5\_2 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{( }
+\NormalTok{    divorce\_s }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bM }\SpecialCharTok{*}\NormalTok{ marriage\_s , }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ) , }
+\NormalTok{    bM }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ) , }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data =}\NormalTok{ data\_divorce )}
+
+\NormalTok{summary\_5\_2 }\OtherTok{\textless{}{-}}\NormalTok{ m5\_2 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, bM, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"m5\_2"}\NormalTok{)}
+
+\FunctionTok{data\_grid}\NormalTok{(data\_divorce,}\AttributeTok{marriage\_s=}\FunctionTok{seq\_range}\NormalTok{(marriage\_s, }\AttributeTok{n =} \DecValTok{51}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{add\_linpred\_draws}\NormalTok{(m5\_2) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# add draws for mean divorce rate}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Marriage=}\NormalTok{ marriage\_s }\SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Marriage) }\SpecialCharTok{+} \FunctionTok{mean}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Marriage),}
+         \AttributeTok{Divorce =}\NormalTok{ .linpred }\SpecialCharTok{*} \FunctionTok{sd}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Divorce) }\SpecialCharTok{+} \FunctionTok{mean}\NormalTok{(data\_divorce}\SpecialCharTok{$}\NormalTok{Divorce))}\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Marriage, }\AttributeTok{y=}\NormalTok{Divorce)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_divorce, }\AttributeTok{colour =} \StringTok{"light blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+The chapter goes on to introduce DAGs and causal reasoning, before coming back to define a regression model that uses both marriage rate and median age at marriage as predictors.
+
+Here are a couple of possible DAGs for how marriage rate and median age of marriage influence the divorce rate:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mar =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, .}\DecValTok{1}\NormalTok{, .}\DecValTok{1}\NormalTok{))}
+
+\NormalTok{dag\_div1 }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{(}\StringTok{"dag\{A {-}\textgreater{} M; M {-}\textgreater{} D; A {-}\textgreater{} D \}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_div1) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{A=}\DecValTok{0}\NormalTok{,}\AttributeTok{D=}\FloatTok{0.5}\NormalTok{,}\AttributeTok{M=}\DecValTok{1}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{A=}\DecValTok{0}\NormalTok{,}\AttributeTok{M=}\DecValTok{0}\NormalTok{,}\AttributeTok{D=}\DecValTok{1}\NormalTok{))}
+\FunctionTok{drawdag}\NormalTok{(dag\_div1)}
+
+\NormalTok{dag\_div2 }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{(}\StringTok{"dag\{A {-}\textgreater{} M; A {-}\textgreater{} D \}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_div2) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{A=}\DecValTok{0}\NormalTok{,}\AttributeTok{D=}\FloatTok{0.5}\NormalTok{,}\AttributeTok{M=}\DecValTok{1}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{A=}\DecValTok{0}\NormalTok{,}\AttributeTok{M=}\DecValTok{0}\NormalTok{,}\AttributeTok{D=}\DecValTok{1}\NormalTok{))}
+\FunctionTok{drawdag}\NormalTok{(dag\_div2)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.5\linewidth]{05-many_variables_files/figure-latex/figures-side-1} \includegraphics[width=0.5\linewidth]{05-many_variables_files/figure-latex/figures-side-2}
+
+We can use our data to test these proposed causal models, because they make different predictions. The first has no conditional independencies:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{impliedConditionalIndependencies}\NormalTok{(dag\_div1)}
+\end{Highlighting}
+\end{Shaded}
+
+The second predicts that D is independent from M, conditional on A:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{impliedConditionalIndependencies}\NormalTok{(dag\_div2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## D _||_ M | A
+\end{verbatim}
+
+Here's our statistical model:
+
+\[
+\begin{aligned}
+D_i &\sim \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_M M_i + \beta_A A_i \\
+\alpha &\sim \text{Normal}(0, 0.2) \\ 
+\beta_M &\sim \text{Normal}(0, 0.5) \\
+\beta_A &\sim \text{Normal}(0, 0.5) \\
+\sigma &\sim \text{Exponential}(1) \\
+\end{aligned}
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m5\_3 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{( }
+\NormalTok{    divorce\_s }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bM }\SpecialCharTok{*}\NormalTok{ marriage\_s }\SpecialCharTok{+}\NormalTok{ bA }\SpecialCharTok{*}\NormalTok{ age\_s , }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ) , }
+\NormalTok{    bM }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ) ,}
+\NormalTok{    bA }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ) , }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data =}\NormalTok{ data\_divorce )}
+
+\NormalTok{summary\_5\_3 }\OtherTok{\textless{}{-}}\NormalTok{ m5\_3 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, bM, bA, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"m5\_3"}\NormalTok{)}
+
+\NormalTok{summary\_5\_3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 8
+##   .variable   .value .lower .upper .width .point .interval model
+##   <chr>        <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
+## 1 a         -0.00204 -0.155  0.156   0.89 median qi        m5_3 
+## 2 bA        -0.610   -0.848 -0.372   0.89 median qi        m5_3 
+## 3 bM        -0.0628  -0.303  0.173   0.89 median qi        m5_3 
+## 4 sigma      0.786    0.662  0.912   0.89 median qi        m5_3
+\end{verbatim}
+
+Here's a plot for the three models:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{bind\_rows}\NormalTok{(summary\_5\_1, summary\_5\_2,summary\_5\_3) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{fct\_rev}\NormalTok{(.variable), }\AttributeTok{x =}\NormalTok{ .value, }\AttributeTok{xmin =}\NormalTok{ .lower, }\AttributeTok{xmax =}\NormalTok{ .upper, }\AttributeTok{color =}\NormalTok{ model)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_pointinterval}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{(}\AttributeTok{width =} \SpecialCharTok{{-}}\FloatTok{0.3}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"parameters"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-8-1.pdf}
+As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.
 
 \hypertarget{questions-4}{%
 \section{Questions}\label{questions-4}}
@@ -3775,6 +5072,8 @@ I'll revisit this later and see if I can make sense of it.
 \begin{verbatim}
 ## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
 ## Using compatibility `.name_repair`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
 \end{verbatim}
 
 \begin{Shaded}
@@ -4200,11 +5499,11 @@ The model in chapter 8, fit using quadratic approximation looks like this:
 
 \begin{verbatim}
 ##             mean          sd        5.5%       94.5%
-## a[1]   0.8865635 0.015675730  0.86151069  0.91161638
-## a[2]   1.0505696 0.009936630  1.03468895  1.06645026
-## b[1]   0.1325052 0.074204606  0.01391187  0.25109846
-## b[2]  -0.1425764 0.054749526 -0.23007674 -0.05507611
-## sigma  0.1094944 0.005935334  0.10000856  0.11898018
+## a[1]   0.8865728 0.015674582  0.86152183  0.91162385
+## a[2]   1.0505629 0.009935884  1.03468345  1.06644237
+## b[1]   0.1325032 0.074199296  0.01391841  0.25108802
+## b[2]  -0.1424933 0.054745575 -0.22998727 -0.05499926
+## sigma  0.1094860 0.005934206  0.10000201  0.11897003
 \end{verbatim}
 
 Here is the same model using ulam:
@@ -4223,12 +5522,12 @@ Here is the same model using ulam:
 \end{Shaded}
 
 \begin{verbatim}
-##             mean          sd         5.5%       94.5%    n_eff     Rhat4
-## a[1]   0.8863900 0.016066653  0.861263755  0.91239339 2385.040 0.9989979
-## a[2]   1.0507876 0.010359464  1.034099450  1.06736275 3169.658 0.9983588
-## b[1]   0.1308372 0.074861084  0.007588926  0.24926313 2501.290 0.9999101
-## b[2]  -0.1421440 0.053609582 -0.231558840 -0.05599294 2814.435 0.9984347
-## sigma  0.1115744 0.006327084  0.102049240  0.12232890 2873.048 0.9992689
+##             mean          sd        5.5%      94.5%    n_eff     Rhat4
+## a[1]   0.8862251 0.016028192  0.86000551  0.9120409 2699.895 0.9990555
+## a[2]   1.0511253 0.010116677  1.03477395  1.0672044 2851.886 0.9990817
+## b[1]   0.1312790 0.073579475  0.01514265  0.2484935 2191.984 0.9995037
+## b[2]  -0.1422040 0.054041641 -0.22564370 -0.0549517 2981.076 0.9988560
+## sigma  0.1115890 0.006322299  0.10219079  0.1215263 2560.062 1.0000555
 \end{verbatim}
 
 We show the traceplot and trankplot for the model fit, in order to contrast with more pathological plots that will be shown in the next section.
@@ -4236,17 +5535,7 @@ We show the traceplot and trankplot for the model fit, in order to contrast with
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{traceplot}\NormalTok{(m9}\FloatTok{.1}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## [1] 1000
-## [1] 1
-## [1] 1000
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{trankplot}\NormalTok{(m9}\FloatTok{.1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -4254,12 +5543,6 @@ We show the traceplot and trankplot for the model fit, in order to contrast with
 \includegraphics{09-markov_chain_files/figure-latex/unnamed-chunk-10-1.pdf} \includegraphics{09-markov_chain_files/figure-latex/unnamed-chunk-10-2.pdf}
 
 The chapter includes an example of a model with very flat priors and very little data, in order to demonstrate how you may be able to tell if you're attempt at model fitting has gone wrong somewhere.
-
-\begin{verbatim}
-## [1] 1000
-## [1] 1
-## [1] 1000
-\end{verbatim}
 
 \includegraphics{09-markov_chain_files/figure-latex/unnamed-chunk-12-1.pdf} \includegraphics{09-markov_chain_files/figure-latex/unnamed-chunk-12-2.pdf}
 
@@ -4468,13 +5751,13 @@ After transforming them into the outcome scale, we can plot the parameters that 
 
 \begin{verbatim}
 ##         mean         sd      5.5%     94.5%
-## a1 0.3944755 0.07538840 0.2751757 0.5166700
-## a2 0.9749322 0.01700938 0.9422885 0.9940229
-## a3 0.3264039 0.06860096 0.2230224 0.4394275
-## a4 0.3266157 0.07132896 0.2198608 0.4456540
-## a5 0.3954838 0.07458802 0.2763856 0.5167282
-## a6 0.6159157 0.07700935 0.4920274 0.7350907
-## a7 0.8708656 0.04414408 0.7936983 0.9326369
+## a1 0.3906872 0.07593051 0.2713121 0.5170867
+## a2 0.9742894 0.01716667 0.9429495 0.9940104
+## a3 0.3222523 0.06929863 0.2169651 0.4433149
+## a4 0.3234947 0.07037946 0.2213532 0.4426394
+## a5 0.3900974 0.07652739 0.2717665 0.5146987
+## a6 0.6101797 0.07560688 0.4854886 0.7234966
+## a7 0.8694970 0.04508907 0.7920538 0.9310104
 \end{verbatim}
 
 \includegraphics{11-god_spiked_files/figure-latex/unnamed-chunk-6-1.pdf}
@@ -5138,9 +6421,9 @@ y_i &\sim \text{Binomial}(n_i,p_i) \\
 Here's a comparison of the two models by WAIC:
 
 \begin{verbatim}
-##             WAIC       SE    dWAIC      dSE    pWAIC    weight
-## m11.H2b 59.12533 11.47513 0.000000       NA 8.428120 0.8490221
-## m11.H2c 62.57924 15.58555 3.453904 6.463145 8.660236 0.1509779
+##             WAIC       SE    dWAIC      dSE    pWAIC   weight
+## m11.H2b 58.97597 11.46574 0.000000       NA 8.280315 0.765901
+## m11.H2c 61.34659 15.25543 2.370618 5.891377 7.982785 0.234099
 \end{verbatim}
 
 \hypertarget{h3-4}{%
@@ -5244,9 +6527,9 @@ I'll start with a model that only includes gender, and not department. This will
 Here are the results:
 
 \begin{verbatim}
-##             mean         sd        5.5%      94.5%
-## diff_a 0.2052849 0.10600295 0.033859750 0.37151055
-## diff_p 0.0279155 0.01430979 0.004750198 0.05024213
+##              mean         sd        5.5%      94.5%
+## diff_a 0.20646480 0.10435218 0.039312400 0.37026665
+## diff_p 0.02810227 0.01410845 0.005329711 0.05045711
 \end{verbatim}
 
 On the probability scale, applications from women are 1-5\% less likely to succeed.
@@ -5256,9 +6539,9 @@ Now we add department to the model, blocking the pipe to estimate the direct eff
 And the results:
 
 \begin{verbatim}
-##              mean        sd         5.5%      94.5%
-## diff_a 0.13369936 0.1041802 -0.033428400 0.30217128
-## diff_p 0.02328461 0.0192204 -0.005233406 0.05567785
+##             mean         sd         5.5%      94.5%
+## diff_a 0.1415749 0.10123312 -0.021963000 0.30244495
+## diff_p 0.0247863 0.01901147 -0.003853548 0.05708239
 \end{verbatim}
 
 See comment above, unsure about this one. revisit this.
@@ -5343,11 +6626,11 @@ The higher the value of \(\theta\), the more concentrated the probability. When 
 We fit the model, and examine the posterior:
 
 \begin{verbatim}
-##             mean        sd        5.5%     94.5%    n_eff    Rhat4
-## a[1]  -0.4382833 0.3978251 -1.07298200 0.1909862 1273.019 1.003047
-## a[2]  -0.3122475 0.3929913 -0.93395765 0.3170948 1442.562 1.000484
-## phi    1.0201106 0.8173286  0.05844827 2.5509630 1437.939 1.001612
-## theta  3.0201106 0.8173286  2.05845170 4.5509630 1437.941 1.001612
+##             mean        sd        5.5%     94.5%    n_eff     Rhat4
+## a[1]  -0.4504782 0.3976519 -1.10058580 0.1626845 1496.970 1.0022057
+## a[2]  -0.3195312 0.4105463 -0.96373111 0.3161446 1393.141 0.9999819
+## phi    1.0333930 0.8226213  0.08581792 2.6120413 1315.242 1.0004287
+## theta  3.0333930 0.8226213  2.08581800 4.6120413 1315.241 1.0004287
 \end{verbatim}
 
 The probability of admission increases with the value of \(\alpha\). The difference between \(\alpha\) for men and women is
@@ -5359,10 +6642,10 @@ The probability of admission increases with the value of \(\alpha\). The differe
 \end{Shaded}
 
 \begin{verbatim}
-## [1] -0.1260357
+## [1] -0.1309471
 \end{verbatim}
 
-suggesting the model believes women are more likely to be admitted. However the standard deviation of this value is 0.5597575;the model is very uncertain. We contrast this with model m11.7 in the last chapter, which predicted that men were more likely to be admitted, and was quite a bit more confident about this. Even though we haven't included department in the model, allowing \(p\) to vary by department / gender combination has captured some of the variation between departments.
+suggesting the model believes women are more likely to be admitted. However the standard deviation of this value is 0.5684114;the model is very uncertain. We contrast this with model m11.7 in the last chapter, which predicted that men were more likely to be admitted, and was quite a bit more confident about this. Even though we haven't included department in the model, allowing \(p\) to vary by department / gender combination has captured some of the variation between departments.
 
 Here's a plot:
 
@@ -5538,9 +6821,9 @@ In the multi-level model, the intercept prior is a function of two \emph{hyperpr
 \end{Shaded}
 
 \begin{verbatim}
-##           WAIC       SE    dWAIC      dSE    pWAIC       weight
-## m13.2 200.1824 7.375376  0.00000       NA 21.02083 0.9993382648
-## m13.1 214.8224 4.480321 14.63997 4.157364 25.66467 0.0006617352
+##           WAIC       SE    dWAIC      dSE    pWAIC      weight
+## m13.2 201.0119 7.301358  0.00000       NA 21.32306 0.998931144
+## m13.1 214.6921 4.496586 13.68019 4.183409 25.53754 0.001068856
 \end{verbatim}
 
 The measure of ``effective parameters'', pWAIC is lower for the multi-level model (m13.2), because of the stronger regularising effect of the hyperpriors.
@@ -5897,10 +7180,10 @@ W &\sim N(\mu_i, \sigma)\\
 The model believes that education leads to higher wages (you can see that \(b_{EW}\) is very far from 0):
 
 \begin{verbatim}
-##                mean         sd        5.5%      94.5%    n_eff     Rhat4
-## aW    -0.0005288119 0.03972125 -0.06551111 0.06268503 4420.966 0.9998203
-## bEW    0.3969786620 0.04207471  0.32912801 0.46241297 4023.615 0.9995759
-## sigma  0.9177689387 0.02926500  0.87166634 0.96589663 4274.570 0.9998091
+##               mean         sd       5.5%     94.5%    n_eff     Rhat4
+## aW    -0.001419763 0.04103712 -0.0668210 0.0614210 2058.644 0.9999916
+## bEW    0.397312055 0.04067676  0.3330058 0.4587898 1922.806 1.0005218
+## sigma  0.918514205 0.02924823  0.8724036 0.9659672 1900.922 1.0034956
 \end{verbatim}
 
 Next we add \(Q\) as a predictor:
@@ -5919,11 +7202,11 @@ W &\sim N(\mu_i, \sigma)\\
 And the results are worse:
 
 \begin{verbatim}
-##               mean         sd        5.5%       94.5%    n_eff    Rhat4
-## aW     0.001225136 0.03729397 -0.05886653  0.05983202 3832.831 1.001327
-## bEW    0.634945642 0.04612737  0.56244349  0.70667009 2673.269 1.000318
-## bQW   -0.404044928 0.04540413 -0.47634060 -0.33201980 2716.394 1.000414
-## sigma  0.857273180 0.02738017  0.81479490  0.90206280 3654.169 1.000256
+##                mean         sd        5.5%       94.5%    n_eff     Rhat4
+## aW    -0.0002878362 0.03732442 -0.05972346  0.05953473 1940.322 0.9988731
+## bEW    0.6355551170 0.04867284  0.55926847  0.71532664 1195.392 1.0002084
+## bQW   -0.4058662475 0.04678752 -0.47877007 -0.33126016 1205.308 0.9991839
+## sigma  0.8575132195 0.02795544  0.81467929  0.90481446 1552.985 1.0008698
 \end{verbatim}
 
 The estimated effect of education on wages is even larger, and the model also thinks that \(Q\) is correlated with wages even when \(E\) is included in the model. We know from the simulation that \(Q\) has no effect on wages except through E; the error comes from the fact that E is a collider of \(Q\) and \(U\).
@@ -5971,17 +7254,17 @@ What's happening here is that wages and education are both simultaneously outcom
 Here are the results:
 
 \begin{verbatim}
-##                   mean         sd        5.5%      94.5%    n_eff     Rhat4
-## aE        0.0010056517 0.03553324 -0.05496976 0.05860987 2883.136 1.0003532
-## aW        0.0007991066 0.04487617 -0.07018863 0.07286133 2687.905 1.0005700
-## bQE       0.5886988233 0.03526074  0.53321709 0.64673715 2420.864 0.9997788
-## bEW      -0.0472580413 0.07614137 -0.16898210 0.07509664 2065.612 1.0002730
-## Rho[1,1]  1.0000000000 0.00000000  1.00000000 1.00000000      NaN       NaN
-## Rho[1,2]  0.5395469192 0.05337246  0.45012197 0.62061797 2051.787 0.9996464
-## Rho[2,1]  0.5395469192 0.05337246  0.45012197 0.62061797 2051.787 0.9996464
-## Rho[2,2]  1.0000000000 0.00000000  1.00000000 1.00000000      NaN       NaN
-## Sigma[1]  1.0224607505 0.04648751  0.95180275 1.10091265 2279.323 0.9996041
-## Sigma[2]  0.8086648767 0.02530651  0.77065219 0.85006606 3275.550 0.9995571
+##                   mean         sd        5.5%      94.5%     n_eff     Rhat4
+## aE        0.0008915069 0.03433353 -0.05523862 0.05541958 1480.0990 0.9996156
+## aW        0.0006545851 0.04377868 -0.07079820 0.07273627 1401.6666 1.0010062
+## bQE       0.5891858335 0.03498143  0.53501613 0.64443475 1411.4764 0.9993527
+## bEW      -0.0463663122 0.07308362 -0.16794360 0.06406582  777.4085 1.0020241
+## Rho[1,1]  1.0000000000 0.00000000  1.00000000 1.00000000       NaN       NaN
+## Rho[1,2]  0.5402627720 0.05073347  0.45610957 0.62018750  750.5671 1.0018643
+## Rho[2,1]  0.5402627720 0.05073347  0.45610957 0.62018750  750.5671 1.0018643
+## Rho[2,2]  1.0000000000 0.00000000  1.00000000 1.00000000       NaN       NaN
+## Sigma[1]  1.0241176895 0.04590810  0.95699685 1.10006935  767.6010 1.0025145
+## Sigma[2]  0.8085983475 0.02547070  0.76929886 0.85086392 1633.9111 1.0003105
 \end{verbatim}
 
 The model now correctly believes that the causal effect of education on wages is close to zero. The residual correlation between wages and education, \(\rho_{1,2}\), is positive, which reflects the influence of \(U\).
@@ -6055,22 +7338,22 @@ Why are the entries of the covariance matrix defined like that?
 Here are the parameter results:
 
 \begin{verbatim}
-##              mean         sd        5.5%      94.5%     n_eff    Rhat4
-## k[1]  -0.16088405 0.31526404 -0.67045860 0.31894576  987.0526 1.001144
-## k[2]  -0.01697647 0.30479761 -0.49987212 0.45799395  949.2456 1.001370
-## k[3]  -0.06666622 0.29111097 -0.52920464 0.37975397  896.6437 1.001253
-## k[4]   0.35446322 0.26996443 -0.03412487 0.78706341  904.3119 1.001902
-## k[5]   0.07795147 0.26439746 -0.31677036 0.50827782  905.7486 1.001346
-## k[6]  -0.38133184 0.28069063 -0.84888874 0.02314573 1057.9603 1.000483
-## k[7]   0.14319340 0.26276852 -0.25247955 0.56156311  895.0096 1.001791
-## k[8]  -0.21157799 0.27077059 -0.64582998 0.19112627  953.6216 1.000780
-## k[9]   0.26370387 0.25213222 -0.11737149 0.66382836  983.8960 1.001907
-## k[10] -0.16787512 0.35862526 -0.74310009 0.37899101 1451.0006 1.002150
-## g      0.60664983 0.58415728  0.06663160 1.70592420 3032.0289 1.001418
-## b      0.27839146 0.08925179  0.13740195 0.42366237 1866.9741 1.001771
-## a      1.39347170 1.07005061  0.21890241 3.37432905 4253.9771 1.000381
-## etasq  0.19929679 0.22148924  0.02698265 0.54926219 1645.4633 1.001446
-## rhosq  1.34619796 1.70331345  0.07966262 4.68532515 3806.0575 1.000336
+##               mean         sd        5.5%      94.5%     n_eff    Rhat4
+## k[1]  -0.148402659 0.30998543 -0.63955874 0.33646864  709.9680 1.005093
+## k[2]   0.002684859 0.30056597 -0.45053691 0.49759916  633.2755 1.004251
+## k[3]  -0.050550296 0.28174896 -0.47895698 0.40597849  598.4924 1.004261
+## k[4]   0.366865490 0.26729507 -0.02193611 0.81699311  657.3474 1.005273
+## k[5]   0.094786551 0.26006232 -0.28204444 0.53608437  697.9420 1.002621
+## k[6]  -0.360295041 0.27160317 -0.80016738 0.03490379  818.9144 1.003139
+## k[7]   0.157534273 0.25409633 -0.20737781 0.56643565  678.2727 1.003498
+## k[8]  -0.192210414 0.25940191 -0.58630755 0.22291150  748.3814 1.003753
+## k[9]   0.277474804 0.24967771 -0.08590088 0.69005578  705.6751 1.003134
+## k[10] -0.150614677 0.34512273 -0.70713486 0.39019117 1112.6261 1.000693
+## g      0.602461754 0.57198391  0.07419879 1.71741660 1607.5003 1.003247
+## b      0.278706970 0.08672352  0.14322593 0.42380396 1306.5750 1.002605
+## a      1.390190386 1.10746784  0.21896477 3.40762055 2166.0644 1.000575
+## etasq  0.193184148 0.20287420  0.02551770 0.55632958  989.9122 1.001779
+## rhosq  1.387124588 1.72623165  0.08278087 4.67127800 1864.7903 1.001385
 \end{verbatim}
 
 These are a little difficult to interpret, but we can plot the Gaussian process function to get a sense of how the model expects covariance to change with increasing distance:
@@ -6128,7 +7411,7 @@ We want to build models that allow for measurement error. The book returns to th
 
 \includegraphics{15-missing_data_files/figure-latex/unnamed-chunk-2-1.pdf}
 
-The plot on the left is meant to demonstrate that the standard error is much larger for states with small populations as you'd expect. This is important, because variation in the size of the error among states is likely to introduce biases.
+The plot on the right is meant to demonstrate that the standard error is much larger for states with small populations as you'd expect. This is important, because variation in the size of the error among states is likely to introduce biases.
 
 In order to motivate the approach to incorporating measurement data, the chapter draws the following graph of the data generating processes:
 
@@ -6153,11 +7436,11 @@ D_{\text{TRUE},i} &\sim \text{Normal}(\mu_i,\sigma) \\
 Here's the posterior for (some of) the model parameters:
 
 \begin{verbatim}
-##              mean         sd       5.5%       94.5%    n_eff    Rhat4
-## a     -0.05177365 0.09420048 -0.1990557  0.09980758 2768.051 0.999540
-## bA    -0.61112914 0.16011141 -0.8703275 -0.35526900 2090.397 1.001288
-## bM     0.05950384 0.16531121 -0.2053998  0.31386528 1994.706 1.002141
-## sigma  0.58336106 0.10498017  0.4233734  0.76007407 1208.433 1.002050
+##              mean         sd       5.5%      94.5%     n_eff    Rhat4
+## a     -0.05217401 0.09804187 -0.2082779  0.1073199 1226.4762 1.003677
+## bA    -0.61406158 0.16784361 -0.8765321 -0.3385763  795.2799 1.002621
+## bM     0.05151590 0.17176807 -0.2290728  0.3250571  787.9058 1.001282
+## sigma  0.59272317 0.10208346  0.4400059  0.7639598  702.4037 1.002614
 \end{verbatim}
 
 Compared to the chapter 5 model, \(bA\) has almost halved. In this case the impact of measurement error was to exaggerate the effect of marriage age on divorce. However you can't assume that measurement error will always increase the effects of interest, sometimes it can obscure them. Endnote 223 points to some papers on this.
@@ -6245,16 +7528,16 @@ Here's a summary of the posterior parameter distributions we get assuming we can
 
 \begin{verbatim}
 ##         mean         sd      5.5%     94.5%    n_eff    Rhat4
-## a  1.1135375 0.02410944 1.0758589 1.1523427 2597.326 1.000184
-## bS 0.6898362 0.02490829 0.6500868 0.7300311 2316.962 1.000640
+## a  1.1128840 0.02392241 1.0761494 1.1514411 1221.785 1.003241
+## bS 0.6891082 0.02562531 0.6482949 0.7303994 1212.296 1.000231
 \end{verbatim}
 
 Now here's the outcome of the same model where the missing cases are simply dropped:
 
 \begin{verbatim}
-##         mean         sd      5.5%     94.5%    n_eff     Rhat4
-## a  1.7946147 0.03356130 1.7408573 1.8485027 1801.153 1.0000524
-## bS 0.8276137 0.03382677 0.7750254 0.8813257 1908.130 0.9994402
+##         mean         sd      5.5%    94.5%    n_eff    Rhat4
+## a  1.7948496 0.03578085 1.7380078 1.850438 927.8955 1.000555
+## bS 0.8274926 0.03330760 0.7749454 0.882055 872.6053 1.002531
 \end{verbatim}
 
 We can see that \(bS\) is now closer to the true value of 1. This is because on average homework is missing from noisy houses, and it's usually noisy houses where our estimate of the effect of studying is confounded. In this case the missingness made our inference easier, but in another scenario it could easily make things worse.
@@ -6312,10 +7595,10 @@ You could also set sensible priors by dividing out the units in the volume equat
 Here are the parameter estimates:
 
 \begin{verbatim}
-##            mean          sd      5.5%      94.5%     n_eff    Rhat4
-## p     0.2445827 0.053933252 0.1689543  0.3421992  974.3439 1.001621
-## k     5.8143419 2.607328283 2.5765822 10.5986880 1040.3333 1.000492
-## sigma 0.2067431 0.006217272 0.1971499  0.2172184 1296.4441 1.000743
+##            mean          sd      5.5%      94.5%    n_eff    Rhat4
+## p     0.2517260 0.061439242 0.1709598  0.3547435 464.9976 1.010270
+## k     5.5871104 2.581455054 2.3889364 10.3184655 485.2606 1.013346
+## sigma 0.2065658 0.006402481 0.1967345  0.2167261 600.5539 1.003603
 \end{verbatim}
 
 Let's plot the posterior predictions:
