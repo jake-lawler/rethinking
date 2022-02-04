@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -451,13 +454,13 @@ L_i &amp;\sim \text{Binomial}(1,p_i) \\
 \end{aligned}
 \]</span></p>
 <p>In R:</p>
-<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="god_spiked.html#cb205-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb205-2"><a href="god_spiked.html#cb205-2" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>(</span>
-<span id="cb205-3"><a href="god_spiked.html#cb205-3" aria-hidden="true" tabindex="-1"></a>  pulled_left <span class="sc">~</span> <span class="fu">dbinom</span>( <span class="dv">1</span> , p ) , </span>
-<span id="cb205-4"><a href="god_spiked.html#cb205-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">logit</span>(p) <span class="ot">&lt;-</span> a[actor] <span class="sc">+</span> b[treatment] , </span>
-<span id="cb205-5"><a href="god_spiked.html#cb205-5" aria-hidden="true" tabindex="-1"></a>  a[actor] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> ), </span>
-<span id="cb205-6"><a href="god_spiked.html#cb205-6" aria-hidden="true" tabindex="-1"></a>  b[treatment] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> )</span>
-<span id="cb205-7"><a href="god_spiked.html#cb205-7" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_chimp , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">log_lik=</span><span class="cn">TRUE</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="god_spiked.html#cb225-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb225-2"><a href="god_spiked.html#cb225-2" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>(</span>
+<span id="cb225-3"><a href="god_spiked.html#cb225-3" aria-hidden="true" tabindex="-1"></a>  pulled_left <span class="sc">~</span> <span class="fu">dbinom</span>( <span class="dv">1</span> , p ) , </span>
+<span id="cb225-4"><a href="god_spiked.html#cb225-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">logit</span>(p) <span class="ot">&lt;-</span> a[actor] <span class="sc">+</span> b[treatment] , </span>
+<span id="cb225-5"><a href="god_spiked.html#cb225-5" aria-hidden="true" tabindex="-1"></a>  a[actor] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> ), </span>
+<span id="cb225-6"><a href="god_spiked.html#cb225-6" aria-hidden="true" tabindex="-1"></a>  b[treatment] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> )</span>
+<span id="cb225-7"><a href="god_spiked.html#cb225-7" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_chimp , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">log_lik=</span><span class="cn">TRUE</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
 <p>After transforming them into the outcome scale, we can plot the parameters that represent each chimpanzee:</p>
 <pre><code>##         mean         sd      5.5%     94.5%
 ## a1 0.3906872 0.07593051 0.2713121 0.5170867
@@ -488,13 +491,13 @@ T_i &amp;\sim \text{Poisson}(\lambda_i) \\
 \end{aligned}
 \]</span></p>
 <p>Here it is in R:</p>
-<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="god_spiked.html#cb207-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb207-2"><a href="god_spiked.html#cb207-2" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.10</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
-<span id="cb207-3"><a href="god_spiked.html#cb207-3" aria-hidden="true" tabindex="-1"></a>  T <span class="sc">~</span> <span class="fu">dpois</span>( lambda ), </span>
-<span id="cb207-4"><a href="god_spiked.html#cb207-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(lambda) <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>P, </span>
-<span id="cb207-5"><a href="god_spiked.html#cb207-5" aria-hidden="true" tabindex="-1"></a>  a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">3</span> , <span class="fl">0.5</span> ), </span>
-<span id="cb207-6"><a href="god_spiked.html#cb207-6" aria-hidden="true" tabindex="-1"></a>  b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> )</span>
-<span id="cb207-7"><a href="god_spiked.html#cb207-7" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>data_tool , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">log_lik=</span><span class="cn">TRUE</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="god_spiked.html#cb227-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb227-2"><a href="god_spiked.html#cb227-2" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.10</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
+<span id="cb227-3"><a href="god_spiked.html#cb227-3" aria-hidden="true" tabindex="-1"></a>  T <span class="sc">~</span> <span class="fu">dpois</span>( lambda ), </span>
+<span id="cb227-4"><a href="god_spiked.html#cb227-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(lambda) <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>P, </span>
+<span id="cb227-5"><a href="god_spiked.html#cb227-5" aria-hidden="true" tabindex="-1"></a>  a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">3</span> , <span class="fl">0.5</span> ), </span>
+<span id="cb227-6"><a href="god_spiked.html#cb227-6" aria-hidden="true" tabindex="-1"></a>  b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> )</span>
+<span id="cb227-7"><a href="god_spiked.html#cb227-7" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>data_tool , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">log_lik=</span><span class="cn">TRUE</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
 <p>We plot the posterior predictions:</p>
 <p><img src="11-god_spiked_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Here blue dots are high contact, and red low contact societies. The size of the points is scaled by Pareto k-value.</p>
@@ -503,30 +506,30 @@ T_i &amp;\sim \text{Poisson}(\lambda_i) \\
 <h4>Negative Binomial Models</h4>
 <p>The chapter introduces an extension of the Poisson generalised linear model that uses the negative binomial distribution. This adds the ability to adjust our model for data over varying exposures. A toy example is introduced to explain.</p>
 <p>We own a monastery that produces manuscripts at a rate <span class="math inline">\(\lambda\)</span> of 1.5 per day. We simulate data over a month:</p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="god_spiked.html#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">47</span>)</span>
-<span id="cb208-2"><a href="god_spiked.html#cb208-2" aria-hidden="true" tabindex="-1"></a>num_days <span class="ot">&lt;-</span> <span class="dv">30</span></span>
-<span id="cb208-3"><a href="god_spiked.html#cb208-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb208-4"><a href="god_spiked.html#cb208-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rpois</span>(num_days, <span class="fl">1.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="god_spiked.html#cb228-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">47</span>)</span>
+<span id="cb228-2"><a href="god_spiked.html#cb228-2" aria-hidden="true" tabindex="-1"></a>num_days <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb228-3"><a href="god_spiked.html#cb228-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-4"><a href="god_spiked.html#cb228-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rpois</span>(num_days, <span class="fl">1.5</span>)</span></code></pre></div>
 <p>We are considering acquiring a new monastery, and want to compare its productivity. However this one does not keep a daily record of manuscript production, but instead a weekly one. The <em>exposure</em> is different: seven days instead of one. Our task will be to model the rate of manuscript production at each monastery in order to inform our purchasing decision.</p>
 <p>The (unknown to us) daily rate of the second monastery is actually 0.5 manuscripts per day, and we simulate 4 weeks worth of data on that basis:</p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="god_spiked.html#cb209-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">47</span>)</span>
-<span id="cb209-2"><a href="god_spiked.html#cb209-2" aria-hidden="true" tabindex="-1"></a>num_weeks <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb209-3"><a href="god_spiked.html#cb209-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb209-4"><a href="god_spiked.html#cb209-4" aria-hidden="true" tabindex="-1"></a>y_new <span class="ot">&lt;-</span> <span class="fu">rpois</span>(num_weeks, <span class="fl">0.5</span><span class="sc">*</span><span class="dv">7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="god_spiked.html#cb229-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">47</span>)</span>
+<span id="cb229-2"><a href="god_spiked.html#cb229-2" aria-hidden="true" tabindex="-1"></a>num_weeks <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb229-3"><a href="god_spiked.html#cb229-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-4"><a href="god_spiked.html#cb229-4" aria-hidden="true" tabindex="-1"></a>y_new <span class="ot">&lt;-</span> <span class="fu">rpois</span>(num_weeks, <span class="fl">0.5</span><span class="sc">*</span><span class="dv">7</span>)</span></code></pre></div>
 <p>We collect these two sets of data into one data frame.</p>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="god_spiked.html#cb210-1" aria-hidden="true" tabindex="-1"></a>data_manu <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y_all =</span> <span class="fu">c</span>(y,y_new),</span>
-<span id="cb210-2"><a href="god_spiked.html#cb210-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">exposure =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="dv">7</span>,<span class="dv">4</span>)),</span>
-<span id="cb210-3"><a href="god_spiked.html#cb210-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">monastery =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>))) <span class="co"># monastery indicator</span></span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="god_spiked.html#cb230-1" aria-hidden="true" tabindex="-1"></a>data_manu <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">y_all =</span> <span class="fu">c</span>(y,y_new),</span>
+<span id="cb230-2"><a href="god_spiked.html#cb230-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">exposure =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="dv">7</span>,<span class="dv">4</span>)),</span>
+<span id="cb230-3"><a href="god_spiked.html#cb230-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">monastery =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>))) <span class="co"># monastery indicator</span></span></code></pre></div>
 <p>The introduction of a new term into our model allows us to compare rates across our varying exposures. This term is the logarithm of the exposure.</p>
-<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="god_spiked.html#cb211-1" aria-hidden="true" tabindex="-1"></a>data_manu <span class="ot">&lt;-</span> data_manu <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">log_exp =</span> <span class="fu">log</span>(exposure))</span>
-<span id="cb211-2"><a href="god_spiked.html#cb211-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb211-3"><a href="god_spiked.html#cb211-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb211-4"><a href="god_spiked.html#cb211-4" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.12</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>( </span>
-<span id="cb211-5"><a href="god_spiked.html#cb211-5" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">dpois</span>( lambda ), </span>
-<span id="cb211-6"><a href="god_spiked.html#cb211-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(lambda) <span class="ot">&lt;-</span> log_exp <span class="sc">+</span> a <span class="sc">+</span> b<span class="sc">*</span>monastery, </span>
-<span id="cb211-7"><a href="god_spiked.html#cb211-7" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ), </span>
-<span id="cb211-8"><a href="god_spiked.html#cb211-8" aria-hidden="true" tabindex="-1"></a>  b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> )</span>
-<span id="cb211-9"><a href="god_spiked.html#cb211-9" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>data_manu )</span></code></pre></div>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="god_spiked.html#cb231-1" aria-hidden="true" tabindex="-1"></a>data_manu <span class="ot">&lt;-</span> data_manu <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">log_exp =</span> <span class="fu">log</span>(exposure))</span>
+<span id="cb231-2"><a href="god_spiked.html#cb231-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-3"><a href="god_spiked.html#cb231-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb231-4"><a href="god_spiked.html#cb231-4" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.12</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>( </span>
+<span id="cb231-5"><a href="god_spiked.html#cb231-5" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">dpois</span>( lambda ), </span>
+<span id="cb231-6"><a href="god_spiked.html#cb231-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(lambda) <span class="ot">&lt;-</span> log_exp <span class="sc">+</span> a <span class="sc">+</span> b<span class="sc">*</span>monastery, </span>
+<span id="cb231-7"><a href="god_spiked.html#cb231-7" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ), </span>
+<span id="cb231-8"><a href="god_spiked.html#cb231-8" aria-hidden="true" tabindex="-1"></a>  b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> )</span>
+<span id="cb231-9"><a href="god_spiked.html#cb231-9" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>data_manu )</span></code></pre></div>
 <p>Why does the addition of this term adjust for the varying exposures?</p>
 <p>If we think about <span class="math inline">\(\lambda\)</span> as a rate we can express it as a number of manuscripts <span class="math inline">\(\mu\)</span> produced over a number of days <span class="math inline">\(\tau\)</span>: <span class="math inline">\(\lambda = \mu/\tau\)</span>. If we return to the definition of the Poisson GLM with the log link function we can see how this helps us to scale our rate parameter to adjust for the varying exposures:</p>
 <p><span class="math display">\[
@@ -574,52 +577,52 @@ term in the binomial PMF.</p>
 where <span class="math inline">\(s_i\)</span> is a <em>score</em> assigned to event type <span class="math inline">\(i\)</span>.</p>
 <p>To illustrate, the chapter introduces a simulated example. We are trying to model career choice in 500 young adults. There are three career options, each comes with its own expected income.</p>
 <p>The following code assigns an income to each career option, converts this to a score, and converts the score to a set of probabilities using the softmax function. Then the 500 individuals pick one of the three options, with the choice weighted by the calculated probabilities. We end up with a vector of length 500, where each entry is one of the three career options.</p>
-<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="god_spiked.html#cb213-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
-<span id="cb213-2"><a href="god_spiked.html#cb213-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-3"><a href="god_spiked.html#cb213-3" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>)</span>
-<span id="cb213-4"><a href="god_spiked.html#cb213-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-5"><a href="god_spiked.html#cb213-5" aria-hidden="true" tabindex="-1"></a>score <span class="ot">&lt;-</span> income<span class="sc">*</span><span class="fl">0.5</span></span>
-<span id="cb213-6"><a href="god_spiked.html#cb213-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-7"><a href="god_spiked.html#cb213-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">softmax</span>(score[<span class="dv">1</span>],score[<span class="dv">2</span>],score[<span class="dv">3</span>])</span>
-<span id="cb213-8"><a href="god_spiked.html#cb213-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-9"><a href="god_spiked.html#cb213-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-10"><a href="god_spiked.html#cb213-10" aria-hidden="true" tabindex="-1"></a>career <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,N)</span>
-<span id="cb213-11"><a href="god_spiked.html#cb213-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb213-12"><a href="god_spiked.html#cb213-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">34302</span>)</span>
-<span id="cb213-13"><a href="god_spiked.html#cb213-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
-<span id="cb213-14"><a href="god_spiked.html#cb213-14" aria-hidden="true" tabindex="-1"></a>  career[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">size =</span><span class="dv">1</span>, <span class="at">prob =</span> p)</span>
-<span id="cb213-15"><a href="god_spiked.html#cb213-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="god_spiked.html#cb233-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb233-2"><a href="god_spiked.html#cb233-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-3"><a href="god_spiked.html#cb233-3" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>)</span>
+<span id="cb233-4"><a href="god_spiked.html#cb233-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-5"><a href="god_spiked.html#cb233-5" aria-hidden="true" tabindex="-1"></a>score <span class="ot">&lt;-</span> income<span class="sc">*</span><span class="fl">0.5</span></span>
+<span id="cb233-6"><a href="god_spiked.html#cb233-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-7"><a href="god_spiked.html#cb233-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">softmax</span>(score[<span class="dv">1</span>],score[<span class="dv">2</span>],score[<span class="dv">3</span>])</span>
+<span id="cb233-8"><a href="god_spiked.html#cb233-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-9"><a href="god_spiked.html#cb233-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-10"><a href="god_spiked.html#cb233-10" aria-hidden="true" tabindex="-1"></a>career <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,N)</span>
+<span id="cb233-11"><a href="god_spiked.html#cb233-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb233-12"><a href="god_spiked.html#cb233-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">34302</span>)</span>
+<span id="cb233-13"><a href="god_spiked.html#cb233-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb233-14"><a href="god_spiked.html#cb233-14" aria-hidden="true" tabindex="-1"></a>  career[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">size =</span><span class="dv">1</span>, <span class="at">prob =</span> p)</span>
+<span id="cb233-15"><a href="god_spiked.html#cb233-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>The chapter presents the code for the multi-nomial model in raw Stan code. This is the first model written in raw Stan in the book.</p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="god_spiked.html#cb214-1" aria-hidden="true" tabindex="-1"></a>code_m11<span class="fl">.13</span> <span class="ot">&lt;-</span> <span class="st">&quot; data{</span></span>
-<span id="cb214-2"><a href="god_spiked.html#cb214-2" aria-hidden="true" tabindex="-1"></a><span class="st">int N; // number of individuals </span></span>
-<span id="cb214-3"><a href="god_spiked.html#cb214-3" aria-hidden="true" tabindex="-1"></a><span class="st">int K; // number of possible careers </span></span>
-<span id="cb214-4"><a href="god_spiked.html#cb214-4" aria-hidden="true" tabindex="-1"></a><span class="st">int career[N]; // outcome </span></span>
-<span id="cb214-5"><a href="god_spiked.html#cb214-5" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] career_income;</span></span>
-<span id="cb214-6"><a href="god_spiked.html#cb214-6" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span>
-<span id="cb214-7"><a href="god_spiked.html#cb214-7" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
-<span id="cb214-8"><a href="god_spiked.html#cb214-8" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K-1] a; // intercepts </span></span>
-<span id="cb214-9"><a href="god_spiked.html#cb214-9" aria-hidden="true" tabindex="-1"></a><span class="st">real&lt;lower=0&gt; b; // association of income with choice</span></span>
-<span id="cb214-10"><a href="god_spiked.html#cb214-10" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span>
-<span id="cb214-11"><a href="god_spiked.html#cb214-11" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
-<span id="cb214-12"><a href="god_spiked.html#cb214-12" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] p; </span></span>
-<span id="cb214-13"><a href="god_spiked.html#cb214-13" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] s; </span></span>
-<span id="cb214-14"><a href="god_spiked.html#cb214-14" aria-hidden="true" tabindex="-1"></a><span class="st">a ~ normal( 0 , 1 ); </span></span>
-<span id="cb214-15"><a href="god_spiked.html#cb214-15" aria-hidden="true" tabindex="-1"></a><span class="st">b ~ normal( 0 , 0.5 ); </span></span>
-<span id="cb214-16"><a href="god_spiked.html#cb214-16" aria-hidden="true" tabindex="-1"></a><span class="st">s[1] = a[1] + b*career_income[1]; </span></span>
-<span id="cb214-17"><a href="god_spiked.html#cb214-17" aria-hidden="true" tabindex="-1"></a><span class="st">s[2] = a[2] + b*career_income[2]; </span></span>
-<span id="cb214-18"><a href="god_spiked.html#cb214-18" aria-hidden="true" tabindex="-1"></a><span class="st">s[3] = 0; // pivot </span></span>
-<span id="cb214-19"><a href="god_spiked.html#cb214-19" aria-hidden="true" tabindex="-1"></a><span class="st">p = softmax( s ); </span></span>
-<span id="cb214-20"><a href="god_spiked.html#cb214-20" aria-hidden="true" tabindex="-1"></a><span class="st">career ~ categorical( p );</span></span>
-<span id="cb214-21"><a href="god_spiked.html#cb214-21" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
-<span id="cb214-22"><a href="god_spiked.html#cb214-22" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="god_spiked.html#cb234-1" aria-hidden="true" tabindex="-1"></a>code_m11<span class="fl">.13</span> <span class="ot">&lt;-</span> <span class="st">&quot; data{</span></span>
+<span id="cb234-2"><a href="god_spiked.html#cb234-2" aria-hidden="true" tabindex="-1"></a><span class="st">int N; // number of individuals </span></span>
+<span id="cb234-3"><a href="god_spiked.html#cb234-3" aria-hidden="true" tabindex="-1"></a><span class="st">int K; // number of possible careers </span></span>
+<span id="cb234-4"><a href="god_spiked.html#cb234-4" aria-hidden="true" tabindex="-1"></a><span class="st">int career[N]; // outcome </span></span>
+<span id="cb234-5"><a href="god_spiked.html#cb234-5" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] career_income;</span></span>
+<span id="cb234-6"><a href="god_spiked.html#cb234-6" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span>
+<span id="cb234-7"><a href="god_spiked.html#cb234-7" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
+<span id="cb234-8"><a href="god_spiked.html#cb234-8" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K-1] a; // intercepts </span></span>
+<span id="cb234-9"><a href="god_spiked.html#cb234-9" aria-hidden="true" tabindex="-1"></a><span class="st">real&lt;lower=0&gt; b; // association of income with choice</span></span>
+<span id="cb234-10"><a href="god_spiked.html#cb234-10" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span>
+<span id="cb234-11"><a href="god_spiked.html#cb234-11" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
+<span id="cb234-12"><a href="god_spiked.html#cb234-12" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] p; </span></span>
+<span id="cb234-13"><a href="god_spiked.html#cb234-13" aria-hidden="true" tabindex="-1"></a><span class="st">vector[K] s; </span></span>
+<span id="cb234-14"><a href="god_spiked.html#cb234-14" aria-hidden="true" tabindex="-1"></a><span class="st">a ~ normal( 0 , 1 ); </span></span>
+<span id="cb234-15"><a href="god_spiked.html#cb234-15" aria-hidden="true" tabindex="-1"></a><span class="st">b ~ normal( 0 , 0.5 ); </span></span>
+<span id="cb234-16"><a href="god_spiked.html#cb234-16" aria-hidden="true" tabindex="-1"></a><span class="st">s[1] = a[1] + b*career_income[1]; </span></span>
+<span id="cb234-17"><a href="god_spiked.html#cb234-17" aria-hidden="true" tabindex="-1"></a><span class="st">s[2] = a[2] + b*career_income[2]; </span></span>
+<span id="cb234-18"><a href="god_spiked.html#cb234-18" aria-hidden="true" tabindex="-1"></a><span class="st">s[3] = 0; // pivot </span></span>
+<span id="cb234-19"><a href="god_spiked.html#cb234-19" aria-hidden="true" tabindex="-1"></a><span class="st">p = softmax( s ); </span></span>
+<span id="cb234-20"><a href="god_spiked.html#cb234-20" aria-hidden="true" tabindex="-1"></a><span class="st">career ~ categorical( p );</span></span>
+<span id="cb234-21"><a href="god_spiked.html#cb234-21" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb234-22"><a href="god_spiked.html#cb234-22" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
 <p>The string of code is fed to Stan like so:</p>
-<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="god_spiked.html#cb215-1" aria-hidden="true" tabindex="-1"></a>data_career <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">N=</span>N , <span class="at">K=</span><span class="dv">3</span> , <span class="at">career=</span>career , <span class="at">career_income=</span>income ) </span>
-<span id="cb215-2"><a href="god_spiked.html#cb215-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb215-3"><a href="god_spiked.html#cb215-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb215-4"><a href="god_spiked.html#cb215-4" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.13</span> <span class="ot">&lt;-</span> <span class="fu">stan</span>( <span class="at">model_code=</span>code_m11<span class="fl">.13</span> , <span class="at">data=</span>data_career , <span class="at">chains=</span><span class="dv">4</span> )</span>
-<span id="cb215-5"><a href="god_spiked.html#cb215-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb215-6"><a href="god_spiked.html#cb215-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb215-7"><a href="god_spiked.html#cb215-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m11<span class="fl">.13</span> , <span class="dv">2</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="god_spiked.html#cb235-1" aria-hidden="true" tabindex="-1"></a>data_career <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">N=</span>N , <span class="at">K=</span><span class="dv">3</span> , <span class="at">career=</span>career , <span class="at">career_income=</span>income ) </span>
+<span id="cb235-2"><a href="god_spiked.html#cb235-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-3"><a href="god_spiked.html#cb235-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb235-4"><a href="god_spiked.html#cb235-4" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.13</span> <span class="ot">&lt;-</span> <span class="fu">stan</span>( <span class="at">model_code=</span>code_m11<span class="fl">.13</span> , <span class="at">data=</span>data_career , <span class="at">chains=</span><span class="dv">4</span> )</span>
+<span id="cb235-5"><a href="god_spiked.html#cb235-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-6"><a href="god_spiked.html#cb235-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-7"><a href="god_spiked.html#cb235-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m11<span class="fl">.13</span> , <span class="dv">2</span> )</span></code></pre></div>
 <p>Revisit: I got lost here. Return after attempting some questions.</p>
 </div>
 </div>
@@ -800,13 +803,13 @@ Our outcome value has been increased by a factor of <span class="math inline">\(
 <div id="answer-91" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>Here’s m11.4 using quap instead of ulam:</p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="god_spiked.html#cb216-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb216-2"><a href="god_spiked.html#cb216-2" aria-hidden="true" tabindex="-1"></a>m11.<span class="fl">4.</span>quap <span class="ot">&lt;-</span> <span class="fu">quap</span>(<span class="fu">alist</span>( </span>
-<span id="cb216-3"><a href="god_spiked.html#cb216-3" aria-hidden="true" tabindex="-1"></a>  pulled_left <span class="sc">~</span> <span class="fu">dbinom</span>( <span class="dv">1</span> , p ) , </span>
-<span id="cb216-4"><a href="god_spiked.html#cb216-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">logit</span>(p) <span class="ot">&lt;-</span> a[actor] <span class="sc">+</span> b[treatment] , </span>
-<span id="cb216-5"><a href="god_spiked.html#cb216-5" aria-hidden="true" tabindex="-1"></a>  a[actor] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> ), </span>
-<span id="cb216-6"><a href="god_spiked.html#cb216-6" aria-hidden="true" tabindex="-1"></a>  b[treatment] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> )</span>
-<span id="cb216-7"><a href="god_spiked.html#cb216-7" aria-hidden="true" tabindex="-1"></a> ), <span class="at">data=</span>data_chimp)</span></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="god_spiked.html#cb236-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb236-2"><a href="god_spiked.html#cb236-2" aria-hidden="true" tabindex="-1"></a>m11.<span class="fl">4.</span>quap <span class="ot">&lt;-</span> <span class="fu">quap</span>(<span class="fu">alist</span>( </span>
+<span id="cb236-3"><a href="god_spiked.html#cb236-3" aria-hidden="true" tabindex="-1"></a>  pulled_left <span class="sc">~</span> <span class="fu">dbinom</span>( <span class="dv">1</span> , p ) , </span>
+<span id="cb236-4"><a href="god_spiked.html#cb236-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">logit</span>(p) <span class="ot">&lt;-</span> a[actor] <span class="sc">+</span> b[treatment] , </span>
+<span id="cb236-5"><a href="god_spiked.html#cb236-5" aria-hidden="true" tabindex="-1"></a>  a[actor] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> ), </span>
+<span id="cb236-6"><a href="god_spiked.html#cb236-6" aria-hidden="true" tabindex="-1"></a>  b[treatment] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> )</span>
+<span id="cb236-7"><a href="god_spiked.html#cb236-7" aria-hidden="true" tabindex="-1"></a> ), <span class="at">data=</span>data_chimp)</span></code></pre></div>
 <p>And here are the two posterior plots side by side:</p>
 <p><img src="11-god_spiked_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <p>Here is the same chart after relaxing the actor intercept prior to Normal(0,10).</p>
@@ -924,14 +927,14 @@ y_i &amp;\sim \text{Poisson}(\lambda_i) \\
 \end{aligned}
 \]</span></p>
 <p>We use the log link since we want our salamander estimates to be non-negative. Here is my data prep:</p>
-<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="god_spiked.html#cb219-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;salamanders&quot;</span>)</span>
-<span id="cb219-2"><a href="god_spiked.html#cb219-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-3"><a href="god_spiked.html#cb219-3" aria-hidden="true" tabindex="-1"></a><span class="co"># scaling PCTCOVER to be between 0 and 1 and then centering.</span></span>
-<span id="cb219-4"><a href="god_spiked.html#cb219-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-5"><a href="god_spiked.html#cb219-5" aria-hidden="true" tabindex="-1"></a>data_sal <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(salamanders)<span class="sc">%&gt;%</span></span>
-<span id="cb219-6"><a href="god_spiked.html#cb219-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cov_cen =</span> <span class="fu">scale</span>(PCTCOVER))</span>
-<span id="cb219-7"><a href="god_spiked.html#cb219-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-8"><a href="god_spiked.html#cb219-8" aria-hidden="true" tabindex="-1"></a>list_sal <span class="ot">&lt;-</span> <span class="fu">with</span>(data_sal,<span class="fu">list</span>(<span class="at">sal =</span>SALAMAN,<span class="at">cov_cen =</span> cov_cen)) </span></code></pre></div>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="god_spiked.html#cb239-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;salamanders&quot;</span>)</span>
+<span id="cb239-2"><a href="god_spiked.html#cb239-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb239-3"><a href="god_spiked.html#cb239-3" aria-hidden="true" tabindex="-1"></a><span class="co"># scaling PCTCOVER to be between 0 and 1 and then centering.</span></span>
+<span id="cb239-4"><a href="god_spiked.html#cb239-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb239-5"><a href="god_spiked.html#cb239-5" aria-hidden="true" tabindex="-1"></a>data_sal <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(salamanders)<span class="sc">%&gt;%</span></span>
+<span id="cb239-6"><a href="god_spiked.html#cb239-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cov_cen =</span> <span class="fu">scale</span>(PCTCOVER))</span>
+<span id="cb239-7"><a href="god_spiked.html#cb239-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb239-8"><a href="god_spiked.html#cb239-8" aria-hidden="true" tabindex="-1"></a>list_sal <span class="ot">&lt;-</span> <span class="fu">with</span>(data_sal,<span class="fu">list</span>(<span class="at">sal =</span>SALAMAN,<span class="at">cov_cen =</span> cov_cen)) </span></code></pre></div>
 <p>And now for some prior simulation. After some messing around I settled on Normal(1.2,1) for the intercept, and Normal(0,0.2) for <span class="math inline">\(\beta_C\)</span>.</p>
 <p><img src="11-god_spiked_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <p>These prior simulations are displayed two different ways. On the left is a density plot of the number of salamanders in the intercept only model when <span class="math inline">\(a \sim \text{Normal}(1.2,1)\)</span>. The plot on the right shows 50 simulations of how the number of salamanders might vary with the amount of ground cover, when <span class="math inline">\(a\)</span> is as above and <span class="math inline">\(b \sim \text{Normal}(0,0.2)\)</span>.</p>

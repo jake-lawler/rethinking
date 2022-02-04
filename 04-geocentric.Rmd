@@ -33,7 +33,7 @@ There is a section justifying the use of the normal distribution here by noting 
 
 Maximum entropy arguments are described later on in Chapter 10.
 
-There is then a section on notation, before the chapter introduces the first linear regression model of the book, a model of human height based on some data on the !Kung San collected by Nancy Howell in the 1960s.
+There is then a section on notation, before the chapter introduces the first linear regression model of the book, a model of human height based on data on the !Kung San collected by Nancy Howell in the 1960s.
 
 ```{r}
 data(Howell1) 
@@ -127,7 +127,7 @@ Here is the model, using Bayes' rule:
 $$
 \text{Pr}(\mu, \sigma | h) = \frac{\prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) }{\int \int \prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) d\mu d\sigma}
 $$
-To get the probability of the parameters given the data, we compute the probability of the parameters on each $h_i$ and then multiply them all together. This is what the product symbol is doing in the top row.
+To get the probability of the parameters given the *total* data, we compute the probability of the parameters on each $h_i$ individually (using Bayes' rule) and then multiply them all together. This is what the product symbol is doing in the top row.
 
 ### Model Using Grid Approximation
 
@@ -152,7 +152,8 @@ post_grid <- as_tibble(expand.grid( mu=seq_mu , sigma=seq_sigma ))
 # I'm going to try to recreate  this using purrr.
 # For each point in the grid we produce a sum of the log likelihoods of the heights.
 # Summing log likelihoods is equivalent to multiplying likelihoods.
-# I.e. For each mu and sigma combination, create a vector length 352 (the number of heights in the data set) 
+# I.e. For each mu and sigma combination, create a vector length 352 
+# (the number of heights in the data set) 
 # of log likelihoods, sum that vector, and assign it to that point on the grid
 post_ll <- post_grid %>%
   pmap_dbl(.f = function(mu,sigma){sum(dnorm(data_adults$height,mean=mu, sd = sigma, log = TRUE))})
@@ -191,13 +192,13 @@ head(exp(post_grid$product))
 ```
 So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
 
-I'm sure there's a solution to this but for now I'll continue on using the relative posterior "probabilities" we've already calculated. Here's a glimpse of our posterior probabilities for the paramters mu and sigma:
+I'm sure there's a solution to this but for now I'll continue on using the relative posterior "probabilities" we've already calculated. Here's a glimpse of our posterior probabilities for the parameters mu and sigma:
 
 ```{r}
 head(post_grid[,-3:-4])
 ```
 
-We sample the mu and sigma parameters from the posterior, sampling each in proportion to it's posterior probability. Since each posterior probability represents the relative plausibility of the *combination* of mu and sigma, we shouldn't sample them independently. We sample a row number using the probabilities in column post_prob and then sample the posterior mu and sigma from that row:
+We sample the mu and sigma parameters from the posterior, sampling each in proportion to its posterior probability. Since each posterior probability represents the relative plausibility of the *combination* of mu and sigma, we shouldn't sample them independently. We sample a row number using the probabilities in column post_prob and then sample the posterior mu and sigma from that row:
 
 ```{r}
 sample_rows <- sample(1:nrow(post_grid),1e4, replace = TRUE, prob = post_grid$post_prob)
@@ -307,6 +308,8 @@ ggplot(data_adults)+
   geom_point(aes(x=weight, y=height))+
   ggtitle("!Kung San Adults")
 ```
+Here's the chapter:
+
 > The strategy is to make the parameter for the mean of a Gaussian distribution, $\mu$, into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.
 
 Here's the previous model:

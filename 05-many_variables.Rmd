@@ -51,6 +51,7 @@ ggplot(prior_sim_5_1)+
   xlab("Median Age of Marriage (std)")+
   ylab("Divorce Rate (std)")
 ```
+
 Here's the model and the posterior mean/expected divorce rate:
 
 ```{r}
@@ -186,7 +187,69 @@ bind_rows(summary_5_1, summary_5_2,summary_5_3) %>%
   ylab("parameters")
 
 ```
+
 As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.
+
+The chapter then describes three plots to help visualise inferences from more complicated models then the simple one predictor models from chapter 4.
+
+(1) Predictor residual plots
+(2) Posterior prediction plots
+(3) Counterfactual plots
+
+For now I'll only recreate the posterior prediction plot.
+
+```{r}
+
+plot_data_m5_3 <- data_divorce%>%
+  select(Loc, divorce_s, marriage_s, age_s)%>%
+  add_linpred_draws(m5_3)%>% # add the predicted mean divorce rates
+  group_by(Loc, divorce_s)%>%
+  mean_qi(x=.linpred, .width = 0.89) # summarise each group in the df 
+
+head(plot_data_m5_3) # x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits
+
+  ggplot(plot_data_m5_3)+
+  geom_pointinterval(mapping=aes(x=divorce_s, y=x,ymin=.lower,ymax=.upper), 
+                     orientation = "vertical",
+                     colour = '#EE8866')+
+  xlab("Observed Divorce Rate (std)")+
+  ylab("Predicted Mean Divorce Rate (std)")+
+  geom_abline(slope=1,intercept=0)+
+  geom_text(data=   plot_data_m5_3%>%
+                      filter(Loc %in% c("ID","UT","RI","ME")),
+    aes(x= divorce_s, y= x, label = Loc ), nudge_x = -0.1)
+  
+
+
+```
+
+States above the line have lower divorce rates than the model expects, given marriage rate and median age at marriage. States below the line have a higher divorce rate than the model expects.
+
+There is a section in the chapter on variables that mask the influence of each other on the outcome of interest. A case study of primate milk and brain size is used to illustrate.
+
+There is a section on using categorical data in regression models. The key point in this section is the argument for index variables over indicators variables when coding categorical variables.
+
+With indicator variables you might look at the !Kung San data from the previous chapter, and decide to code men as 1 and women as 0 in a variable called $m$. Your model for height might look like:
+
+$$
+\begin{aligned}
+h_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_m m_i
+\end{aligned}
+$$
+One problem with this is that the parameter $\beta_m$ now means the expected difference in height between men and women, and it may be difficult to set a prior. This approach also assumes that there is more uncertainty about male height than female height, since $\beta_m$ and its distribution doesn't enter into our predictions for the height of women.
+
+An alternative approach is to use index variables. You might code the !Kung San men as 1 and the women as 2 and your model might look like:
+
+$$
+\begin{aligned}
+h_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha_{\text{sex}[i]} 
+\end{aligned}
+$$
+We have a vector of two intercept parameters and select either $\alpha_1$ or $\alpha_2$ depending on the index at each row of data. The same prior can be assigned to each, and neither is inherently more uncertain than the other.
+
+The index approach also extends much more simply to more than two categories.
 
 ## Questions
 

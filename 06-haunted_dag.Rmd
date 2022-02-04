@@ -7,50 +7,66 @@ library(rethinking)
 library(vroom)
 library(GGally)
 library(dagitty)
+library(tidybayes)
+library(tidybayes.rethinking)
+library(modelr)
+library(ggdist)
 
 ```
 
 ## Chapter Notes
 
-Figure 6.1 Selection Bias
+The chapter opens with an example of a selection effect. Assuming that journal editors and peer reviewers care about both novelty and rigour, we can expect to see a negative correlation between the two in published papers.
 
-```{r echo=FALSE,message=FALSE}
+Here's a simulation and a chart:
+
+```{r}
 
 set.seed(1914) 
-N <- 200 
+N <- 200 # we simulate 200 papers
 p <- 0.1 
-nw <- rnorm(N) 
-tw <- rnorm(N) 
+
+nw <- rnorm(N) # we create a newsworthiness figure for each paper
+tw <- rnorm(N) # we create a trustworthiness figure for each paper
+
+# note that there is no correlation between the two in the simualation
+
 s <- nw + tw 
-q <- quantile( s , 1-p ) 
-selected <- ifelse( s >= q , TRUE , FALSE )
+q <- quantile( s , 1-p ) # the top 10% of papers are accepted
+selected <- ifelse( s >= q , "Yes" , "No" ) # are the papers selected? i.e. published
 
 
-data_pub <- bind_cols(Trustworthiness = tw, Newsworthiness= nw,Selected =selected) %>%
-  mutate(Selected = if_else(Selected=="TRUE","Yes","No"))
+data_pub <- tibble(Trustworthiness = tw, Newsworthiness= nw,Selected =selected)
 
 ggplot(mapping=aes(Newsworthiness,Trustworthiness,colour=Selected))+
   geom_point(data=data_pub)+
-    geom_smooth(data=filter(data_pub,Selected=="Yes"),method=lm,se=FALSE)
+    geom_smooth(data=filter(data_pub,Selected=="Yes"),method=lm,formula ='y ~ x',se=FALSE)
   
 ```
+The blue line is the negative correlation between newsworthiness and trustworthiness induced by the selection process. This effect can occur inside of a multiple regression, where it is called collider bias.
 
-Parameters estimates for effect of leg length on height.
 
-```{r echo=FALSE,message=FALSE, cache = TRUE}
+### Multicollinearity {-}
 
-N <- 100 
+How to multiple regression models behave when the predictor variables are highly correlated?
+
+The chapter contains a simulation for the effect of leg length on height.
+
+```{r}
+
 set.seed(909) 
-height <- rnorm(N,10,2)
-leg_prop <- runif(N,0.4,0.5) 
-leg_left <- leg_prop*height + rnorm( N , 0 , 0.02 )
-leg_right <- leg_prop*height + rnorm( N , 0 , 0.02 )
+N <- 100 # we have 100 people
+height <- rnorm(N,10,2) # we simulate their heights
+leg_prop <- runif(N,0.4,0.5) #we simulate their leg length as a proportion of their height
+leg_left <- leg_prop*height + rnorm( N , 0 , 0.02 ) # we calculate the length of each leg using the above 
+leg_right <- leg_prop*height + rnorm( N , 0 , 0.02 ) # making sure to include a little error
 
 
-data_leg <- bind_cols(height,leg_left,leg_right)
+data_leg <- tibble(height,leg_left,leg_right)
 
-set.seed(100)
-m6.1 <- quap( 
+# we fit a model and plot the parameters
+
+m6_1 <- quap( 
   alist(
     height ~ dnorm( mu , sigma ) , 
     mu <- a + bl*leg_left + br*leg_right , 
@@ -60,45 +76,62 @@ m6.1 <- quap(
     sigma ~ dexp( 1 )
 ) , data=data_leg )
 
-
-ggplot(data=precis(m6.1))+
-  geom_pointrange(aes(x=rownames(precis(m6.1)),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
-  geom_hline(yintercept = 0,col="red")+
-  xlab("parameter")+
-  coord_flip()
+gather_draws(m6_1,a, bl, br, sigma) %>%
+  median_qi(.width=0.89)%>%
+ggplot(aes(y = fct_rev(.variable), x = .value, xmin = .lower, xmax = .upper), )+
+  geom_pointinterval(colour = "dark grey")+
+  ylab("parameters")
   
 ```
 
-Figure 6.2 Posterior of height~leg Model
+Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
 
+$$
+\begin{aligned}
+y_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_1 x_i + \beta_2 x_i
+\end{aligned}
+$$
+or 
 
-```{r echo=FALSE,message=FALSE}
+$$
+\mu_i = \alpha + (\beta_1  + \beta_2 )x_i
+$$
+There are a huge number of combinations of $\beta_1$ and $\beta_2$ that could produce the data.
 
-data_leg_post <- extract.samples(m6.1) %>%
+Here's the chapter:
+
+> Recall that a multiple linear regression answers the question: *What is the value of knowing each predictor, after already knowing all of the other predictors?*
+
+Here we sample the model parameters $b_l$ and $b_r$ and plot them and their sum. There are highly correlated, and their sum is centered on the true parameter value for regressing leg length on height.  
+
+```{r}
+
+data_leg_post <- spread_draws(m6_1,br,bl) %>%
   mutate(`sum of bl and br`=br+bl)
 
 ggplot(data_leg_post)+
-  geom_point(aes(x=br,y=bl),col="light blue",alpha=0.2)
+  geom_point(aes(x=br,y=bl),col='#77AADD',alpha=0.2)
 
 ggplot(data_leg_post)+
-  geom_density(aes(x=`sum of bl and br`),col="blue")
+  geom_density(aes(x=`sum of bl and br`),col='#77AADD',size=1)
 
 
 ```  
 
-Figure 6.3
+The chapter reintroduces the primate milk example from chapter 5.
 
-```{r echo=FALSE,message=FALSE, cache = TRUE}
+```{r}
 
-data_milk <- vroom("data/milk.csv")%>%
+# load data
+data_milk <- read_delim("data/milk.csv", delim = ";",col_names = TRUE)%>%
   mutate(K=standardize(kcal.per.g),
          F=standardize(perc.fat),
          L=standardize(perc.lactose))
 
 # kcal.per.g regressed on perc.fat 
 
-set.seed(100)
-m6.3 <- quap(
+m6_3 <- quap(
   alist(
     K ~ dnorm( mu , sigma ), 
     mu <- a + bF*F, 
@@ -109,8 +142,8 @@ m6.3 <- quap(
 
 # kcal.per.g regressed on perc.lactose 
 
-set.seed(100)
-m6.4 <- quap( 
+
+m6_4 <- quap( 
   alist(
     K ~ dnorm( mu , sigma )
     , mu <- a + bL*L, 
@@ -122,8 +155,7 @@ m6.4 <- quap(
 
 # kcal.per.g regressed on both 
 
-set.seed(100)
-m6.5 <- quap( 
+m6_5 <- quap( 
   alist(
     K ~ dnorm( mu , sigma )
     , mu <- a + bF*F + bL*L, 
@@ -133,11 +165,68 @@ m6.5 <- quap(
     sigma ~ dexp( 1 )
 ) , data=data_milk )
 
-ggpairs(data=select(data_milk,kcal.per.g,perc.fat,perc.lactose))
-
 ``` 
 
-Primate Milk DAG
+Here is the parameter summary for regression of kcal per gram of milk on the fat percentage of the milk:
+
+```{r}
+summary_6_3 <- m6_3%>%
+  gather_draws(a,bF,sigma)%>%
+  mean_qi(.width = 0.89)%>%
+  mutate(model="Fat")
+
+summary_6_3
+
+```
+
+And here's the summary for the regression of kcals on lactose content:
+
+```{r}
+summary_6_4 <- m6_4%>%
+  gather_draws(a,bL,sigma)%>%
+  mean_qi(.width = 0.89)%>%
+  mutate(model="Lactose")
+
+summary_6_4
+
+```
+The parameters are almost mirror images of each other: the more fat content of the milk the higher the calories, the higher lactose content the lower the calories. This makes sense since fat is more energy dense than carbohydrate and fat and lactose contents are negatively correlated. 
+
+Here's what happens when both are included in the same model:
+
+```{r}
+summary_6_5 <- m6_5%>%
+  gather_draws(a,bF,bL,sigma)%>%
+  mean_qi(.width = 0.89)%>%
+  mutate(model="Both")
+
+summary_6_5
+```
+
+Here's a plot:
+
+```{r}
+bind_rows(summary_6_3, summary_6_4,summary_6_5) %>%
+  ggplot(aes(y = fct_rev(.variable), x = .value, xmin = .lower, xmax = .upper, color = model)) +
+  geom_pointinterval(position = position_dodge(width = -0.3))+
+  geom_vline(xintercept=0, linetype = "dashed")+
+  ylab("parameters")
+```
+
+Including both fat and lactose contents in the model pulls the parameter estimates $b_F$ and $b_L$ towards zero, and about doubles the uncertainty around both.
+
+Here's a pairs plot of the two variables:
+
+```{r}
+ggpairs(data=select(data_milk,kcal.per.g,perc.fat,perc.lactose))
+```
+
+The chapter summarises:
+
+> These two variables are negatively correlated, and so strongly so that they are nearly redundant. Either helps in predicting kcal.per.g, but neither helps as much once you already know the other.... The problem of multicollinearity is amember of a family of problems with fitting models, a family sometimes known as non-identifiability. When a parameter is non-identifiable, it means that the structure of the data and model do not make it possible to estimate the parameter’s value. 
+
+
+And here's a DAG the chapter suggests for this case. D here is how dense the milk needs to be, and is related to how frequently the species nurses. Species that nurse more often tend to have relatively more lactose and less fat in their milk.
 
 ```{r echo=FALSE,message=FALSE}
 
@@ -195,7 +284,7 @@ h1 <- h0 + rnorm( N , 5 + 3*M )
 d2 <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
 
 set.seed(100)
-m6.7 <- quap( alist( 
+m6_7 <- quap( alist( 
   h1 ~ dnorm( mu , sigma ), 
   mu <- h0 * p, 
   p <- a + bt*treatment + bf*fungus, 
@@ -206,7 +295,7 @@ m6.7 <- quap( alist(
 ), data=d2 )
 
 set.seed(100)
-m6.8 <- quap( alist( 
+m6_8 <- quap( alist( 
   h1 ~ dnorm( mu , sigma ), 
   mu <- h0 * p, 
   p <- a + bt*treatment, 
@@ -215,15 +304,15 @@ m6.8 <- quap( alist(
   sigma ~ dexp( 1 )
 ), data=d2 )
 
-ggplot(data=precis( m6.7 , depth=2 ))+
-  geom_pointrange(aes(x=rownames(precis( m6.7 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
+ggplot(data=precis( m6_7 , depth=2 ))+
+  geom_pointrange(aes(x=rownames(precis( m6_7 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
   geom_hline(yintercept = 0,col="red")+
   xlab("parameter")+
   coord_flip()+
   ggtitle("Including Fungus as Variable")
 
-ggplot(data=precis( m6.8 , depth=2 ))+
-  geom_pointrange(aes(x=rownames(precis( m6.8 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
+ggplot(data=precis( m6_8 , depth=2 ))+
+  geom_pointrange(aes(x=rownames(precis( m6_8 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
   geom_hline(yintercept = 0,col="red")+
   xlab("parameter")+
   coord_flip()+

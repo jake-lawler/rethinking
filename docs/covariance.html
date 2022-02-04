@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -436,13 +439,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The chapter introduces a simulation exercise to explain varying effects models. We have a population of cafes, and are interested in waiting times. As in the previous chapter, we’ll allow intercepts to vary, with partial pooling across cafes. But we’re also interested in the effect of the predictor afternoon (i.e. whether you are getting coffee in the morning or afternoon). We want to also allow the slopes to vary, and to pool across cafes. This is a <em>varying effects</em> strategy.</p>
 <p>More than this, the key addition here is that we also want to allow our intercepts and slopes to covary, pooling information across intercepts and slopes.</p>
 <p>We’re going to use a multi-variate normal distribution to generate a population of cafes. We need a vector of means and a variance-covariance matrix:</p>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="covariance.html#cb229-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">3.5</span> </span>
-<span id="cb229-2"><a href="covariance.html#cb229-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb229-3"><a href="covariance.html#cb229-3" aria-hidden="true" tabindex="-1"></a>sigma_a <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
-<span id="cb229-4"><a href="covariance.html#cb229-4" aria-hidden="true" tabindex="-1"></a>sigma_b <span class="ot">&lt;-</span> <span class="fl">0.5</span> </span>
-<span id="cb229-5"><a href="covariance.html#cb229-5" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="fl">0.7</span>)</span>
-<span id="cb229-6"><a href="covariance.html#cb229-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb229-7"><a href="covariance.html#cb229-7" aria-hidden="true" tabindex="-1"></a>Mu <span class="ot">&lt;-</span> <span class="fu">c</span>(a,b)</span></code></pre></div>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="covariance.html#cb249-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fl">3.5</span> </span>
+<span id="cb249-2"><a href="covariance.html#cb249-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb249-3"><a href="covariance.html#cb249-3" aria-hidden="true" tabindex="-1"></a>sigma_a <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb249-4"><a href="covariance.html#cb249-4" aria-hidden="true" tabindex="-1"></a>sigma_b <span class="ot">&lt;-</span> <span class="fl">0.5</span> </span>
+<span id="cb249-5"><a href="covariance.html#cb249-5" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> (<span class="sc">-</span><span class="fl">0.7</span>)</span>
+<span id="cb249-6"><a href="covariance.html#cb249-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb249-7"><a href="covariance.html#cb249-7" aria-hidden="true" tabindex="-1"></a>Mu <span class="ot">&lt;-</span> <span class="fu">c</span>(a,b)</span></code></pre></div>
 <p>Where</p>
 <ul>
 <li><span class="math inline">\(a\)</span> is average morning wait time</li>
@@ -459,11 +462,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \end{pmatrix}
 \]</span></p>
 <p>Instead we decompose it, in a way that treats the standard deviations and correlations separately, because this will become useful in setting priors</p>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="covariance.html#cb230-1" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">c</span>(sigma_a,sigma_b)  </span>
-<span id="cb230-2"><a href="covariance.html#cb230-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-3"><a href="covariance.html#cb230-3" aria-hidden="true" tabindex="-1"></a>Rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>( <span class="fu">c</span>(<span class="dv">1</span>,rho,rho,<span class="dv">1</span>) , <span class="at">nrow=</span><span class="dv">2</span> ) </span>
-<span id="cb230-4"><a href="covariance.html#cb230-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-5"><a href="covariance.html#cb230-5" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sigmas) <span class="sc">%*%</span> Rho <span class="sc">%*%</span> <span class="fu">diag</span>(sigmas)</span></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="covariance.html#cb250-1" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">c</span>(sigma_a,sigma_b)  </span>
+<span id="cb250-2"><a href="covariance.html#cb250-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb250-3"><a href="covariance.html#cb250-3" aria-hidden="true" tabindex="-1"></a>Rho <span class="ot">&lt;-</span> <span class="fu">matrix</span>( <span class="fu">c</span>(<span class="dv">1</span>,rho,rho,<span class="dv">1</span>) , <span class="at">nrow=</span><span class="dv">2</span> ) </span>
+<span id="cb250-4"><a href="covariance.html#cb250-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb250-5"><a href="covariance.html#cb250-5" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sigmas) <span class="sc">%*%</span> Rho <span class="sc">%*%</span> <span class="fu">diag</span>(sigmas)</span></code></pre></div>
 <p>i.e.</p>
 <p><span class="math display">\[
 \begin{pmatrix}
@@ -485,30 +488,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \end{pmatrix}
 \]</span></p>
 <p>That’s the setup, here’s the simulation part, with a plot of the data, that shows how the intercepts and slopes covary.</p>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="covariance.html#cb231-1" aria-hidden="true" tabindex="-1"></a>N_cafes <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb231-2"><a href="covariance.html#cb231-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-3"><a href="covariance.html#cb231-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
-<span id="cb231-4"><a href="covariance.html#cb231-4" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">mvrnorm</span>(N_cafes, Mu, Sigma))<span class="sc">%&gt;%</span></span>
-<span id="cb231-5"><a href="covariance.html#cb231-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">intercepts =</span> V1, <span class="at">slopes =</span> V2)</span>
-<span id="cb231-6"><a href="covariance.html#cb231-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-7"><a href="covariance.html#cb231-7" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span>N_cafes,vary_effects)</span>
-<span id="cb231-8"><a href="covariance.html#cb231-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-9"><a href="covariance.html#cb231-9" aria-hidden="true" tabindex="-1"></a>plot_cafe_data <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> vary_effects, <span class="fu">aes</span>(<span class="at">x =</span> intercepts, <span class="at">y =</span> slopes))<span class="sc">+</span></span>
-<span id="cb231-10"><a href="covariance.html#cb231-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>)</span>
-<span id="cb231-11"><a href="covariance.html#cb231-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-12"><a href="covariance.html#cb231-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (l <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.8</span>,<span class="fl">0.99</span>)){</span>
-<span id="cb231-13"><a href="covariance.html#cb231-13" aria-hidden="true" tabindex="-1"></a>  plot_cafe_data <span class="ot">&lt;-</span> plot_cafe_data <span class="sc">+</span> </span>
-<span id="cb231-14"><a href="covariance.html#cb231-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>,<span class="at">level =</span> l)}</span>
-<span id="cb231-15"><a href="covariance.html#cb231-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-16"><a href="covariance.html#cb231-16" aria-hidden="true" tabindex="-1"></a>plot_cafe_data</span></code></pre></div>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="covariance.html#cb251-1" aria-hidden="true" tabindex="-1"></a>N_cafes <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb251-2"><a href="covariance.html#cb251-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-3"><a href="covariance.html#cb251-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb251-4"><a href="covariance.html#cb251-4" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">mvrnorm</span>(N_cafes, Mu, Sigma))<span class="sc">%&gt;%</span></span>
+<span id="cb251-5"><a href="covariance.html#cb251-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">intercepts =</span> V1, <span class="at">slopes =</span> V2)</span>
+<span id="cb251-6"><a href="covariance.html#cb251-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-7"><a href="covariance.html#cb251-7" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span>N_cafes,vary_effects)</span>
+<span id="cb251-8"><a href="covariance.html#cb251-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-9"><a href="covariance.html#cb251-9" aria-hidden="true" tabindex="-1"></a>plot_cafe_data <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> vary_effects, <span class="fu">aes</span>(<span class="at">x =</span> intercepts, <span class="at">y =</span> slopes))<span class="sc">+</span></span>
+<span id="cb251-10"><a href="covariance.html#cb251-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>)</span>
+<span id="cb251-11"><a href="covariance.html#cb251-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-12"><a href="covariance.html#cb251-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (l <span class="cf">in</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.8</span>,<span class="fl">0.99</span>)){</span>
+<span id="cb251-13"><a href="covariance.html#cb251-13" aria-hidden="true" tabindex="-1"></a>  plot_cafe_data <span class="ot">&lt;-</span> plot_cafe_data <span class="sc">+</span> </span>
+<span id="cb251-14"><a href="covariance.html#cb251-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>,<span class="at">level =</span> l)}</span>
+<span id="cb251-15"><a href="covariance.html#cb251-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-16"><a href="covariance.html#cb251-16" aria-hidden="true" tabindex="-1"></a>plot_cafe_data</span></code></pre></div>
 <p><img src="14-covariance_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Each point is a cafe.</p>
 <p>We now simulate 10 visits to each cafe:</p>
-<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="covariance.html#cb232-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>) </span>
-<span id="cb232-2"><a href="covariance.html#cb232-2" aria-hidden="true" tabindex="-1"></a>data_cafe <span class="ot">&lt;-</span> <span class="fu">tibble</span>( <span class="at">cafe=</span> <span class="fu">rep</span>( <span class="dv">1</span><span class="sc">:</span>N_cafes , <span class="at">each=</span><span class="dv">10</span> ), </span>
-<span id="cb232-3"><a href="covariance.html#cb232-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">afternoon=</span><span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="dv">10</span><span class="sc">*</span>N_cafes<span class="sc">/</span><span class="dv">2</span>))<span class="sc">%&gt;%</span></span>
-<span id="cb232-4"><a href="covariance.html#cb232-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vary_effects, <span class="at">by =</span> <span class="st">&quot;cafe&quot;</span>)<span class="sc">%&gt;%</span></span>
-<span id="cb232-5"><a href="covariance.html#cb232-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wait =</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="at">mean  =</span> intercepts <span class="sc">+</span> slopes <span class="sc">*</span> afternoon , <span class="at">sd =</span> <span class="fl">0.5</span> ))</span></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="covariance.html#cb252-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>) </span>
+<span id="cb252-2"><a href="covariance.html#cb252-2" aria-hidden="true" tabindex="-1"></a>data_cafe <span class="ot">&lt;-</span> <span class="fu">tibble</span>( <span class="at">cafe=</span> <span class="fu">rep</span>( <span class="dv">1</span><span class="sc">:</span>N_cafes , <span class="at">each=</span><span class="dv">10</span> ), </span>
+<span id="cb252-3"><a href="covariance.html#cb252-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">afternoon=</span><span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="dv">10</span><span class="sc">*</span>N_cafes<span class="sc">/</span><span class="dv">2</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb252-4"><a href="covariance.html#cb252-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vary_effects, <span class="at">by =</span> <span class="st">&quot;cafe&quot;</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb252-5"><a href="covariance.html#cb252-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wait =</span> <span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="at">mean  =</span> intercepts <span class="sc">+</span> slopes <span class="sc">*</span> afternoon , <span class="at">sd =</span> <span class="fl">0.5</span> ))</span></code></pre></div>
 <p>Now we fit a model to see if we can get back the data generating process. The model looks like this:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -565,15 +568,15 @@ R &amp;\sim \text{LKJcorr}(2) &amp;&amp; \text{prior for correlation matrix}
 <p>Assuming we have an instrumental variable, our DAG now looks like:</p>
 <p><img src="14-covariance_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>How do we use <span class="math inline">\(Q\)</span>. The book suggesting thinking of Q in this example as the quarter of the year a person is born in, which has an influence on how much education a person receives. The chapter simulates some data:</p>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="covariance.html#cb233-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">73</span>) </span>
-<span id="cb233-2"><a href="covariance.html#cb233-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span> </span>
-<span id="cb233-3"><a href="covariance.html#cb233-3" aria-hidden="true" tabindex="-1"></a>U_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N ) </span>
-<span id="cb233-4"><a href="covariance.html#cb233-4" aria-hidden="true" tabindex="-1"></a>Q_sim <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> , <span class="at">size=</span>N , <span class="at">replace=</span><span class="cn">TRUE</span> ) </span>
-<span id="cb233-5"><a href="covariance.html#cb233-5" aria-hidden="true" tabindex="-1"></a>E_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> Q_sim ) </span>
-<span id="cb233-6"><a href="covariance.html#cb233-6" aria-hidden="true" tabindex="-1"></a>W_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> <span class="dv">0</span><span class="sc">*</span>E_sim ) </span>
-<span id="cb233-7"><a href="covariance.html#cb233-7" aria-hidden="true" tabindex="-1"></a>data_edu_sim <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">W=</span><span class="fu">standardize</span>(W_sim) , </span>
-<span id="cb233-8"><a href="covariance.html#cb233-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">E=</span><span class="fu">standardize</span>(E_sim) ,</span>
-<span id="cb233-9"><a href="covariance.html#cb233-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">Q=</span><span class="fu">standardize</span>(Q_sim) )</span></code></pre></div>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="covariance.html#cb253-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">73</span>) </span>
+<span id="cb253-2"><a href="covariance.html#cb253-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span> </span>
+<span id="cb253-3"><a href="covariance.html#cb253-3" aria-hidden="true" tabindex="-1"></a>U_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N ) </span>
+<span id="cb253-4"><a href="covariance.html#cb253-4" aria-hidden="true" tabindex="-1"></a>Q_sim <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span> , <span class="at">size=</span>N , <span class="at">replace=</span><span class="cn">TRUE</span> ) </span>
+<span id="cb253-5"><a href="covariance.html#cb253-5" aria-hidden="true" tabindex="-1"></a>E_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> Q_sim ) </span>
+<span id="cb253-6"><a href="covariance.html#cb253-6" aria-hidden="true" tabindex="-1"></a>W_sim <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , U_sim <span class="sc">+</span> <span class="dv">0</span><span class="sc">*</span>E_sim ) </span>
+<span id="cb253-7"><a href="covariance.html#cb253-7" aria-hidden="true" tabindex="-1"></a>data_edu_sim <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">W=</span><span class="fu">standardize</span>(W_sim) , </span>
+<span id="cb253-8"><a href="covariance.html#cb253-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">E=</span><span class="fu">standardize</span>(E_sim) ,</span>
+<span id="cb253-9"><a href="covariance.html#cb253-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">Q=</span><span class="fu">standardize</span>(Q_sim) )</span></code></pre></div>
 <p>You can see that in the simulated data, education has no causal effect on wages. The first model attempted is a straightforward regression of wages on education:</p>
 <p><span class="math display">\[
 \begin{aligned}

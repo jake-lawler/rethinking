@@ -6,7 +6,7 @@
 ]{book}
 \title{Statistical Rethinking Notes}
 \author{Jake Lawler}
-\date{2022-01-27}
+\date{2022-02-04}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -1779,7 +1779,7 @@ There is a section justifying the use of the normal distribution here by noting 
 
 Maximum entropy arguments are described later on in Chapter 10.
 
-There is then a section on notation, before the chapter introduces the first linear regression model of the book, a model of human height based on some data on the !Kung San collected by Nancy Howell in the 1960s.
+There is then a section on notation, before the chapter introduces the first linear regression model of the book, a model of human height based on data on the !Kung San collected by Nancy Howell in the 1960s.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1899,7 +1899,7 @@ Here is the model, using Bayes' rule:
 \[
 \text{Pr}(\mu, \sigma | h) = \frac{\prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) }{\int \int \prod_i \text{Normal}(h_i | \mu, \sigma) \text{Normal}(\mu | 178, 20) \text{Uniform}(\sigma |0 ,50) d\mu d\sigma}
 \]
-To get the probability of the parameters given the data, we compute the probability of the parameters on each \(h_i\) and then multiply them all together. This is what the product symbol is doing in the top row.
+To get the probability of the parameters given the \emph{total} data, we compute the probability of the parameters on each \(h_i\) individually (using Bayes' rule) and then multiply them all together. This is what the product symbol is doing in the top row.
 
 \hypertarget{model-using-grid-approximation}{%
 \subsection{Model Using Grid Approximation}\label{model-using-grid-approximation}}
@@ -1925,7 +1925,8 @@ The chapter then uses grid approximation to get an estimate of the posterior. I 
 \CommentTok{\# I\textquotesingle{}m going to try to recreate  this using purrr.}
 \CommentTok{\# For each point in the grid we produce a sum of the log likelihoods of the heights.}
 \CommentTok{\# Summing log likelihoods is equivalent to multiplying likelihoods.}
-\CommentTok{\# I.e. For each mu and sigma combination, create a vector length 352 (the number of heights in the data set) }
+\CommentTok{\# I.e. For each mu and sigma combination, create a vector length 352 }
+\CommentTok{\# (the number of heights in the data set) }
 \CommentTok{\# of log likelihoods, sum that vector, and assign it to that point on the grid}
 \NormalTok{post\_ll }\OtherTok{\textless{}{-}}\NormalTok{ post\_grid }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{pmap\_dbl}\NormalTok{(}\AttributeTok{.f =} \ControlFlowTok{function}\NormalTok{(mu,sigma)\{}\FunctionTok{sum}\NormalTok{(}\FunctionTok{dnorm}\NormalTok{(data\_adults}\SpecialCharTok{$}\NormalTok{height,}\AttributeTok{mean=}\NormalTok{mu, }\AttributeTok{sd =}\NormalTok{ sigma, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{))\})}
@@ -1971,7 +1972,7 @@ I wonder how we would get the actual posterior probabilities. Why wouldn't we be
 
 So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
 
-I'm sure there's a solution to this but for now I'll continue on using the relative posterior ``probabilities'' we've already calculated. Here's a glimpse of our posterior probabilities for the paramters mu and sigma:
+I'm sure there's a solution to this but for now I'll continue on using the relative posterior ``probabilities'' we've already calculated. Here's a glimpse of our posterior probabilities for the parameters mu and sigma:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1991,7 +1992,7 @@ I'm sure there's a solution to this but for now I'll continue on using the relat
 ## 6  151.     7  1.42e-28
 \end{verbatim}
 
-We sample the mu and sigma parameters from the posterior, sampling each in proportion to it's posterior probability. Since each posterior probability represents the relative plausibility of the \emph{combination} of mu and sigma, we shouldn't sample them independently. We sample a row number using the probabilities in column post\_prob and then sample the posterior mu and sigma from that row:
+We sample the mu and sigma parameters from the posterior, sampling each in proportion to its posterior probability. Since each posterior probability represents the relative plausibility of the \emph{combination} of mu and sigma, we shouldn't sample them independently. We sample a row number using the probabilities in column post\_prob and then sample the posterior mu and sigma from that row:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2049,16 +2050,16 @@ The {[}tidybayes::{]}spread\_draws() function yields a common format for all mod
 ## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     <int>      <int> <int> <dbl> <dbl>
-##  1     NA         NA     1  155.  7.74
-##  2     NA         NA     2  154.  8.07
-##  3     NA         NA     3  154.  7.93
-##  4     NA         NA     4  154.  7.91
-##  5     NA         NA     5  155.  7.64
-##  6     NA         NA     6  154.  7.25
-##  7     NA         NA     7  154.  7.63
-##  8     NA         NA     8  154.  7.74
-##  9     NA         NA     9  155.  7.93
-## 10     NA         NA    10  155.  7.82
+##  1     NA         NA     1  155.  7.84
+##  2     NA         NA     2  155.  7.31
+##  3     NA         NA     3  154.  7.34
+##  4     NA         NA     4  155.  8.44
+##  5     NA         NA     5  154.  7.54
+##  6     NA         NA     6  155.  7.78
+##  7     NA         NA     7  155.  8.12
+##  8     NA         NA     8  154.  7.14
+##  9     NA         NA     9  155.  8.28
+## 10     NA         NA    10  154.  8.20
 \end{verbatim}
 
 Here's a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:
@@ -2185,7 +2186,7 @@ To the results from grid approximation:
 
 \begin{verbatim}
 ##     5.5%    94.5% 
-## 7.303030 8.252525
+## 7.323232 8.252525
 \end{verbatim}
 
 These are very close, especially for mu. We would expect this since mu is the outcome of a Gaussian likelihood and prior, whereas sigma was given a uniform prior with lower bound at zero. We might expect then that it would have a longer right tail than the quadratic approximation allows.
@@ -2204,7 +2205,11 @@ We are going to use the weights in our data set to predict heights:
 \end{Shaded}
 
 \includegraphics{04-geocentric_files/figure-latex/unnamed-chunk-18-1.pdf}
-\textgreater{} The strategy is to make the parameter for the mean of a Gaussian distribution, \(\mu\), into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.
+Here's the chapter:
+
+\begin{quote}
+The strategy is to make the parameter for the mean of a Gaussian distribution, \(\mu\), into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.
+\end{quote}
 
 Here's the previous model:
 
@@ -2461,8 +2466,8 @@ h_i &= \text{Normal}(\mu_i, \sigma)\\
 ##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
 ## 1 a         146.   145.   147.     0.89 median qi       
 ## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.80  -8.25  -7.37   0.89 median qi       
-## 4 sigma       5.77   5.49   6.06   0.89 median qi
+## 3 b2         -7.81  -8.24  -7.36   0.89 median qi       
+## 4 sigma       5.77   5.49   6.05   0.89 median qi
 \end{verbatim}
 
 Here's a plot of draws from the posterior:
@@ -2947,6 +2952,7 @@ Plot of these priors:
 \end{Shaded}
 
 \includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-2-1.pdf}
+
 Here's the model and the posterior mean/expected divorce rate:
 
 \begin{Shaded}
@@ -3096,10 +3102,10 @@ D_i &\sim \text{Normal}(\mu_i, \sigma) \\
 ## # A tibble: 4 x 8
 ##   .variable   .value .lower .upper .width .point .interval model
 ##   <chr>        <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
-## 1 a         -0.00204 -0.155  0.156   0.89 median qi        m5_3 
-## 2 bA        -0.610   -0.848 -0.372   0.89 median qi        m5_3 
-## 3 bM        -0.0628  -0.303  0.173   0.89 median qi        m5_3 
-## 4 sigma      0.786    0.662  0.912   0.89 median qi        m5_3
+## 1 a          0.00266 -0.150  0.159   0.89 median qi        m5_3 
+## 2 bA        -0.613   -0.856 -0.373   0.89 median qi        m5_3 
+## 3 bM        -0.0664  -0.310  0.178   0.89 median qi        m5_3 
+## 4 sigma      0.786    0.663  0.909   0.89 median qi        m5_3
 \end{verbatim}
 
 Here's a plot for the three models:
@@ -3114,7 +3120,92 @@ Here's a plot for the three models:
 \end{Shaded}
 
 \includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-8-1.pdf}
+
 As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.
+
+The chapter then describes three plots to help visualise inferences from more complicated models then the simple one predictor models from chapter 4.
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\tightlist
+\item
+  Predictor residual plots
+\item
+  Posterior prediction plots
+\item
+  Counterfactual plots
+\end{enumerate}
+
+For now I'll only recreate the posterior prediction plot.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plot\_data\_m5\_3 }\OtherTok{\textless{}{-}}\NormalTok{ data\_divorce}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(Loc, divorce\_s, marriage\_s, age\_s)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_linpred\_draws}\NormalTok{(m5\_3)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# add the predicted mean divorce rates}
+  \FunctionTok{group\_by}\NormalTok{(Loc, divorce\_s)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{x=}\NormalTok{.linpred, }\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{) }\CommentTok{\# summarise each group in the df }
+
+\FunctionTok{head}\NormalTok{(plot\_data\_m5\_3) }\CommentTok{\# x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 8
+##   Loc   divorce_s      x   .lower .upper .width .point .interval
+##   <fct>     <dbl>  <dbl>    <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 AK        1.54   0.319 -0.00911  0.639   0.89 mean   qi       
+## 2 AL        1.65   0.370  0.163    0.577   0.89 mean   qi       
+## 3 AR        2.09   0.757  0.424    1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.121 -0.0393   0.281   0.89 mean   qi       
+## 5 CA       -0.927 -0.352 -0.547   -0.160   0.89 mean   qi       
+## 6 CO        1.05   0.115 -0.122    0.343   0.89 mean   qi
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \FunctionTok{ggplot}\NormalTok{(plot\_data\_m5\_3)}\SpecialCharTok{+}
+  \FunctionTok{geom\_pointinterval}\NormalTok{(}\AttributeTok{mapping=}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{divorce\_s, }\AttributeTok{y=}\NormalTok{x,}\AttributeTok{ymin=}\NormalTok{.lower,}\AttributeTok{ymax=}\NormalTok{.upper), }
+                     \AttributeTok{orientation =} \StringTok{"vertical"}\NormalTok{,}
+                     \AttributeTok{colour =} \StringTok{\textquotesingle{}\#EE8866\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Observed Divorce Rate (std)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Predicted Mean Divorce Rate (std)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{slope=}\DecValTok{1}\NormalTok{,}\AttributeTok{intercept=}\DecValTok{0}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\AttributeTok{data=}\NormalTok{   plot\_data\_m5\_3}\SpecialCharTok{\%\textgreater{}\%}
+                      \FunctionTok{filter}\NormalTok{(Loc }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"ID"}\NormalTok{,}\StringTok{"UT"}\NormalTok{,}\StringTok{"RI"}\NormalTok{,}\StringTok{"ME"}\NormalTok{)),}
+    \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{ divorce\_s, }\AttributeTok{y=}\NormalTok{ x, }\AttributeTok{label =}\NormalTok{ Loc ), }\AttributeTok{nudge\_x =} \SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{05-many_variables_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+States above the line have lower divorce rates than the model expects, given marriage rate and median age at marriage. States below the line have a higher divorce rate than the model expects.
+
+There is a section in the chapter on variables that mask the influence of each other on the outcome of interest. A case study of primate milk and brain size is used to illustrate.
+
+There is a section on using categorical data in regression models. The key point in this section is the argument for index variables over indicators variables when coding categorical variables.
+
+With indicator variables you might look at the !Kung San data from the previous chapter, and decide to code men as 1 and women as 0 in a variable called \(m\). Your model for height might look like:
+
+\[
+\begin{aligned}
+h_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_m m_i
+\end{aligned}
+\]
+One problem with this is that the parameter \(\beta_m\) now means the expected difference in height between men and women, and it may be difficult to set a prior. This approach also assumes that there is more uncertainty about male height than female height, since \(\beta_m\) and its distribution doesn't enter into our predictions for the height of women.
+
+An alternative approach is to use index variables. You might code the !Kung San men as 1 and the women as 2 and your model might look like:
+
+\[
+\begin{aligned}
+h_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha_{\text{sex}[i]} 
+\end{aligned}
+\]
+We have a vector of two intercept parameters and select either \(\alpha_1\) or \(\alpha_2\) depending on the index at each row of data. The same prior can be assigned to each, and neither is inherently more uncertain than the other.
+
+The index approach also extends much more simply to more than two categories.
 
 \hypertarget{questions-4}{%
 \section{Questions}\label{questions-4}}
@@ -3234,11 +3325,13 @@ Suppose you have a single categorical predictor with 4 levels (unique values), l
 Now which of the following linear models are inferentially equivalent ways to include the categorical variable in a regression? Models are inferentially equivalent when it's possible to compute one posterior distribution from the posterior distribution of another model.
 
 \[
-(1) \mu_i = \alpha + \beta_A A_i + \beta_B B_i + \beta_D D_i  \\
-(2) \mu_i = \alpha + \beta_A A_i + \beta_B B_i + \beta_C C_i + \beta_D D_i \\ 
-(3) \mu_i = \alpha + \beta_B B_i + \beta_C C_i + \beta_D D_i \\
-(4) \mu_i = \alpha_A A_i + α_B B_i + α_C C_i + α_D D_i \\
-(5) \mu_i = \alpha_A(1 − B_i − C_i −D_i) + \alpha_B B_i + \alpha_C C_i + \alpha_D D_i
+\begin{aligned}
+(1) \mu_i &= \alpha + \beta_A A_i + \beta_B B_i + \beta_D D_i  \\
+(2) \mu_i &= \alpha + \beta_A A_i + \beta_B B_i + \beta_C C_i + \beta_D D_i \\ 
+(3) \mu_i &= \alpha + \beta_B B_i + \beta_C C_i + \beta_D D_i \\
+(4) \mu_i &= \alpha_A A_i + α_B B_i + α_C C_i + α_D D_i \\
+(5) \mu_i &= \alpha_A(1 − B_i − C_i −D_i) + \alpha_B B_i + \alpha_C C_i + \alpha_D D_i
+\end{aligned}
 \]
 \end{quote}
 
@@ -3270,31 +3363,302 @@ Now which of the following linear models are inferentially equivalent ways to in
 \hypertarget{chapter-notes-5}{%
 \section{Chapter Notes}\label{chapter-notes-5}}
 
-Figure 6.1 Selection Bias
+The chapter opens with an example of a selection effect. Assuming that journal editors and peer reviewers care about both novelty and rigour, we can expect to see a negative correlation between the two in published papers.
+
+Here's a simulation and a chart:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1914}\NormalTok{) }
+\NormalTok{N }\OtherTok{\textless{}{-}} \DecValTok{200} \CommentTok{\# we simulate 200 papers}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FloatTok{0.1} 
+
+\NormalTok{nw }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N) }\CommentTok{\# we create a newsworthiness figure for each paper}
+\NormalTok{tw }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N) }\CommentTok{\# we create a trustworthiness figure for each paper}
+
+\CommentTok{\# note that there is no correlation between the two in the simualation}
+
+\NormalTok{s }\OtherTok{\textless{}{-}}\NormalTok{ nw }\SpecialCharTok{+}\NormalTok{ tw }
+\NormalTok{q }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{( s , }\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{p ) }\CommentTok{\# the top 10\% of papers are accepted}
+\NormalTok{selected }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{( s }\SpecialCharTok{\textgreater{}=}\NormalTok{ q , }\StringTok{"Yes"}\NormalTok{ , }\StringTok{"No"}\NormalTok{ ) }\CommentTok{\# are the papers selected? i.e. published}
+
+
+\NormalTok{data\_pub }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{Trustworthiness =}\NormalTok{ tw, }\AttributeTok{Newsworthiness=}\NormalTok{ nw,}\AttributeTok{Selected =}\NormalTok{selected)}
+
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{mapping=}\FunctionTok{aes}\NormalTok{(Newsworthiness,Trustworthiness,}\AttributeTok{colour=}\NormalTok{Selected))}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data=}\NormalTok{data\_pub)}\SpecialCharTok{+}
+    \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{data=}\FunctionTok{filter}\NormalTok{(data\_pub,Selected}\SpecialCharTok{==}\StringTok{"Yes"}\NormalTok{),}\AttributeTok{method=}\NormalTok{lm,}\AttributeTok{formula =}\StringTok{\textquotesingle{}y \textasciitilde{} x\textquotesingle{}}\NormalTok{,}\AttributeTok{se=}\ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-2-1.pdf}
+The blue line is the negative correlation between newsworthiness and trustworthiness induced by the selection process. This effect can occur inside of a multiple regression, where it is called collider bias.
 
-Parameters estimates for effect of leg length on height.
+\hypertarget{multicollinearity}{%
+\subsection*{Multicollinearity}\label{multicollinearity}}
+\addcontentsline{toc}{subsection}{Multicollinearity}
+
+How to multiple regression models behave when the predictor variables are highly correlated?
+
+The chapter contains a simulation for the effect of leg length on height.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{909}\NormalTok{) }
+\NormalTok{N }\OtherTok{\textless{}{-}} \DecValTok{100} \CommentTok{\# we have 100 people}
+\NormalTok{height }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N,}\DecValTok{10}\NormalTok{,}\DecValTok{2}\NormalTok{) }\CommentTok{\# we simulate their heights}
+\NormalTok{leg\_prop }\OtherTok{\textless{}{-}} \FunctionTok{runif}\NormalTok{(N,}\FloatTok{0.4}\NormalTok{,}\FloatTok{0.5}\NormalTok{) }\CommentTok{\#we simulate their leg length as a proportion of their height}
+\NormalTok{leg\_left }\OtherTok{\textless{}{-}}\NormalTok{ leg\_prop}\SpecialCharTok{*}\NormalTok{height }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{( N , }\DecValTok{0}\NormalTok{ , }\FloatTok{0.02}\NormalTok{ ) }\CommentTok{\# we calculate the length of each leg using the above }
+\NormalTok{leg\_right }\OtherTok{\textless{}{-}}\NormalTok{ leg\_prop}\SpecialCharTok{*}\NormalTok{height }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{( N , }\DecValTok{0}\NormalTok{ , }\FloatTok{0.02}\NormalTok{ ) }\CommentTok{\# making sure to include a little error}
+
+
+\NormalTok{data\_leg }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(height,leg\_left,leg\_right)}
+
+\CommentTok{\# we fit a model and plot the parameters}
+
+\NormalTok{m6\_1 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{(}
+\NormalTok{    height }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bl}\SpecialCharTok{*}\NormalTok{leg\_left }\SpecialCharTok{+}\NormalTok{ br}\SpecialCharTok{*}\NormalTok{leg\_right , }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{10}\NormalTok{ , }\DecValTok{100}\NormalTok{ ) , }
+\NormalTok{    bl }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{2}\NormalTok{ , }\DecValTok{10}\NormalTok{ ) , }
+\NormalTok{    br }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{2}\NormalTok{ , }\DecValTok{10}\NormalTok{ ) , }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_leg )}
+
+\FunctionTok{gather\_draws}\NormalTok{(m6\_1,a, bl, br, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{fct\_rev}\NormalTok{(.variable), }\AttributeTok{x =}\NormalTok{ .value, }\AttributeTok{xmin =}\NormalTok{ .lower, }\AttributeTok{xmax =}\NormalTok{ .upper), )}\SpecialCharTok{+}
+  \FunctionTok{geom\_pointinterval}\NormalTok{(}\AttributeTok{colour =} \StringTok{"dark grey"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"parameters"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-3-1.pdf}
 
-Figure 6.2 Posterior of height\textasciitilde leg Model
+Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-4-1.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-4-2.pdf}
+\[
+\begin{aligned}
+y_i &∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_1 x_i + \beta_2 x_i
+\end{aligned}
+\]
+or
 
-Figure 6.3
+\[
+\mu_i = \alpha + (\beta_1  + \beta_2 )x_i
+\]
+There are a huge number of combinations of \(\beta_1\) and \(\beta_2\) that could produce the data.
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-5-1.pdf}
+Here's the chapter:
 
-Primate Milk DAG
+\begin{quote}
+Recall that a multiple linear regression answers the question: \emph{What is the value of knowing each predictor, after already knowing all of the other predictors?}
+\end{quote}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-6-1.pdf}
+Here we sample the model parameters \(b_l\) and \(b_r\) and plot them and their sum. There are highly correlated, and their sum is centered on the true parameter value for regressing leg length on height.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_leg\_post }\OtherTok{\textless{}{-}} \FunctionTok{spread\_draws}\NormalTok{(m6\_1,br,bl) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{sum of bl and br}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{br}\SpecialCharTok{+}\NormalTok{bl)}
+
+\FunctionTok{ggplot}\NormalTok{(data\_leg\_post)}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{br,}\AttributeTok{y=}\NormalTok{bl),}\AttributeTok{col=}\StringTok{\textquotesingle{}\#77AADD\textquotesingle{}}\NormalTok{,}\AttributeTok{alpha=}\FloatTok{0.2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(data\_leg\_post)}\SpecialCharTok{+}
+  \FunctionTok{geom\_density}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\StringTok{\textasciigrave{}}\AttributeTok{sum of bl and br}\StringTok{\textasciigrave{}}\NormalTok{),}\AttributeTok{col=}\StringTok{\textquotesingle{}\#77AADD\textquotesingle{}}\NormalTok{,}\AttributeTok{size=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-4-2.pdf}
+
+The chapter reintroduces the primate milk example from chapter 5.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data}
+\NormalTok{data\_milk }\OtherTok{\textless{}{-}} \FunctionTok{read\_delim}\NormalTok{(}\StringTok{"data/milk.csv"}\NormalTok{, }\AttributeTok{delim =} \StringTok{";"}\NormalTok{,}\AttributeTok{col\_names =} \ConstantTok{TRUE}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{K=}\FunctionTok{standardize}\NormalTok{(kcal.per.g),}
+         \AttributeTok{F=}\FunctionTok{standardize}\NormalTok{(perc.fat),}
+         \AttributeTok{L=}\FunctionTok{standardize}\NormalTok{(perc.lactose))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 29 Columns: 8
+\end{verbatim}
+
+\begin{verbatim}
+## -- Column specification --------------------------------------------------------
+## Delimiter: ";"
+## chr (2): clade, species
+## dbl (6): kcal.per.g, perc.fat, perc.protein, perc.lactose, mass, neocortex.perc
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# kcal.per.g regressed on perc.fat }
+
+\NormalTok{m6\_3 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{(}
+  \FunctionTok{alist}\NormalTok{(}
+\NormalTok{    K }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ), }
+\NormalTok{    mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bF}\SpecialCharTok{*}\NormalTok{F, }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ), }
+\NormalTok{    bF }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_milk )}
+
+\CommentTok{\# kcal.per.g regressed on perc.lactose }
+
+
+\NormalTok{m6\_4 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{(}
+\NormalTok{    K }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma )}
+\NormalTok{    , mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bL}\SpecialCharTok{*}\NormalTok{L, }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ), }
+\NormalTok{    bL }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_milk )}
+
+
+\CommentTok{\# kcal.per.g regressed on both }
+
+\NormalTok{m6\_5 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }
+  \FunctionTok{alist}\NormalTok{(}
+\NormalTok{    K }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma )}
+\NormalTok{    , mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bF}\SpecialCharTok{*}\NormalTok{F }\SpecialCharTok{+}\NormalTok{ bL}\SpecialCharTok{*}\NormalTok{L, }
+\NormalTok{    a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ),}
+\NormalTok{    bF }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ),}
+\NormalTok{    bL }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{    sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_milk )}
+\end{Highlighting}
+\end{Shaded}
+
+Here is the parameter summary for regression of kcal per gram of milk on the fat percentage of the milk:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{summary\_6\_3 }\OtherTok{\textless{}{-}}\NormalTok{ m6\_3}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a,bF,sigma)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Fat"}\NormalTok{)}
+
+\NormalTok{summary\_6\_3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 8
+##   .variable   .value .lower .upper .width .point .interval model
+##   <chr>        <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
+## 1 a         0.000384 -0.124  0.124   0.89 mean   qi        Fat  
+## 2 bF        0.861     0.725  0.999   0.89 mean   qi        Fat  
+## 3 sigma     0.450     0.356  0.545   0.89 mean   qi        Fat
+\end{verbatim}
+
+And here's the summary for the regression of kcals on lactose content:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{summary\_6\_4 }\OtherTok{\textless{}{-}}\NormalTok{ m6\_4}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a,bL,sigma)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Lactose"}\NormalTok{)}
+
+\NormalTok{summary\_6\_4}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 8
+##   .variable    .value .lower .upper .width .point .interval model  
+##   <chr>         <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>  
+## 1 a         -0.000894 -0.106  0.104   0.89 mean   qi        Lactose
+## 2 bL        -0.902    -1.01  -0.789   0.89 mean   qi        Lactose
+## 3 sigma      0.380     0.300  0.458   0.89 mean   qi        Lactose
+\end{verbatim}
+
+The parameters are almost mirror images of each other: the more fat content of the milk the higher the calories, the higher lactose content the lower the calories. This makes sense since fat is more energy dense than carbohydrate and fat and lactose contents are negatively correlated.
+
+Here's what happens when both are included in the same model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{summary\_6\_5 }\OtherTok{\textless{}{-}}\NormalTok{ m6\_5}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a,bF,bL,sigma)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Both"}\NormalTok{)}
+
+\NormalTok{summary\_6\_5}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 8
+##   .variable    .value  .lower .upper .width .point .interval model
+##   <chr>         <dbl>   <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
+## 1 a          0.000589 -0.108   0.104   0.89 mean   qi        Both 
+## 2 bF         0.245    -0.0567  0.541   0.89 mean   qi        Both 
+## 3 bL        -0.676    -0.970  -0.386   0.89 mean   qi        Both 
+## 4 sigma      0.378     0.301   0.456   0.89 mean   qi        Both
+\end{verbatim}
+
+Here's a plot:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{bind\_rows}\NormalTok{(summary\_6\_3, summary\_6\_4,summary\_6\_5) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{fct\_rev}\NormalTok{(.variable), }\AttributeTok{x =}\NormalTok{ .value, }\AttributeTok{xmin =}\NormalTok{ .lower, }\AttributeTok{xmax =}\NormalTok{ .upper, }\AttributeTok{color =}\NormalTok{ model)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_pointinterval}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{(}\AttributeTok{width =} \SpecialCharTok{{-}}\FloatTok{0.3}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept=}\DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"parameters"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+Including both fat and lactose contents in the model pulls the parameter estimates \(b_F\) and \(b_L\) towards zero, and about doubles the uncertainty around both.
+
+Here's a pairs plot of the two variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggpairs}\NormalTok{(}\AttributeTok{data=}\FunctionTok{select}\NormalTok{(data\_milk,kcal.per.g,perc.fat,perc.lactose))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+The chapter summarises:
+
+\begin{quote}
+These two variables are negatively correlated, and so strongly so that they are nearly redundant. Either helps in predicting kcal.per.g, but neither helps as much once you already know the other\ldots. The problem of multicollinearity is amember of a family of problems with fitting models, a family sometimes known as non-identifiability. When a parameter is non-identifiable, it means that the structure of the data and model do not make it possible to estimate the parameter's value.
+\end{quote}
+
+And here's a DAG the chapter suggests for this case. D here is how dense the milk needs to be, and is related to how frequently the species nurses. Species that nurse more often tend to have relatively more lactose and less fat in their milk.
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-11-1.pdf}
 
 Simulating Colliinearity
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-7-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-12-1.pdf}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-8-1.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-8-2.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-8-3.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-1.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-2.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-3.pdf}
 
 Here's my very rough attempt at explaining to myself why conditioning on fungus makes treatment appear to have a small positive effect.
 
@@ -3372,7 +3736,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Fork - X and Y are independent, once we condition on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-9-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-14-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3382,7 +3746,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Pipe - X and Y are independent, once we condition on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-10-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-15-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3392,7 +3756,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Collider - Conditioning on Z creates an association between X and Y.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-11-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-16-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3402,7 +3766,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Descendant - Conditioning on D partly conditions on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-12-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-17-1.pdf}
 
 \hypertarget{e4-4}{%
 \subsection*{6E4}\label{e4-4}}
@@ -3444,11 +3808,11 @@ Modify the DAG on page 186 to include the variable V, an unobserved cause of C a
 
 Here's the original DAG:
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-18-1.pdf}
 
 Now we add the unobserved V:
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-14-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-19-1.pdf}
 
 Previously, we could condition on either A or C to find the direct casual effect of X on Y. Now C is a collider, so we should condition on A.
 
@@ -3503,7 +3867,7 @@ Modifying the leg example:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-16-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3551,7 +3915,7 @@ Modifying the leg example:
 ## Warning: Removed 1 rows containing missing values (geom_segment).
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-16-2.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-2.pdf}
 
 In the legs example, the model was very uncertain about the parameter values for both legs. This is not the case here, the parameter estimate for the influence of Z is about as expected, 2-2.5. The model has correctly identified that the only influence of X on Y is through Z, and so produces parameter estimates for X much smaller than expected. We have a pipe, and including Z blocks the path from X to Y, but we don't have the problems with identifiability that we had in the legs example.
 
@@ -3586,7 +3950,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-18-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-23-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3612,7 +3976,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-19-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-24-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3638,7 +4002,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-20-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-25-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3664,7 +4028,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-26-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3710,7 +4074,7 @@ Here's my proposed DAG:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-22-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-27-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3748,7 +4112,7 @@ After loading the data, standardising, and doing some prior simulation, I have t
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-24-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-29-1.pdf}
 
 This is consistent with the number of Waffle Houses having no causal effect on the divorce rate.
 
@@ -3810,7 +4174,7 @@ We'll first test that the divorce rate is independent of being in the South, con
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-26-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 The values of the diff\_south parameter are consistent with the conditional independence, but I'm not completely happy that I've caught all the ways that being in the South can influence the divorce rate. Perhaps I should add an arrow directly from the South to the divorce rate, or add in an unobserved variable to stand in for cultural/ religious attitudes towards divorce.
 
@@ -3839,7 +4203,7 @@ We'll test one more conditional independence, one that I think is more likely to
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-27-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-32-1.pdf}
 
 The parameter bW is estimated to be quite close to zero.
 
@@ -3863,13 +4227,13 @@ You might want to standardize the variables. Regardless, use prior predictive si
 
 We don't need to condition on any other parameters since we're looking for the total causal effect.
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-28-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-33-1.pdf}
 
 \begin{verbatim}
 ##  {}
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-28-2.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-33-2.pdf}
 
 Unexpectedly, the total causal impact of area on weight appears to be zero, or slightly negative. Increasing area would not make foxes heavier.
 
@@ -3895,7 +4259,7 @@ We don't need to condition on any other parameters assuming the DAG we're given 
 ##  {}
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-29-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-34-1.pdf}
 
 The total causal impact of food on weight again appears to be negative. Increasing food would not make foxes heavier.
 
@@ -3921,7 +4285,7 @@ Now we have to condition on food to block the backdoor path.
 ## { F }
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-30-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-35-1.pdf}
 
 We see that the causal impact of group size is negative, and that the direct effect of food is zero or slightly positive. It is at least not so negative as the total causal effect.
 
@@ -5499,11 +5863,11 @@ The model in chapter 8, fit using quadratic approximation looks like this:
 
 \begin{verbatim}
 ##             mean          sd        5.5%       94.5%
-## a[1]   0.8865728 0.015674582  0.86152183  0.91162385
-## a[2]   1.0505629 0.009935884  1.03468345  1.06644237
-## b[1]   0.1325032 0.074199296  0.01391841  0.25108802
-## b[2]  -0.1424933 0.054745575 -0.22998727 -0.05499926
-## sigma  0.1094860 0.005934206  0.10000201  0.11897003
+## a[1]   0.8865634 0.015675092  0.86151154  0.91161518
+## a[2]   1.0505683 0.009936219  1.03468827  1.06644827
+## b[1]   0.1325055 0.074201695  0.01391687  0.25109415
+## b[2]  -0.1425765 0.054747314 -0.23007332 -0.05507976
+## sigma  0.1094898 0.005934713  0.10000498  0.11897461
 \end{verbatim}
 
 Here is the same model using ulam:

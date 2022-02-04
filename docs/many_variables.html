@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -448,92 +451,92 @@ Here are the variables we’ll use in this model and later on:</p>
 <li><span class="math inline">\(A_i\)</span> - The 2005-2010 median age at marriage for each state</li>
 </ul>
 <p>Plot of these priors:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="many_variables.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we generate 100 samples from our prior distributions</span></span>
-<span id="cb1-2"><a href="many_variables.html#cb1-2" aria-hidden="true" tabindex="-1"></a>prior_sim_5_1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.2</span>),</span>
-<span id="cb1-3"><a href="many_variables.html#cb1-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">bA =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.5</span>))</span>
-<span id="cb1-4"><a href="many_variables.html#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="many_variables.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># and plot the lines they imply</span></span>
-<span id="cb1-6"><a href="many_variables.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(prior_sim_5_1)<span class="sc">+</span></span>
-<span id="cb1-7"><a href="many_variables.html#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">slope =</span> bA,</span>
-<span id="cb1-8"><a href="many_variables.html#cb1-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">intercept =</span> a))<span class="sc">+</span></span>
-<span id="cb1-9"><a href="many_variables.html#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb1-10"><a href="many_variables.html#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)<span class="sc">+</span></span>
-<span id="cb1-11"><a href="many_variables.html#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Median Age of Marriage (std)&quot;</span>)<span class="sc">+</span></span>
-<span id="cb1-12"><a href="many_variables.html#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Divorce Rate (std)&quot;</span>)</span></code></pre></div>
-<p><img src="05-many_variables_files/figure-html/unnamed-chunk-2-1.png" width="672" />
-Here’s the model and the posterior mean/expected divorce rate:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="many_variables.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(WaffleDivorce) </span>
-<span id="cb2-2"><a href="many_variables.html#cb2-2" aria-hidden="true" tabindex="-1"></a>data_divorce <span class="ot">&lt;-</span> WaffleDivorce<span class="sc">%&gt;%</span><span class="fu">as_tibble</span>()</span>
-<span id="cb2-3"><a href="many_variables.html#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="many_variables.html#cb2-4" aria-hidden="true" tabindex="-1"></a>data_divorce <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb2-5"><a href="many_variables.html#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">divorce_s =</span> (Divorce <span class="sc">-</span> <span class="fu">mean</span>(Divorce))<span class="sc">/</span><span class="fu">sd</span>(Divorce),</span>
-<span id="cb2-6"><a href="many_variables.html#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">marriage_s =</span> (Marriage <span class="sc">-</span> <span class="fu">mean</span>(Marriage))<span class="sc">/</span><span class="fu">sd</span>(Marriage),</span>
-<span id="cb2-7"><a href="many_variables.html#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">age_s =</span> (MedianAgeMarriage <span class="sc">-</span> <span class="fu">mean</span>(MedianAgeMarriage))<span class="sc">/</span><span class="fu">sd</span>(MedianAgeMarriage),</span>
-<span id="cb2-8"><a href="many_variables.html#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-9"><a href="many_variables.html#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="many_variables.html#cb2-10" aria-hidden="true" tabindex="-1"></a>m5_1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb2-11"><a href="many_variables.html#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
-<span id="cb2-12"><a href="many_variables.html#cb2-12" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb2-13"><a href="many_variables.html#cb2-13" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bA <span class="sc">*</span> age_s , </span>
-<span id="cb2-14"><a href="many_variables.html#cb2-14" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
-<span id="cb2-15"><a href="many_variables.html#cb2-15" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
-<span id="cb2-16"><a href="many_variables.html#cb2-16" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb2-17"><a href="many_variables.html#cb2-17" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
-<span id="cb2-18"><a href="many_variables.html#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="many_variables.html#cb2-19" aria-hidden="true" tabindex="-1"></a>summary_5_1 <span class="ot">&lt;-</span> m5_1 <span class="sc">%&gt;%</span></span>
-<span id="cb2-20"><a href="many_variables.html#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bA, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb2-21"><a href="many_variables.html#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
-<span id="cb2-22"><a href="many_variables.html#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_1&quot;</span>)</span>
-<span id="cb2-23"><a href="many_variables.html#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="many_variables.html#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_divorce,<span class="at">age_s=</span><span class="fu">seq_range</span>(age_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-25"><a href="many_variables.html#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_1) <span class="sc">%&gt;%</span> <span class="co"># add draws for mean divorce rate</span></span>
-<span id="cb2-26"><a href="many_variables.html#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MedianAgeMarriage=</span> age_s <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>MedianAgeMarriage) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>MedianAgeMarriage),</span>
-<span id="cb2-27"><a href="many_variables.html#cb2-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">Divorce =</span> .linpred <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Divorce) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Divorce))<span class="sc">%&gt;%</span> </span>
-<span id="cb2-28"><a href="many_variables.html#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MedianAgeMarriage, <span class="at">y=</span>Divorce)) <span class="sc">+</span></span>
-<span id="cb2-29"><a href="many_variables.html#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>() <span class="sc">+</span></span>
-<span id="cb2-30"><a href="many_variables.html#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_divorce, <span class="at">colour =</span> <span class="st">&quot;light blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-31"><a href="many_variables.html#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="many_variables.html#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we generate 100 samples from our prior distributions</span></span>
+<span id="cb103-2"><a href="many_variables.html#cb103-2" aria-hidden="true" tabindex="-1"></a>prior_sim_5_1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.2</span>),</span>
+<span id="cb103-3"><a href="many_variables.html#cb103-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">bA =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.5</span>))</span>
+<span id="cb103-4"><a href="many_variables.html#cb103-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-5"><a href="many_variables.html#cb103-5" aria-hidden="true" tabindex="-1"></a><span class="co"># and plot the lines they imply</span></span>
+<span id="cb103-6"><a href="many_variables.html#cb103-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(prior_sim_5_1)<span class="sc">+</span></span>
+<span id="cb103-7"><a href="many_variables.html#cb103-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">slope =</span> bA,</span>
+<span id="cb103-8"><a href="many_variables.html#cb103-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">intercept =</span> a))<span class="sc">+</span></span>
+<span id="cb103-9"><a href="many_variables.html#cb103-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)<span class="sc">+</span></span>
+<span id="cb103-10"><a href="many_variables.html#cb103-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)<span class="sc">+</span></span>
+<span id="cb103-11"><a href="many_variables.html#cb103-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Median Age of Marriage (std)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb103-12"><a href="many_variables.html#cb103-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Divorce Rate (std)&quot;</span>)</span></code></pre></div>
+<p><img src="05-many_variables_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Here’s the model and the posterior mean/expected divorce rate:</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="many_variables.html#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(WaffleDivorce) </span>
+<span id="cb104-2"><a href="many_variables.html#cb104-2" aria-hidden="true" tabindex="-1"></a>data_divorce <span class="ot">&lt;-</span> WaffleDivorce<span class="sc">%&gt;%</span><span class="fu">as_tibble</span>()</span>
+<span id="cb104-3"><a href="many_variables.html#cb104-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-4"><a href="many_variables.html#cb104-4" aria-hidden="true" tabindex="-1"></a>data_divorce <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb104-5"><a href="many_variables.html#cb104-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">divorce_s =</span> (Divorce <span class="sc">-</span> <span class="fu">mean</span>(Divorce))<span class="sc">/</span><span class="fu">sd</span>(Divorce),</span>
+<span id="cb104-6"><a href="many_variables.html#cb104-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">marriage_s =</span> (Marriage <span class="sc">-</span> <span class="fu">mean</span>(Marriage))<span class="sc">/</span><span class="fu">sd</span>(Marriage),</span>
+<span id="cb104-7"><a href="many_variables.html#cb104-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">age_s =</span> (MedianAgeMarriage <span class="sc">-</span> <span class="fu">mean</span>(MedianAgeMarriage))<span class="sc">/</span><span class="fu">sd</span>(MedianAgeMarriage),</span>
+<span id="cb104-8"><a href="many_variables.html#cb104-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb104-9"><a href="many_variables.html#cb104-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-10"><a href="many_variables.html#cb104-10" aria-hidden="true" tabindex="-1"></a>m5_1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb104-11"><a href="many_variables.html#cb104-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
+<span id="cb104-12"><a href="many_variables.html#cb104-12" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb104-13"><a href="many_variables.html#cb104-13" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bA <span class="sc">*</span> age_s , </span>
+<span id="cb104-14"><a href="many_variables.html#cb104-14" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
+<span id="cb104-15"><a href="many_variables.html#cb104-15" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
+<span id="cb104-16"><a href="many_variables.html#cb104-16" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb104-17"><a href="many_variables.html#cb104-17" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
+<span id="cb104-18"><a href="many_variables.html#cb104-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-19"><a href="many_variables.html#cb104-19" aria-hidden="true" tabindex="-1"></a>summary_5_1 <span class="ot">&lt;-</span> m5_1 <span class="sc">%&gt;%</span></span>
+<span id="cb104-20"><a href="many_variables.html#cb104-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bA, sigma) <span class="sc">%&gt;%</span></span>
+<span id="cb104-21"><a href="many_variables.html#cb104-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb104-22"><a href="many_variables.html#cb104-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_1&quot;</span>)</span>
+<span id="cb104-23"><a href="many_variables.html#cb104-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-24"><a href="many_variables.html#cb104-24" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_divorce,<span class="at">age_s=</span><span class="fu">seq_range</span>(age_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb104-25"><a href="many_variables.html#cb104-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_1) <span class="sc">%&gt;%</span> <span class="co"># add draws for mean divorce rate</span></span>
+<span id="cb104-26"><a href="many_variables.html#cb104-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MedianAgeMarriage=</span> age_s <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>MedianAgeMarriage) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>MedianAgeMarriage),</span>
+<span id="cb104-27"><a href="many_variables.html#cb104-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">Divorce =</span> .linpred <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Divorce) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Divorce))<span class="sc">%&gt;%</span> </span>
+<span id="cb104-28"><a href="many_variables.html#cb104-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MedianAgeMarriage, <span class="at">y=</span>Divorce)) <span class="sc">+</span></span>
+<span id="cb104-29"><a href="many_variables.html#cb104-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>() <span class="sc">+</span></span>
+<span id="cb104-30"><a href="many_variables.html#cb104-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_divorce, <span class="at">colour =</span> <span class="st">&quot;light blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb104-31"><a href="many_variables.html#cb104-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
 <p><img src="05-many_variables_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>Here’s the same plot for model 5.2 - which uses marriage rate as a predictor instead of age at marriage:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="many_variables.html#cb3-1" aria-hidden="true" tabindex="-1"></a>m5_2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb3-2"><a href="many_variables.html#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
-<span id="cb3-3"><a href="many_variables.html#cb3-3" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb3-4"><a href="many_variables.html#cb3-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> marriage_s , </span>
-<span id="cb3-5"><a href="many_variables.html#cb3-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
-<span id="cb3-6"><a href="many_variables.html#cb3-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
-<span id="cb3-7"><a href="many_variables.html#cb3-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb3-8"><a href="many_variables.html#cb3-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
-<span id="cb3-9"><a href="many_variables.html#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="many_variables.html#cb3-10" aria-hidden="true" tabindex="-1"></a>summary_5_2 <span class="ot">&lt;-</span> m5_2 <span class="sc">%&gt;%</span></span>
-<span id="cb3-11"><a href="many_variables.html#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bM, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb3-12"><a href="many_variables.html#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
-<span id="cb3-13"><a href="many_variables.html#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_2&quot;</span>)</span>
-<span id="cb3-14"><a href="many_variables.html#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="many_variables.html#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_divorce,<span class="at">marriage_s=</span><span class="fu">seq_range</span>(marriage_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-16"><a href="many_variables.html#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_2) <span class="sc">%&gt;%</span> <span class="co"># add draws for mean divorce rate</span></span>
-<span id="cb3-17"><a href="many_variables.html#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Marriage=</span> marriage_s <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Marriage) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Marriage),</span>
-<span id="cb3-18"><a href="many_variables.html#cb3-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">Divorce =</span> .linpred <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Divorce) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Divorce))<span class="sc">%&gt;%</span> </span>
-<span id="cb3-19"><a href="many_variables.html#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Marriage, <span class="at">y=</span>Divorce)) <span class="sc">+</span></span>
-<span id="cb3-20"><a href="many_variables.html#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>() <span class="sc">+</span></span>
-<span id="cb3-21"><a href="many_variables.html#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_divorce, <span class="at">colour =</span> <span class="st">&quot;light blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-22"><a href="many_variables.html#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="many_variables.html#cb105-1" aria-hidden="true" tabindex="-1"></a>m5_2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb105-2"><a href="many_variables.html#cb105-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
+<span id="cb105-3"><a href="many_variables.html#cb105-3" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb105-4"><a href="many_variables.html#cb105-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> marriage_s , </span>
+<span id="cb105-5"><a href="many_variables.html#cb105-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
+<span id="cb105-6"><a href="many_variables.html#cb105-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
+<span id="cb105-7"><a href="many_variables.html#cb105-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb105-8"><a href="many_variables.html#cb105-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
+<span id="cb105-9"><a href="many_variables.html#cb105-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-10"><a href="many_variables.html#cb105-10" aria-hidden="true" tabindex="-1"></a>summary_5_2 <span class="ot">&lt;-</span> m5_2 <span class="sc">%&gt;%</span></span>
+<span id="cb105-11"><a href="many_variables.html#cb105-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bM, sigma) <span class="sc">%&gt;%</span></span>
+<span id="cb105-12"><a href="many_variables.html#cb105-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb105-13"><a href="many_variables.html#cb105-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_2&quot;</span>)</span>
+<span id="cb105-14"><a href="many_variables.html#cb105-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-15"><a href="many_variables.html#cb105-15" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_divorce,<span class="at">marriage_s=</span><span class="fu">seq_range</span>(marriage_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-16"><a href="many_variables.html#cb105-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_2) <span class="sc">%&gt;%</span> <span class="co"># add draws for mean divorce rate</span></span>
+<span id="cb105-17"><a href="many_variables.html#cb105-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Marriage=</span> marriage_s <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Marriage) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Marriage),</span>
+<span id="cb105-18"><a href="many_variables.html#cb105-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">Divorce =</span> .linpred <span class="sc">*</span> <span class="fu">sd</span>(data_divorce<span class="sc">$</span>Divorce) <span class="sc">+</span> <span class="fu">mean</span>(data_divorce<span class="sc">$</span>Divorce))<span class="sc">%&gt;%</span> </span>
+<span id="cb105-19"><a href="many_variables.html#cb105-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Marriage, <span class="at">y=</span>Divorce)) <span class="sc">+</span></span>
+<span id="cb105-20"><a href="many_variables.html#cb105-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>() <span class="sc">+</span></span>
+<span id="cb105-21"><a href="many_variables.html#cb105-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_divorce, <span class="at">colour =</span> <span class="st">&quot;light blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb105-22"><a href="many_variables.html#cb105-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
 <p><img src="05-many_variables_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>The chapter goes on to introduce DAGs and causal reasoning, before coming back to define a regression model that uses both marriage rate and median age at marriage as predictors.</p>
 <p>Here are a couple of possible DAGs for how marriage rate and median age of marriage influence the divorce rate:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="many_variables.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, .<span class="dv">1</span>, .<span class="dv">1</span>))</span>
-<span id="cb4-2"><a href="many_variables.html#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="many_variables.html#cb4-3" aria-hidden="true" tabindex="-1"></a>dag_div1 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&quot;dag{A -&gt; M; M -&gt; D; A -&gt; D }&quot;</span>)</span>
-<span id="cb4-4"><a href="many_variables.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_div1) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="fl">0.5</span>,<span class="at">M=</span><span class="dv">1</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">M=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>))</span>
-<span id="cb4-5"><a href="many_variables.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_div1)</span>
-<span id="cb4-6"><a href="many_variables.html#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="many_variables.html#cb4-7" aria-hidden="true" tabindex="-1"></a>dag_div2 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&quot;dag{A -&gt; M; A -&gt; D }&quot;</span>)</span>
-<span id="cb4-8"><a href="many_variables.html#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_div2) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="fl">0.5</span>,<span class="at">M=</span><span class="dv">1</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">M=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>))</span>
-<span id="cb4-9"><a href="many_variables.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_div2)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="many_variables.html#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, .<span class="dv">1</span>, .<span class="dv">1</span>))</span>
+<span id="cb106-2"><a href="many_variables.html#cb106-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-3"><a href="many_variables.html#cb106-3" aria-hidden="true" tabindex="-1"></a>dag_div1 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&quot;dag{A -&gt; M; M -&gt; D; A -&gt; D }&quot;</span>)</span>
+<span id="cb106-4"><a href="many_variables.html#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_div1) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="fl">0.5</span>,<span class="at">M=</span><span class="dv">1</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">M=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>))</span>
+<span id="cb106-5"><a href="many_variables.html#cb106-5" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_div1)</span>
+<span id="cb106-6"><a href="many_variables.html#cb106-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-7"><a href="many_variables.html#cb106-7" aria-hidden="true" tabindex="-1"></a>dag_div2 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&quot;dag{A -&gt; M; A -&gt; D }&quot;</span>)</span>
+<span id="cb106-8"><a href="many_variables.html#cb106-8" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_div2) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="fl">0.5</span>,<span class="at">M=</span><span class="dv">1</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">M=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>))</span>
+<span id="cb106-9"><a href="many_variables.html#cb106-9" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_div2)</span></code></pre></div>
 <p><img src="05-many_variables_files/figure-html/figures-side-1.png" width="50%" /><img src="05-many_variables_files/figure-html/figures-side-2.png" width="50%" /></p>
 <p>We can use our data to test these proposed causal models, because they make different predictions. The first has no conditional independencies:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="many_variables.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_div1)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="many_variables.html#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_div1)</span></code></pre></div>
 <p>The second predicts that D is independent from M, conditional on A:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="many_variables.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_div2)</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="many_variables.html#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_div2)</span></code></pre></div>
 <pre><code>## D _||_ M | A</code></pre>
 <p>Here’s our statistical model:</p>
 <p><span class="math display">\[
@@ -546,36 +549,90 @@ D_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 \sigma &amp;\sim \text{Exponential}(1) \\
 \end{aligned}
 \]</span></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="many_variables.html#cb8-1" aria-hidden="true" tabindex="-1"></a>m5_3 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb8-2"><a href="many_variables.html#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
-<span id="cb8-3"><a href="many_variables.html#cb8-3" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb8-4"><a href="many_variables.html#cb8-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> marriage_s <span class="sc">+</span> bA <span class="sc">*</span> age_s , </span>
-<span id="cb8-5"><a href="many_variables.html#cb8-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
-<span id="cb8-6"><a href="many_variables.html#cb8-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
-<span id="cb8-7"><a href="many_variables.html#cb8-7" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
-<span id="cb8-8"><a href="many_variables.html#cb8-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb8-9"><a href="many_variables.html#cb8-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
-<span id="cb8-10"><a href="many_variables.html#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="many_variables.html#cb8-11" aria-hidden="true" tabindex="-1"></a>summary_5_3 <span class="ot">&lt;-</span> m5_3 <span class="sc">%&gt;%</span></span>
-<span id="cb8-12"><a href="many_variables.html#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bM, bA, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb8-13"><a href="many_variables.html#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
-<span id="cb8-14"><a href="many_variables.html#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_3&quot;</span>)</span>
-<span id="cb8-15"><a href="many_variables.html#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="many_variables.html#cb8-16" aria-hidden="true" tabindex="-1"></a>summary_5_3</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="many_variables.html#cb110-1" aria-hidden="true" tabindex="-1"></a>m5_3 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb110-2"><a href="many_variables.html#cb110-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>( </span>
+<span id="cb110-3"><a href="many_variables.html#cb110-3" aria-hidden="true" tabindex="-1"></a>    divorce_s <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb110-4"><a href="many_variables.html#cb110-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> marriage_s <span class="sc">+</span> bA <span class="sc">*</span> age_s , </span>
+<span id="cb110-5"><a href="many_variables.html#cb110-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
+<span id="cb110-6"><a href="many_variables.html#cb110-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb110-7"><a href="many_variables.html#cb110-7" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) , </span>
+<span id="cb110-8"><a href="many_variables.html#cb110-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb110-9"><a href="many_variables.html#cb110-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data =</span> data_divorce )</span>
+<span id="cb110-10"><a href="many_variables.html#cb110-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-11"><a href="many_variables.html#cb110-11" aria-hidden="true" tabindex="-1"></a>summary_5_3 <span class="ot">&lt;-</span> m5_3 <span class="sc">%&gt;%</span></span>
+<span id="cb110-12"><a href="many_variables.html#cb110-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, bM, bA, sigma) <span class="sc">%&gt;%</span></span>
+<span id="cb110-13"><a href="many_variables.html#cb110-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb110-14"><a href="many_variables.html#cb110-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_3&quot;</span>)</span>
+<span id="cb110-15"><a href="many_variables.html#cb110-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-16"><a href="many_variables.html#cb110-16" aria-hidden="true" tabindex="-1"></a>summary_5_3</span></code></pre></div>
 <pre><code>## # A tibble: 4 x 8
 ##   .variable   .value .lower .upper .width .point .interval model
 ##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
-## 1 a          0.00132 -0.150  0.154   0.89 median qi        m5_3 
-## 2 bA        -0.609   -0.852 -0.372   0.89 median qi        m5_3 
-## 3 bM        -0.0611  -0.305  0.175   0.89 median qi        m5_3 
-## 4 sigma      0.787    0.659  0.912   0.89 median qi        m5_3</code></pre>
+## 1 a          0.00250 -0.157  0.154   0.89 median qi        m5_3 
+## 2 bA        -0.615   -0.854 -0.376   0.89 median qi        m5_3 
+## 3 bM        -0.0652  -0.303  0.172   0.89 median qi        m5_3 
+## 4 sigma      0.787    0.664  0.906   0.89 median qi        m5_3</code></pre>
 <p>Here’s a plot for the three models:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="many_variables.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(summary_5_1, summary_5_2,summary_5_3) <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="many_variables.html#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">color =</span> model)) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="many_variables.html#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="sc">-</span><span class="fl">0.3</span>))<span class="sc">+</span></span>
-<span id="cb10-4"><a href="many_variables.html#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;parameters&quot;</span>)</span></code></pre></div>
-<p><img src="05-many_variables_files/figure-html/unnamed-chunk-8-1.png" width="672" />
-As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="many_variables.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(summary_5_1, summary_5_2,summary_5_3) <span class="sc">%&gt;%</span></span>
+<span id="cb112-2"><a href="many_variables.html#cb112-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">color =</span> model)) <span class="sc">+</span></span>
+<span id="cb112-3"><a href="many_variables.html#cb112-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="sc">-</span><span class="fl">0.3</span>))<span class="sc">+</span></span>
+<span id="cb112-4"><a href="many_variables.html#cb112-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;parameters&quot;</span>)</span></code></pre></div>
+<p><img src="05-many_variables_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>As predicted by the second DAG, marriage rate is not associated with divorce rate once you condition on age of marriage.</p>
+<p>The chapter then describes three plots to help visualise inferences from more complicated models then the simple one predictor models from chapter 4.</p>
+<ol style="list-style-type: decimal">
+<li>Predictor residual plots</li>
+<li>Posterior prediction plots</li>
+<li>Counterfactual plots</li>
+</ol>
+<p>For now I’ll only recreate the posterior prediction plot.</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="many_variables.html#cb113-1" aria-hidden="true" tabindex="-1"></a>plot_data_m5_3 <span class="ot">&lt;-</span> data_divorce<span class="sc">%&gt;%</span></span>
+<span id="cb113-2"><a href="many_variables.html#cb113-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Loc, divorce_s, marriage_s, age_s)<span class="sc">%&gt;%</span></span>
+<span id="cb113-3"><a href="many_variables.html#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_3)<span class="sc">%&gt;%</span> <span class="co"># add the predicted mean divorce rates</span></span>
+<span id="cb113-4"><a href="many_variables.html#cb113-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Loc, divorce_s)<span class="sc">%&gt;%</span></span>
+<span id="cb113-5"><a href="many_variables.html#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">x=</span>.linpred, <span class="at">.width =</span> <span class="fl">0.89</span>) <span class="co"># summarise each group in the df </span></span>
+<span id="cb113-6"><a href="many_variables.html#cb113-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-7"><a href="many_variables.html#cb113-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plot_data_m5_3) <span class="co"># x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits</span></span></code></pre></div>
+<pre><code>## # A tibble: 6 x 8
+##   Loc   divorce_s      x   .lower .upper .width .point .interval
+##   &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 AK        1.54   0.321 -0.00462  0.646   0.89 mean   qi       
+## 2 AL        1.65   0.371  0.163    0.576   0.89 mean   qi       
+## 3 AR        2.09   0.758  0.420    1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.123 -0.0370   0.283   0.89 mean   qi       
+## 5 CA       -0.927 -0.349 -0.540   -0.160   0.89 mean   qi       
+## 6 CO        1.05   0.118 -0.116    0.350   0.89 mean   qi</code></pre>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="many_variables.html#cb115-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_data_m5_3)<span class="sc">+</span></span>
+<span id="cb115-2"><a href="many_variables.html#cb115-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>divorce_s, <span class="at">y=</span>x,<span class="at">ymin=</span>.lower,<span class="at">ymax=</span>.upper), </span>
+<span id="cb115-3"><a href="many_variables.html#cb115-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">orientation =</span> <span class="st">&quot;vertical&quot;</span>,</span>
+<span id="cb115-4"><a href="many_variables.html#cb115-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">colour =</span> <span class="st">&#39;#EE8866&#39;</span>)<span class="sc">+</span></span>
+<span id="cb115-5"><a href="many_variables.html#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Observed Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb115-6"><a href="many_variables.html#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Predicted Mean Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb115-7"><a href="many_variables.html#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>,<span class="at">intercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb115-8"><a href="many_variables.html#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data=</span>   plot_data_m5_3<span class="sc">%&gt;%</span></span>
+<span id="cb115-9"><a href="many_variables.html#cb115-9" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">filter</span>(Loc <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;UT&quot;</span>,<span class="st">&quot;RI&quot;</span>,<span class="st">&quot;ME&quot;</span>)),</span>
+<span id="cb115-10"><a href="many_variables.html#cb115-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span> divorce_s, <span class="at">y=</span> x, <span class="at">label =</span> Loc ), <span class="at">nudge_x =</span> <span class="sc">-</span><span class="fl">0.1</span>)</span></code></pre></div>
+<p><img src="05-many_variables_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>States above the line have lower divorce rates than the model expects, given marriage rate and median age at marriage. States below the line have a higher divorce rate than the model expects.</p>
+<p>There is a section in the chapter on variables that mask the influence of each other on the outcome of interest. A case study of primate milk and brain size is used to illustrate.</p>
+<p>There is a section on using categorical data in regression models. The key point in this section is the argument for index variables over indicators variables when coding categorical variables.</p>
+<p>With indicator variables you might look at the !Kung San data from the previous chapter, and decide to code men as 1 and women as 0 in a variable called <span class="math inline">\(m\)</span>. Your model for height might look like:</p>
+<p><span class="math display">\[
+\begin{aligned}
+h_i &amp;∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &amp;= \alpha + \beta_m m_i
+\end{aligned}
+\]</span>
+One problem with this is that the parameter <span class="math inline">\(\beta_m\)</span> now means the expected difference in height between men and women, and it may be difficult to set a prior. This approach also assumes that there is more uncertainty about male height than female height, since <span class="math inline">\(\beta_m\)</span> and its distribution doesn’t enter into our predictions for the height of women.</p>
+<p>An alternative approach is to use index variables. You might code the !Kung San men as 1 and the women as 2 and your model might look like:</p>
+<p><span class="math display">\[
+\begin{aligned}
+h_i &amp;∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &amp;= \alpha_{\text{sex}[i]} 
+\end{aligned}
+\]</span>
+We have a vector of two intercept parameters and select either <span class="math inline">\(\alpha_1\)</span> or <span class="math inline">\(\alpha_2\)</span> depending on the index at each row of data. The same prior can be assigned to each, and neither is inherently more uncertain than the other.</p>
+<p>The index approach also extends much more simply to more than two categories.</p>
 </div>
 <div id="questions-4" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Questions</h2>

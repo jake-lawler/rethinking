@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -434,35 +437,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="simulating-king-markovs-journey-a-metropolis-algorithm" class="section level3 unnumbered">
 <h3>Simulating King Markov’s Journey (A Metropolis Algorithm)</h3>
 <p>The chapter opens with an implementation of the Metropolis algorithm, through a parable about the king of a ring of ten islands. Each week, the king decides whether to remain on his current island, or move to a neighbouring island. A proposal island is chosen by flipping a coin - either the next island clockwise or anti-clockwise from the current one. Whether the king moves to the proposal island or stays put depends on a random draw, with the probability weighted by the relative population of the island:</p>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="markov_chain.html#cb198-1" aria-hidden="true" tabindex="-1"></a>num_weeks <span class="ot">&lt;-</span> <span class="fl">1e5</span> </span>
-<span id="cb198-2"><a href="markov_chain.html#cb198-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-3"><a href="markov_chain.html#cb198-3" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,num_weeks) </span>
-<span id="cb198-4"><a href="markov_chain.html#cb198-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-5"><a href="markov_chain.html#cb198-5" aria-hidden="true" tabindex="-1"></a>current <span class="ot">&lt;-</span> <span class="dv">10</span> </span>
-<span id="cb198-6"><a href="markov_chain.html#cb198-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-7"><a href="markov_chain.html#cb198-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_weeks ) { </span>
-<span id="cb198-8"><a href="markov_chain.html#cb198-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-9"><a href="markov_chain.html#cb198-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">## record current position </span></span>
-<span id="cb198-10"><a href="markov_chain.html#cb198-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-11"><a href="markov_chain.html#cb198-11" aria-hidden="true" tabindex="-1"></a>  positions[i] <span class="ot">&lt;-</span> current</span>
-<span id="cb198-12"><a href="markov_chain.html#cb198-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-13"><a href="markov_chain.html#cb198-13" aria-hidden="true" tabindex="-1"></a>  <span class="do">## flip coin to generate proposal </span></span>
-<span id="cb198-14"><a href="markov_chain.html#cb198-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-15"><a href="markov_chain.html#cb198-15" aria-hidden="true" tabindex="-1"></a>  proposal <span class="ot">&lt;-</span> current <span class="sc">+</span> <span class="fu">sample</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) , <span class="at">size=</span><span class="dv">1</span> )</span>
-<span id="cb198-16"><a href="markov_chain.html#cb198-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-17"><a href="markov_chain.html#cb198-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">## now make sure he loops around the archipelago </span></span>
-<span id="cb198-18"><a href="markov_chain.html#cb198-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb198-19"><a href="markov_chain.html#cb198-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> ( proposal <span class="sc">&lt;</span> <span class="dv">1</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">10</span> </span>
-<span id="cb198-20"><a href="markov_chain.html#cb198-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> ( proposal <span class="sc">&gt;</span> <span class="dv">10</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb198-21"><a href="markov_chain.html#cb198-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-22"><a href="markov_chain.html#cb198-22" aria-hidden="true" tabindex="-1"></a>  <span class="do">## move?</span></span>
-<span id="cb198-23"><a href="markov_chain.html#cb198-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-24"><a href="markov_chain.html#cb198-24" aria-hidden="true" tabindex="-1"></a>  prob_move <span class="ot">&lt;-</span> proposal<span class="sc">/</span>current </span>
-<span id="cb198-25"><a href="markov_chain.html#cb198-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-26"><a href="markov_chain.html#cb198-26" aria-hidden="true" tabindex="-1"></a>  current <span class="ot">&lt;-</span> <span class="fu">ifelse</span>( <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> prob_move , proposal , current )</span>
-<span id="cb198-27"><a href="markov_chain.html#cb198-27" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb198-28"><a href="markov_chain.html#cb198-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb198-29"><a href="markov_chain.html#cb198-29" aria-hidden="true" tabindex="-1"></a>position_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">week =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100000</span>, <span class="at">position =</span> positions)</span></code></pre></div>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="markov_chain.html#cb218-1" aria-hidden="true" tabindex="-1"></a>num_weeks <span class="ot">&lt;-</span> <span class="fl">1e5</span> </span>
+<span id="cb218-2"><a href="markov_chain.html#cb218-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-3"><a href="markov_chain.html#cb218-3" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,num_weeks) </span>
+<span id="cb218-4"><a href="markov_chain.html#cb218-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-5"><a href="markov_chain.html#cb218-5" aria-hidden="true" tabindex="-1"></a>current <span class="ot">&lt;-</span> <span class="dv">10</span> </span>
+<span id="cb218-6"><a href="markov_chain.html#cb218-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-7"><a href="markov_chain.html#cb218-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_weeks ) { </span>
+<span id="cb218-8"><a href="markov_chain.html#cb218-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-9"><a href="markov_chain.html#cb218-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">## record current position </span></span>
+<span id="cb218-10"><a href="markov_chain.html#cb218-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-11"><a href="markov_chain.html#cb218-11" aria-hidden="true" tabindex="-1"></a>  positions[i] <span class="ot">&lt;-</span> current</span>
+<span id="cb218-12"><a href="markov_chain.html#cb218-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-13"><a href="markov_chain.html#cb218-13" aria-hidden="true" tabindex="-1"></a>  <span class="do">## flip coin to generate proposal </span></span>
+<span id="cb218-14"><a href="markov_chain.html#cb218-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-15"><a href="markov_chain.html#cb218-15" aria-hidden="true" tabindex="-1"></a>  proposal <span class="ot">&lt;-</span> current <span class="sc">+</span> <span class="fu">sample</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) , <span class="at">size=</span><span class="dv">1</span> )</span>
+<span id="cb218-16"><a href="markov_chain.html#cb218-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-17"><a href="markov_chain.html#cb218-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">## now make sure he loops around the archipelago </span></span>
+<span id="cb218-18"><a href="markov_chain.html#cb218-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-19"><a href="markov_chain.html#cb218-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> ( proposal <span class="sc">&lt;</span> <span class="dv">1</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">10</span> </span>
+<span id="cb218-20"><a href="markov_chain.html#cb218-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> ( proposal <span class="sc">&gt;</span> <span class="dv">10</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb218-21"><a href="markov_chain.html#cb218-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-22"><a href="markov_chain.html#cb218-22" aria-hidden="true" tabindex="-1"></a>  <span class="do">## move?</span></span>
+<span id="cb218-23"><a href="markov_chain.html#cb218-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-24"><a href="markov_chain.html#cb218-24" aria-hidden="true" tabindex="-1"></a>  prob_move <span class="ot">&lt;-</span> proposal<span class="sc">/</span>current </span>
+<span id="cb218-25"><a href="markov_chain.html#cb218-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-26"><a href="markov_chain.html#cb218-26" aria-hidden="true" tabindex="-1"></a>  current <span class="ot">&lt;-</span> <span class="fu">ifelse</span>( <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> prob_move , proposal , current )</span>
+<span id="cb218-27"><a href="markov_chain.html#cb218-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb218-28"><a href="markov_chain.html#cb218-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-29"><a href="markov_chain.html#cb218-29" aria-hidden="true" tabindex="-1"></a>position_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">week =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100000</span>, <span class="at">position =</span> positions)</span></code></pre></div>
 <p>Overall time, the proportion of time the king spends on each island is in proportion to its population:</p>
 <p><img src="09-markov_chain_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The chapter also displays the first 100 weeks so you can see the path that the king takes:</p>
@@ -470,42 +473,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Revisit: Return to the Overthinking box on page 276: Overthinking: Hamiltonian Monte Carlo in the raw.</p>
 <p>The chapter introduces the ulam tool for fitting Hamiltonian Monte Carlo (HMC) models in Stan. We load the ruggedness data from chapter 8 and fit the interaction model, this time using HMC instead of quadratic approximation.</p>
 <p>To save computation, we want to pre-process any variable transformations before passing the model to Stan. It’s also good practice to remove columns from the data frame if they will not be included in the model.</p>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="markov_chain.html#cb199-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged)</span>
-<span id="cb199-2"><a href="markov_chain.html#cb199-2" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(rugged)</span>
-<span id="cb199-3"><a href="markov_chain.html#cb199-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb199-4"><a href="markov_chain.html#cb199-4" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> data_rugged<span class="sc">%&gt;%</span></span>
-<span id="cb199-5"><a href="markov_chain.html#cb199-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))<span class="sc">%&gt;%</span></span>
-<span id="cb199-6"><a href="markov_chain.html#cb199-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(log_gdp))<span class="sc">%&gt;%</span></span>
-<span id="cb199-7"><a href="markov_chain.html#cb199-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp <span class="sc">/</span> <span class="fu">mean</span>(log_gdp),</span>
-<span id="cb199-8"><a href="markov_chain.html#cb199-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std =</span> rugged <span class="sc">/</span> <span class="fu">max</span>(rugged),</span>
-<span id="cb199-9"><a href="markov_chain.html#cb199-9" aria-hidden="true" tabindex="-1"></a>         cid <span class="ot">&lt;-</span> <span class="fu">if_else</span>(cont_africa<span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>),</span>
-<span id="cb199-10"><a href="markov_chain.html#cb199-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid =</span> <span class="fu">factor</span>(cid))<span class="sc">%&gt;%</span></span>
-<span id="cb199-11"><a href="markov_chain.html#cb199-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(log_gdp_std, rugged_std,cid)</span></code></pre></div>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="markov_chain.html#cb219-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged)</span>
+<span id="cb219-2"><a href="markov_chain.html#cb219-2" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(rugged)</span>
+<span id="cb219-3"><a href="markov_chain.html#cb219-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb219-4"><a href="markov_chain.html#cb219-4" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> data_rugged<span class="sc">%&gt;%</span></span>
+<span id="cb219-5"><a href="markov_chain.html#cb219-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))<span class="sc">%&gt;%</span></span>
+<span id="cb219-6"><a href="markov_chain.html#cb219-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(log_gdp))<span class="sc">%&gt;%</span></span>
+<span id="cb219-7"><a href="markov_chain.html#cb219-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp <span class="sc">/</span> <span class="fu">mean</span>(log_gdp),</span>
+<span id="cb219-8"><a href="markov_chain.html#cb219-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std =</span> rugged <span class="sc">/</span> <span class="fu">max</span>(rugged),</span>
+<span id="cb219-9"><a href="markov_chain.html#cb219-9" aria-hidden="true" tabindex="-1"></a>         cid <span class="ot">&lt;-</span> <span class="fu">if_else</span>(cont_africa<span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb219-10"><a href="markov_chain.html#cb219-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid =</span> <span class="fu">factor</span>(cid))<span class="sc">%&gt;%</span></span>
+<span id="cb219-11"><a href="markov_chain.html#cb219-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(log_gdp_std, rugged_std,cid)</span></code></pre></div>
 <p>The model in chapter 8, fit using quadratic approximation looks like this:</p>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="markov_chain.html#cb200-1" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb200-2"><a href="markov_chain.html#cb200-2" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb200-3"><a href="markov_chain.html#cb200-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
-<span id="cb200-4"><a href="markov_chain.html#cb200-4" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
-<span id="cb200-5"><a href="markov_chain.html#cb200-5" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
-<span id="cb200-6"><a href="markov_chain.html#cb200-6" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb200-7"><a href="markov_chain.html#cb200-7" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
-<span id="cb200-8"><a href="markov_chain.html#cb200-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb200-9"><a href="markov_chain.html#cb200-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m8<span class="fl">.3</span> , <span class="at">depth=</span><span class="dv">2</span> )</span></code></pre></div>
-<pre><code>##             mean          sd        5.5%       94.5%
-## a[1]   0.8865653 0.015674758  0.86151402  0.91161660
-## a[2]   1.0505660 0.009936003  1.03468636  1.06644567
-## b[1]   0.1324963 0.074200164  0.01391007  0.25108246
-## b[2]  -0.1425853 0.054746135 -0.23008023 -0.05509043
-## sigma  0.1094874 0.005934386  0.10000308  0.11897167</code></pre>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="markov_chain.html#cb220-1" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb220-2"><a href="markov_chain.html#cb220-2" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb220-3"><a href="markov_chain.html#cb220-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
+<span id="cb220-4"><a href="markov_chain.html#cb220-4" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
+<span id="cb220-5"><a href="markov_chain.html#cb220-5" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
+<span id="cb220-6"><a href="markov_chain.html#cb220-6" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb220-7"><a href="markov_chain.html#cb220-7" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
+<span id="cb220-8"><a href="markov_chain.html#cb220-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb220-9"><a href="markov_chain.html#cb220-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m8<span class="fl">.3</span> , <span class="at">depth=</span><span class="dv">2</span> )</span></code></pre></div>
+<pre><code>##             mean         sd        5.5%       94.5%
+## a[1]   0.8865525 0.01567484  0.86150110  0.91160394
+## a[2]   1.0505648 0.00993607  1.03468508  1.06644460
+## b[1]   0.1324255 0.07420070  0.01383848  0.25101256
+## b[2]  -0.1423721 0.05474672 -0.22986791 -0.05487626
+## sigma  0.1094881 0.00593449  0.10000365  0.11897257</code></pre>
 <p>Here is the same model using ulam:</p>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="markov_chain.html#cb202-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb202-2"><a href="markov_chain.html#cb202-2" aria-hidden="true" tabindex="-1"></a>m9<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>(</span>
-<span id="cb202-3"><a href="markov_chain.html#cb202-3" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb202-4"><a href="markov_chain.html#cb202-4" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) ,</span>
-<span id="cb202-5"><a href="markov_chain.html#cb202-5" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) ,</span>
-<span id="cb202-6"><a href="markov_chain.html#cb202-6" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) ,</span>
-<span id="cb202-7"><a href="markov_chain.html#cb202-7" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb202-8"><a href="markov_chain.html#cb202-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged , <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span><span class="dv">4</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="markov_chain.html#cb222-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb222-2"><a href="markov_chain.html#cb222-2" aria-hidden="true" tabindex="-1"></a>m9<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>(</span>
+<span id="cb222-3"><a href="markov_chain.html#cb222-3" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb222-4"><a href="markov_chain.html#cb222-4" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) ,</span>
+<span id="cb222-5"><a href="markov_chain.html#cb222-5" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) ,</span>
+<span id="cb222-6"><a href="markov_chain.html#cb222-6" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) ,</span>
+<span id="cb222-7"><a href="markov_chain.html#cb222-7" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb222-8"><a href="markov_chain.html#cb222-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged , <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span><span class="dv">4</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
 <pre><code>##             mean          sd        5.5%      94.5%    n_eff     Rhat4
 ## a[1]   0.8862251 0.016028192  0.86000551  0.9120409 2699.895 0.9990555
 ## a[2]   1.0511253 0.010116677  1.03477395  1.0672044 2851.886 0.9990817
@@ -513,9 +516,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## b[2]  -0.1422040 0.054041641 -0.22564370 -0.0549517 2981.076 0.9988560
 ## sigma  0.1115890 0.006322299  0.10219079  0.1215263 2560.062 1.0000555</code></pre>
 <p>We show the traceplot and trankplot for the model fit, in order to contrast with more pathological plots that will be shown in the next section.</p>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="markov_chain.html#cb204-1" aria-hidden="true" tabindex="-1"></a><span class="fu">traceplot</span>(m9<span class="fl">.1</span>)</span>
-<span id="cb204-2"><a href="markov_chain.html#cb204-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb204-3"><a href="markov_chain.html#cb204-3" aria-hidden="true" tabindex="-1"></a><span class="fu">trankplot</span>(m9<span class="fl">.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="markov_chain.html#cb224-1" aria-hidden="true" tabindex="-1"></a><span class="fu">traceplot</span>(m9<span class="fl">.1</span>)</span>
+<span id="cb224-2"><a href="markov_chain.html#cb224-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb224-3"><a href="markov_chain.html#cb224-3" aria-hidden="true" tabindex="-1"></a><span class="fu">trankplot</span>(m9<span class="fl">.1</span>)</span></code></pre></div>
 <p><img src="09-markov_chain_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="09-markov_chain_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
 <p>The chapter includes an example of a model with very flat priors and very little data, in order to demonstrate how you may be able to tell if you’re attempt at model fitting has gone wrong somewhere.</p>
 <p><img src="09-markov_chain_files/figure-html/unnamed-chunk-12-1.png" width="672" /><img src="09-markov_chain_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>

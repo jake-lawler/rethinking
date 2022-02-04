@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -434,14 +437,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="brain-volume-model" class="section level3 unnumbered">
 <h3>Brain Volume model</h3>
 <p>We fit the linear brain volume model since it is used to illustrate various concepts later in the chapter:</p>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="ulysses.html#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb142-2"><a href="ulysses.html#cb142-2" aria-hidden="true" tabindex="-1"></a>m7<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb142-3"><a href="ulysses.html#cb142-3" aria-hidden="true" tabindex="-1"></a>  brain_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , <span class="fu">exp</span>(log_sigma) ), </span>
-<span id="cb142-4"><a href="ulysses.html#cb142-4" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>mass_std, </span>
-<span id="cb142-5"><a href="ulysses.html#cb142-5" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="dv">1</span> ), </span>
-<span id="cb142-6"><a href="ulysses.html#cb142-6" aria-hidden="true" tabindex="-1"></a>  b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">10</span> ), </span>
-<span id="cb142-7"><a href="ulysses.html#cb142-7" aria-hidden="true" tabindex="-1"></a>  log_sigma <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> )</span>
-<span id="cb142-8"><a href="ulysses.html#cb142-8" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>brain_volume )</span></code></pre></div>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="ulysses.html#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb162-2"><a href="ulysses.html#cb162-2" aria-hidden="true" tabindex="-1"></a>m7<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb162-3"><a href="ulysses.html#cb162-3" aria-hidden="true" tabindex="-1"></a>  brain_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , <span class="fu">exp</span>(log_sigma) ), </span>
+<span id="cb162-4"><a href="ulysses.html#cb162-4" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>mass_std, </span>
+<span id="cb162-5"><a href="ulysses.html#cb162-5" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="dv">1</span> ), </span>
+<span id="cb162-6"><a href="ulysses.html#cb162-6" aria-hidden="true" tabindex="-1"></a>  b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">10</span> ), </span>
+<span id="cb162-7"><a href="ulysses.html#cb162-7" aria-hidden="true" tabindex="-1"></a>  log_sigma <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> )</span>
+<span id="cb162-8"><a href="ulysses.html#cb162-8" aria-hidden="true" tabindex="-1"></a>), <span class="at">data=</span>brain_volume )</span></code></pre></div>
 </div>
 <div id="log-pointwise-predictive-density" class="section level3 unnumbered">
 <h3>Log Pointwise Predictive Density</h3>
@@ -452,29 +455,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 Where <span class="math inline">\(S\)</span> is the number of samples and each <span class="math inline">\(\theta_s\)</span> is a sample from <span class="math inline">\(\Theta\)</span>.</p>
 <p>For an observation say <span class="math inline">\(y_1\)</span>, you calculate the average probability of seeing this observation given the posterior (i.e. you sum the conditional probabilities of the observation over each posterior sample, and divide by the number of samples). You repeat this process for each observation <span class="math inline">\(y_i\)</span>, take the log of each and sum them all together.</p>
 <p>Here is the calculation done in R, from the “Overthinking: Computing the lppd” box:</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="ulysses.html#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) </span>
-<span id="cb143-2"><a href="ulysses.html#cb143-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-3"><a href="ulysses.html#cb143-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the lppd function built into the Rethinking package</span></span>
-<span id="cb143-4"><a href="ulysses.html#cb143-4" aria-hidden="true" tabindex="-1"></a>lppd1 <span class="ot">&lt;-</span> <span class="fu">lppd</span>( m7<span class="fl">.1</span> , <span class="at">n=</span><span class="fl">1e4</span> )</span>
-<span id="cb143-5"><a href="ulysses.html#cb143-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-6"><a href="ulysses.html#cb143-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-7"><a href="ulysses.html#cb143-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extracting posterior samples and calculating manually</span></span>
-<span id="cb143-8"><a href="ulysses.html#cb143-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-9"><a href="ulysses.html#cb143-9" aria-hidden="true" tabindex="-1"></a>logprob <span class="ot">&lt;-</span> <span class="fu">sim</span>( m7<span class="fl">.1</span> , <span class="at">ll=</span><span class="cn">TRUE</span> , <span class="at">n=</span><span class="fl">1e4</span> )   <span class="co"># logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each</span></span>
-<span id="cb143-10"><a href="ulysses.html#cb143-10" aria-hidden="true" tabindex="-1"></a>                                           <span class="co"># of the seven observations. </span></span>
-<span id="cb143-11"><a href="ulysses.html#cb143-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-12"><a href="ulysses.html#cb143-12" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">ncol</span>(logprob) </span>
-<span id="cb143-13"><a href="ulysses.html#cb143-13" aria-hidden="true" tabindex="-1"></a>ns <span class="ot">&lt;-</span> <span class="fu">nrow</span>(logprob) </span>
-<span id="cb143-14"><a href="ulysses.html#cb143-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-15"><a href="ulysses.html#cb143-15" aria-hidden="true" tabindex="-1"></a>average_post_prob <span class="ot">&lt;-</span> <span class="cf">function</span>( i ) {</span>
-<span id="cb143-16"><a href="ulysses.html#cb143-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">log_sum_exp</span>( logprob[,i] ) <span class="sc">-</span> <span class="fu">log</span>(ns)}     <span class="co"># this functions sums the log probabilities of the 10,000 samples and divides by the number of rows</span></span>
-<span id="cb143-17"><a href="ulysses.html#cb143-17" aria-hidden="true" tabindex="-1"></a>                                              <span class="co"># except it is working on a log probability scale.</span></span>
-<span id="cb143-18"><a href="ulysses.html#cb143-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-19"><a href="ulysses.html#cb143-19" aria-hidden="true" tabindex="-1"></a>lppd2 <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n , average_post_prob )    <span class="co"># the function is applied to each of the seven observations</span></span>
-<span id="cb143-20"><a href="ulysses.html#cb143-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-21"><a href="ulysses.html#cb143-21" aria-hidden="true" tabindex="-1"></a>lppd1</span></code></pre></div>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="ulysses.html#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) </span>
+<span id="cb163-2"><a href="ulysses.html#cb163-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-3"><a href="ulysses.html#cb163-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the lppd function built into the Rethinking package</span></span>
+<span id="cb163-4"><a href="ulysses.html#cb163-4" aria-hidden="true" tabindex="-1"></a>lppd1 <span class="ot">&lt;-</span> <span class="fu">lppd</span>( m7<span class="fl">.1</span> , <span class="at">n=</span><span class="fl">1e4</span> )</span>
+<span id="cb163-5"><a href="ulysses.html#cb163-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-6"><a href="ulysses.html#cb163-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-7"><a href="ulysses.html#cb163-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extracting posterior samples and calculating manually</span></span>
+<span id="cb163-8"><a href="ulysses.html#cb163-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-9"><a href="ulysses.html#cb163-9" aria-hidden="true" tabindex="-1"></a>logprob <span class="ot">&lt;-</span> <span class="fu">sim</span>( m7<span class="fl">.1</span> , <span class="at">ll=</span><span class="cn">TRUE</span> , <span class="at">n=</span><span class="fl">1e4</span> )   <span class="co"># logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each</span></span>
+<span id="cb163-10"><a href="ulysses.html#cb163-10" aria-hidden="true" tabindex="-1"></a>                                           <span class="co"># of the seven observations. </span></span>
+<span id="cb163-11"><a href="ulysses.html#cb163-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-12"><a href="ulysses.html#cb163-12" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">ncol</span>(logprob) </span>
+<span id="cb163-13"><a href="ulysses.html#cb163-13" aria-hidden="true" tabindex="-1"></a>ns <span class="ot">&lt;-</span> <span class="fu">nrow</span>(logprob) </span>
+<span id="cb163-14"><a href="ulysses.html#cb163-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-15"><a href="ulysses.html#cb163-15" aria-hidden="true" tabindex="-1"></a>average_post_prob <span class="ot">&lt;-</span> <span class="cf">function</span>( i ) {</span>
+<span id="cb163-16"><a href="ulysses.html#cb163-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">log_sum_exp</span>( logprob[,i] ) <span class="sc">-</span> <span class="fu">log</span>(ns)}     <span class="co"># this functions sums the log probabilities of the 10,000 samples and divides by the number of rows</span></span>
+<span id="cb163-17"><a href="ulysses.html#cb163-17" aria-hidden="true" tabindex="-1"></a>                                              <span class="co"># except it is working on a log probability scale.</span></span>
+<span id="cb163-18"><a href="ulysses.html#cb163-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-19"><a href="ulysses.html#cb163-19" aria-hidden="true" tabindex="-1"></a>lppd2 <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n , average_post_prob )    <span class="co"># the function is applied to each of the seven observations</span></span>
+<span id="cb163-20"><a href="ulysses.html#cb163-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb163-21"><a href="ulysses.html#cb163-21" aria-hidden="true" tabindex="-1"></a>lppd1</span></code></pre></div>
 <pre><code>## [1]  0.6099135  0.6484063  0.5496868  0.6235310  0.4648179  0.4347736 -0.8444470</code></pre>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="ulysses.html#cb145-1" aria-hidden="true" tabindex="-1"></a>lppd2</span></code></pre></div>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="ulysses.html#cb165-1" aria-hidden="true" tabindex="-1"></a>lppd2</span></code></pre></div>
 <pre><code>## [1]  0.6117253  0.6488831  0.5448708  0.6278331  0.4638980  0.4263233 -0.8522201</code></pre>
 <p>Summing over these seven observations will give the total lppd.</p>
 </div>
@@ -486,26 +489,26 @@ y_i &amp; \sim \text{Normal}(\mu_i,1) \\
 \mu_i &amp;= (0.15)x_{1,i} - (0.4)x_{2,i}
 \end{aligned}\]</span></p>
 <p>To the data produced, we try to fit linear regressions with between 1 and 5 parameters, and compare the in and out of sample deviance for these five models.</p>
-<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="ulysses.html#cb147-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">20</span> </span>
-<span id="cb147-2"><a href="ulysses.html#cb147-2" aria-hidden="true" tabindex="-1"></a>kseq <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span> </span>
-<span id="cb147-3"><a href="ulysses.html#cb147-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-4"><a href="ulysses.html#cb147-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sim_train_test simulates Gaussian data with N cases and fits a model with k parameters, returning the in sample and out of sample lppd (can also do WAIC criteria)</span></span>
-<span id="cb147-5"><a href="ulysses.html#cb147-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-6"><a href="ulysses.html#cb147-6" aria-hidden="true" tabindex="-1"></a><span class="co"># dev contains the mean in sample deviance, mean out of sample deviance, sd of in sample deviance, and sd of out of sample deviance for each model with 1-5 parameters.  </span></span>
-<span id="cb147-7"><a href="ulysses.html#cb147-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-8"><a href="ulysses.html#cb147-8" aria-hidden="true" tabindex="-1"></a>dev <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>( kseq , <span class="cf">function</span>(k) {</span>
-<span id="cb147-9"><a href="ulysses.html#cb147-9" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">replicate</span>( <span class="dv">100</span> , <span class="fu">sim_train_test</span>( <span class="at">N=</span>N, <span class="at">k=</span>k , <span class="at">cv.cores =</span> <span class="dv">4</span>)); </span>
-<span id="cb147-10"><a href="ulysses.html#cb147-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">mean_in =</span> <span class="fu">mean</span>(r[<span class="dv">1</span>,]) ,<span class="at">mean_out=</span> <span class="fu">mean</span>(r[<span class="dv">2</span>,]) ,<span class="at">sd_in=</span> <span class="fu">sd</span>(r[<span class="dv">1</span>,]) ,<span class="at">sd_out=</span> <span class="fu">sd</span>(r[<span class="dv">2</span>,]) )</span>
-<span id="cb147-11"><a href="ulysses.html#cb147-11" aria-hidden="true" tabindex="-1"></a>} )</span>
-<span id="cb147-12"><a href="ulysses.html#cb147-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-13"><a href="ulysses.html#cb147-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>dev)<span class="sc">+</span></span>
-<span id="cb147-14"><a href="ulysses.html#cb147-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="at">y=</span>mean_in,<span class="at">ymin=</span>mean_in<span class="sc">-</span>sd_in,<span class="at">ymax=</span>mean_in<span class="sc">+</span>sd_in), <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
-<span id="cb147-15"><a href="ulysses.html#cb147-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">1.1</span><span class="sc">:</span><span class="fl">5.1</span>,<span class="at">y=</span>mean_out,<span class="at">ymin=</span>mean_out<span class="sc">-</span>sd_out,<span class="at">ymax=</span>mean_out<span class="sc">+</span>sd_out))<span class="sc">+</span></span>
-<span id="cb147-16"><a href="ulysses.html#cb147-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">2.9</span>, <span class="at">y =</span> mean_in[<span class="dv">3</span>], <span class="at">label=</span><span class="st">&quot;in&quot;</span>),<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
-<span id="cb147-17"><a href="ulysses.html#cb147-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">3.2</span>, <span class="at">y =</span> mean_out[<span class="dv">3</span>], <span class="at">label=</span><span class="st">&quot;out&quot;</span>))<span class="sc">+</span></span>
-<span id="cb147-18"><a href="ulysses.html#cb147-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;number of parameters&quot;</span>)<span class="sc">+</span></span>
-<span id="cb147-19"><a href="ulysses.html#cb147-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;deviance&quot;</span>)<span class="sc">+</span></span>
-<span id="cb147-20"><a href="ulysses.html#cb147-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;N = 20&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="ulysses.html#cb167-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">20</span> </span>
+<span id="cb167-2"><a href="ulysses.html#cb167-2" aria-hidden="true" tabindex="-1"></a>kseq <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span> </span>
+<span id="cb167-3"><a href="ulysses.html#cb167-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb167-4"><a href="ulysses.html#cb167-4" aria-hidden="true" tabindex="-1"></a><span class="co"># sim_train_test simulates Gaussian data with N cases and fits a model with k parameters, returning the in sample and out of sample lppd (can also do WAIC criteria)</span></span>
+<span id="cb167-5"><a href="ulysses.html#cb167-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb167-6"><a href="ulysses.html#cb167-6" aria-hidden="true" tabindex="-1"></a><span class="co"># dev contains the mean in sample deviance, mean out of sample deviance, sd of in sample deviance, and sd of out of sample deviance for each model with 1-5 parameters.  </span></span>
+<span id="cb167-7"><a href="ulysses.html#cb167-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb167-8"><a href="ulysses.html#cb167-8" aria-hidden="true" tabindex="-1"></a>dev <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>( kseq , <span class="cf">function</span>(k) {</span>
+<span id="cb167-9"><a href="ulysses.html#cb167-9" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">replicate</span>( <span class="dv">100</span> , <span class="fu">sim_train_test</span>( <span class="at">N=</span>N, <span class="at">k=</span>k , <span class="at">cv.cores =</span> <span class="dv">4</span>)); </span>
+<span id="cb167-10"><a href="ulysses.html#cb167-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">mean_in =</span> <span class="fu">mean</span>(r[<span class="dv">1</span>,]) ,<span class="at">mean_out=</span> <span class="fu">mean</span>(r[<span class="dv">2</span>,]) ,<span class="at">sd_in=</span> <span class="fu">sd</span>(r[<span class="dv">1</span>,]) ,<span class="at">sd_out=</span> <span class="fu">sd</span>(r[<span class="dv">2</span>,]) )</span>
+<span id="cb167-11"><a href="ulysses.html#cb167-11" aria-hidden="true" tabindex="-1"></a>} )</span>
+<span id="cb167-12"><a href="ulysses.html#cb167-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb167-13"><a href="ulysses.html#cb167-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>dev)<span class="sc">+</span></span>
+<span id="cb167-14"><a href="ulysses.html#cb167-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="at">y=</span>mean_in,<span class="at">ymin=</span>mean_in<span class="sc">-</span>sd_in,<span class="at">ymax=</span>mean_in<span class="sc">+</span>sd_in), <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
+<span id="cb167-15"><a href="ulysses.html#cb167-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">1.1</span><span class="sc">:</span><span class="fl">5.1</span>,<span class="at">y=</span>mean_out,<span class="at">ymin=</span>mean_out<span class="sc">-</span>sd_out,<span class="at">ymax=</span>mean_out<span class="sc">+</span>sd_out))<span class="sc">+</span></span>
+<span id="cb167-16"><a href="ulysses.html#cb167-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">2.9</span>, <span class="at">y =</span> mean_in[<span class="dv">3</span>], <span class="at">label=</span><span class="st">&quot;in&quot;</span>),<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
+<span id="cb167-17"><a href="ulysses.html#cb167-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">3.2</span>, <span class="at">y =</span> mean_out[<span class="dv">3</span>], <span class="at">label=</span><span class="st">&quot;out&quot;</span>))<span class="sc">+</span></span>
+<span id="cb167-18"><a href="ulysses.html#cb167-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;number of parameters&quot;</span>)<span class="sc">+</span></span>
+<span id="cb167-19"><a href="ulysses.html#cb167-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;deviance&quot;</span>)<span class="sc">+</span></span>
+<span id="cb167-20"><a href="ulysses.html#cb167-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;N = 20&quot;</span>)</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Overthinking: WAIC calculations.</p>
 <p>The formula for WAIC is:</p>
@@ -514,45 +517,45 @@ y_i &amp; \sim \text{Normal}(\mu_i,1) \\
 \]</span></p>
 <p>where <span class="math inline">\(\text{var}_\theta\)</span> means taking the variance over the set of posterior samples.</p>
 <p>The book calculates it for a simple model:</p>
-<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="ulysses.html#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit a linear model of stopping distance &amp; speed</span></span>
-<span id="cb148-2"><a href="ulysses.html#cb148-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-3"><a href="ulysses.html#cb148-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cars) </span>
-<span id="cb148-4"><a href="ulysses.html#cb148-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-5"><a href="ulysses.html#cb148-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb148-6"><a href="ulysses.html#cb148-6" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb148-7"><a href="ulysses.html#cb148-7" aria-hidden="true" tabindex="-1"></a>dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb148-8"><a href="ulysses.html#cb148-8" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
-<span id="cb148-9"><a href="ulysses.html#cb148-9" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">100</span>), </span>
-<span id="cb148-10"><a href="ulysses.html#cb148-10" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>), </span>
-<span id="cb148-11"><a href="ulysses.html#cb148-11" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb148-12"><a href="ulysses.html#cb148-12" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>cars )</span>
-<span id="cb148-13"><a href="ulysses.html#cb148-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-14"><a href="ulysses.html#cb148-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">94</span>)</span>
-<span id="cb148-15"><a href="ulysses.html#cb148-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-16"><a href="ulysses.html#cb148-16" aria-hidden="true" tabindex="-1"></a>cars_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m,<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb148-17"><a href="ulysses.html#cb148-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-18"><a href="ulysses.html#cb148-18" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate (log) probability of seeing data in cars, assuming it comes from a normal distribution with mean and sd taken from the posterior samples. There are 1000 samples so logprob contains 1000 columns. There are 50 observations in cars so logprob has 50 rows.</span></span>
-<span id="cb148-19"><a href="ulysses.html#cb148-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-20"><a href="ulysses.html#cb148-20" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
-<span id="cb148-21"><a href="ulysses.html#cb148-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-22"><a href="ulysses.html#cb148-22" aria-hidden="true" tabindex="-1"></a>cars_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
-<span id="cb148-23"><a href="ulysses.html#cb148-23" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> cars_post<span class="sc">$</span>a[s] <span class="sc">+</span> cars_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
-<span id="cb148-24"><a href="ulysses.html#cb148-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , cars_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
-<span id="cb148-25"><a href="ulysses.html#cb148-25" aria-hidden="true" tabindex="-1"></a>} )</span>
-<span id="cb148-26"><a href="ulysses.html#cb148-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-27"><a href="ulysses.html#cb148-27" aria-hidden="true" tabindex="-1"></a><span class="co"># we take the log of the average probabilities (with a little extra code since we&#39;re working with log probabilities)</span></span>
-<span id="cb148-28"><a href="ulysses.html#cb148-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-29"><a href="ulysses.html#cb148-29" aria-hidden="true" tabindex="-1"></a>n_cases <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cars) </span>
-<span id="cb148-30"><a href="ulysses.html#cb148-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-31"><a href="ulysses.html#cb148-31" aria-hidden="true" tabindex="-1"></a>cars_lppd <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">log_sum_exp</span>(cars_logprob[i,]) <span class="sc">-</span> <span class="fu">log</span>(n_samples) )</span>
-<span id="cb148-32"><a href="ulysses.html#cb148-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-33"><a href="ulysses.html#cb148-33" aria-hidden="true" tabindex="-1"></a><span class="co"># we calculate the penalty term - taking the variance for each observation across all 1000 rows</span></span>
-<span id="cb148-34"><a href="ulysses.html#cb148-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-35"><a href="ulysses.html#cb148-35" aria-hidden="true" tabindex="-1"></a>cars_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(cars_logprob[i,]) )</span>
-<span id="cb148-36"><a href="ulysses.html#cb148-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-37"><a href="ulysses.html#cb148-37" aria-hidden="true" tabindex="-1"></a><span class="co"># we compute WAIC</span></span>
-<span id="cb148-38"><a href="ulysses.html#cb148-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb148-39"><a href="ulysses.html#cb148-39" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span>( <span class="fu">sum</span>(cars_lppd) <span class="sc">-</span> <span class="fu">sum</span>(cars_pWAIC) )</span></code></pre></div>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="ulysses.html#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit a linear model of stopping distance &amp; speed</span></span>
+<span id="cb168-2"><a href="ulysses.html#cb168-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-3"><a href="ulysses.html#cb168-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cars) </span>
+<span id="cb168-4"><a href="ulysses.html#cb168-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-5"><a href="ulysses.html#cb168-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb168-6"><a href="ulysses.html#cb168-6" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb168-7"><a href="ulysses.html#cb168-7" aria-hidden="true" tabindex="-1"></a>dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb168-8"><a href="ulysses.html#cb168-8" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
+<span id="cb168-9"><a href="ulysses.html#cb168-9" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">100</span>), </span>
+<span id="cb168-10"><a href="ulysses.html#cb168-10" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>), </span>
+<span id="cb168-11"><a href="ulysses.html#cb168-11" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb168-12"><a href="ulysses.html#cb168-12" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>cars )</span>
+<span id="cb168-13"><a href="ulysses.html#cb168-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-14"><a href="ulysses.html#cb168-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">94</span>)</span>
+<span id="cb168-15"><a href="ulysses.html#cb168-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-16"><a href="ulysses.html#cb168-16" aria-hidden="true" tabindex="-1"></a>cars_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m,<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb168-17"><a href="ulysses.html#cb168-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-18"><a href="ulysses.html#cb168-18" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate (log) probability of seeing data in cars, assuming it comes from a normal distribution with mean and sd taken from the posterior samples. There are 1000 samples so logprob contains 1000 columns. There are 50 observations in cars so logprob has 50 rows.</span></span>
+<span id="cb168-19"><a href="ulysses.html#cb168-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-20"><a href="ulysses.html#cb168-20" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
+<span id="cb168-21"><a href="ulysses.html#cb168-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-22"><a href="ulysses.html#cb168-22" aria-hidden="true" tabindex="-1"></a>cars_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
+<span id="cb168-23"><a href="ulysses.html#cb168-23" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> cars_post<span class="sc">$</span>a[s] <span class="sc">+</span> cars_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
+<span id="cb168-24"><a href="ulysses.html#cb168-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , cars_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
+<span id="cb168-25"><a href="ulysses.html#cb168-25" aria-hidden="true" tabindex="-1"></a>} )</span>
+<span id="cb168-26"><a href="ulysses.html#cb168-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-27"><a href="ulysses.html#cb168-27" aria-hidden="true" tabindex="-1"></a><span class="co"># we take the log of the average probabilities (with a little extra code since we&#39;re working with log probabilities)</span></span>
+<span id="cb168-28"><a href="ulysses.html#cb168-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-29"><a href="ulysses.html#cb168-29" aria-hidden="true" tabindex="-1"></a>n_cases <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cars) </span>
+<span id="cb168-30"><a href="ulysses.html#cb168-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-31"><a href="ulysses.html#cb168-31" aria-hidden="true" tabindex="-1"></a>cars_lppd <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">log_sum_exp</span>(cars_logprob[i,]) <span class="sc">-</span> <span class="fu">log</span>(n_samples) )</span>
+<span id="cb168-32"><a href="ulysses.html#cb168-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-33"><a href="ulysses.html#cb168-33" aria-hidden="true" tabindex="-1"></a><span class="co"># we calculate the penalty term - taking the variance for each observation across all 1000 rows</span></span>
+<span id="cb168-34"><a href="ulysses.html#cb168-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-35"><a href="ulysses.html#cb168-35" aria-hidden="true" tabindex="-1"></a>cars_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(cars_logprob[i,]) )</span>
+<span id="cb168-36"><a href="ulysses.html#cb168-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-37"><a href="ulysses.html#cb168-37" aria-hidden="true" tabindex="-1"></a><span class="co"># we compute WAIC</span></span>
+<span id="cb168-38"><a href="ulysses.html#cb168-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb168-39"><a href="ulysses.html#cb168-39" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span>( <span class="fu">sum</span>(cars_lppd) <span class="sc">-</span> <span class="fu">sum</span>(cars_pWAIC) )</span></code></pre></div>
 <pre><code>## [1] 423.3188</code></pre>
 </div>
 </div>
@@ -703,93 +706,93 @@ H(p) &amp;= -\sum^n_{i=1}p_i \ \log(p_i) \\
 <p>I’d expect the variance of the log probabilities here to decrease, since informative priors give a model more concentrated expectations for the data, i.e. they lead to unusual values of <span class="math inline">\(y\)</span> being assigned less probability.</p>
 <p>So I expect that making priors more narrowly peaked decreases the effective number of parameters.</p>
 <p>I’ll pick up the cars data set from earlier and fit a couple of models with increasingly concentrated priors.</p>
-<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="ulysses.html#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="co"># previous model</span></span>
-<span id="cb150-2"><a href="ulysses.html#cb150-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-3"><a href="ulysses.html#cb150-3" aria-hidden="true" tabindex="-1"></a><span class="co"># m &lt;- quap( alist(</span></span>
-<span id="cb150-4"><a href="ulysses.html#cb150-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dist ~ dnorm(mu,sigma), </span></span>
-<span id="cb150-5"><a href="ulysses.html#cb150-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mu &lt;- a + b*speed, </span></span>
-<span id="cb150-6"><a href="ulysses.html#cb150-6" aria-hidden="true" tabindex="-1"></a><span class="co"># a ~ dnorm(0,100), </span></span>
-<span id="cb150-7"><a href="ulysses.html#cb150-7" aria-hidden="true" tabindex="-1"></a><span class="co"># b ~ dnorm(0,10), </span></span>
-<span id="cb150-8"><a href="ulysses.html#cb150-8" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma ~ dexp(1)</span></span>
-<span id="cb150-9"><a href="ulysses.html#cb150-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ) , data=cars )</span></span>
-<span id="cb150-10"><a href="ulysses.html#cb150-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-11"><a href="ulysses.html#cb150-11" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">10</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
-<span id="cb150-12"><a href="ulysses.html#cb150-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-13"><a href="ulysses.html#cb150-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb150-14"><a href="ulysses.html#cb150-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_1, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
-<span id="cb150-15"><a href="ulysses.html#cb150-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb150-16"><a href="ulysses.html#cb150-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb150-17"><a href="ulysses.html#cb150-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="ulysses.html#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="co"># previous model</span></span>
+<span id="cb170-2"><a href="ulysses.html#cb170-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb170-3"><a href="ulysses.html#cb170-3" aria-hidden="true" tabindex="-1"></a><span class="co"># m &lt;- quap( alist(</span></span>
+<span id="cb170-4"><a href="ulysses.html#cb170-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dist ~ dnorm(mu,sigma), </span></span>
+<span id="cb170-5"><a href="ulysses.html#cb170-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mu &lt;- a + b*speed, </span></span>
+<span id="cb170-6"><a href="ulysses.html#cb170-6" aria-hidden="true" tabindex="-1"></a><span class="co"># a ~ dnorm(0,100), </span></span>
+<span id="cb170-7"><a href="ulysses.html#cb170-7" aria-hidden="true" tabindex="-1"></a><span class="co"># b ~ dnorm(0,10), </span></span>
+<span id="cb170-8"><a href="ulysses.html#cb170-8" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma ~ dexp(1)</span></span>
+<span id="cb170-9"><a href="ulysses.html#cb170-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ) , data=cars )</span></span>
+<span id="cb170-10"><a href="ulysses.html#cb170-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb170-11"><a href="ulysses.html#cb170-11" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">10</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
+<span id="cb170-12"><a href="ulysses.html#cb170-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb170-13"><a href="ulysses.html#cb170-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb170-14"><a href="ulysses.html#cb170-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_1, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
+<span id="cb170-15"><a href="ulysses.html#cb170-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb170-16"><a href="ulysses.html#cb170-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb170-17"><a href="ulysses.html#cb170-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-7-1.png" width="672" />
 These priors are very flat. Let’s make them more concentrated.</p>
 <p>Logically, the intercept a should be near zero since if you’re going zero mph it should take you zero feet to stop.</p>
 <p>Also we’d expect b to be positive - the faster you go the further it takes you to stop.</p>
-<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="ulysses.html#cb151-1" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">5</span>,<span class="fl">2.5</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
-<span id="cb151-2"><a href="ulysses.html#cb151-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb151-3"><a href="ulysses.html#cb151-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb151-4"><a href="ulysses.html#cb151-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_2, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
-<span id="cb151-5"><a href="ulysses.html#cb151-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb151-6"><a href="ulysses.html#cb151-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb151-7"><a href="ulysses.html#cb151-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="ulysses.html#cb171-1" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">5</span>,<span class="fl">2.5</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
+<span id="cb171-2"><a href="ulysses.html#cb171-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb171-3"><a href="ulysses.html#cb171-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb171-4"><a href="ulysses.html#cb171-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_2, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
+<span id="cb171-5"><a href="ulysses.html#cb171-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb171-6"><a href="ulysses.html#cb171-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb171-7"><a href="ulysses.html#cb171-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>I think this is reasonable for our purposes.</p>
 <p>Now let’s make the prior very concentrated.</p>
-<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="ulysses.html#cb152-1" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_3 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">5</span>,<span class="fl">0.5</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
-<span id="cb152-2"><a href="ulysses.html#cb152-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb152-3"><a href="ulysses.html#cb152-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb152-4"><a href="ulysses.html#cb152-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_3, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
-<span id="cb152-5"><a href="ulysses.html#cb152-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb152-6"><a href="ulysses.html#cb152-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb152-7"><a href="ulysses.html#cb152-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="ulysses.html#cb172-1" aria-hidden="true" tabindex="-1"></a>cars_prior_sim_3 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="fl">0.5</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">5</span>,<span class="fl">0.5</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
+<span id="cb172-2"><a href="ulysses.html#cb172-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb172-3"><a href="ulysses.html#cb172-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb172-4"><a href="ulysses.html#cb172-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>cars_prior_sim_3, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a))<span class="sc">+</span></span>
+<span id="cb172-5"><a href="ulysses.html#cb172-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.2</span><span class="sc">*</span><span class="fu">max</span>(cars<span class="sc">$</span>dist) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb172-6"><a href="ulysses.html#cb172-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span><span class="sc">*</span><span class="fu">min</span>(cars<span class="sc">$</span>dist),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb172-7"><a href="ulysses.html#cb172-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(cars<span class="sc">$</span>speed),<span class="fu">max</span>(cars<span class="sc">$</span>speed))</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Now we fit two new models with our new priors and calculate the effective number of parameters.</p>
-<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="ulysses.html#cb153-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb153-2"><a href="ulysses.html#cb153-2" aria-hidden="true" tabindex="-1"></a> m_moderate <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb153-3"><a href="ulysses.html#cb153-3" aria-hidden="true" tabindex="-1"></a> dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb153-4"><a href="ulysses.html#cb153-4" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
-<span id="cb153-5"><a href="ulysses.html#cb153-5" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">5</span>), </span>
-<span id="cb153-6"><a href="ulysses.html#cb153-6" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">5</span>,<span class="fl">2.5</span>), </span>
-<span id="cb153-7"><a href="ulysses.html#cb153-7" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb153-8"><a href="ulysses.html#cb153-8" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>cars )</span>
-<span id="cb153-9"><a href="ulysses.html#cb153-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-10"><a href="ulysses.html#cb153-10" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb153-11"><a href="ulysses.html#cb153-11" aria-hidden="true" tabindex="-1"></a> m_concentrated <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb153-12"><a href="ulysses.html#cb153-12" aria-hidden="true" tabindex="-1"></a> dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb153-13"><a href="ulysses.html#cb153-13" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
-<span id="cb153-14"><a href="ulysses.html#cb153-14" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="fl">0.5</span>), </span>
-<span id="cb153-15"><a href="ulysses.html#cb153-15" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">5</span>,<span class="fl">0.5</span>), </span>
-<span id="cb153-16"><a href="ulysses.html#cb153-16" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb153-17"><a href="ulysses.html#cb153-17" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>cars )</span>
-<span id="cb153-18"><a href="ulysses.html#cb153-18" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb153-19"><a href="ulysses.html#cb153-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-20"><a href="ulysses.html#cb153-20" aria-hidden="true" tabindex="-1"></a>moderate_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_moderate,<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb153-21"><a href="ulysses.html#cb153-21" aria-hidden="true" tabindex="-1"></a>concentrated_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_concentrated,<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb153-22"><a href="ulysses.html#cb153-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-23"><a href="ulysses.html#cb153-23" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
-<span id="cb153-24"><a href="ulysses.html#cb153-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-25"><a href="ulysses.html#cb153-25" aria-hidden="true" tabindex="-1"></a>moderate_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
-<span id="cb153-26"><a href="ulysses.html#cb153-26" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> moderate_post<span class="sc">$</span>a[s] <span class="sc">+</span> moderate_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
-<span id="cb153-27"><a href="ulysses.html#cb153-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , moderate_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
-<span id="cb153-28"><a href="ulysses.html#cb153-28" aria-hidden="true" tabindex="-1"></a>} )</span>
-<span id="cb153-29"><a href="ulysses.html#cb153-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-30"><a href="ulysses.html#cb153-30" aria-hidden="true" tabindex="-1"></a>concentrated_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
-<span id="cb153-31"><a href="ulysses.html#cb153-31" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> concentrated_post<span class="sc">$</span>a[s] <span class="sc">+</span> concentrated_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
-<span id="cb153-32"><a href="ulysses.html#cb153-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , concentrated_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
-<span id="cb153-33"><a href="ulysses.html#cb153-33" aria-hidden="true" tabindex="-1"></a>} )</span>
-<span id="cb153-34"><a href="ulysses.html#cb153-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-35"><a href="ulysses.html#cb153-35" aria-hidden="true" tabindex="-1"></a>n_cases <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cars) </span>
-<span id="cb153-36"><a href="ulysses.html#cb153-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-37"><a href="ulysses.html#cb153-37" aria-hidden="true" tabindex="-1"></a>moderate_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(moderate_logprob[i,]) )</span>
-<span id="cb153-38"><a href="ulysses.html#cb153-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-39"><a href="ulysses.html#cb153-39" aria-hidden="true" tabindex="-1"></a>concentrated_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(concentrated_logprob[i,]) )</span>
-<span id="cb153-40"><a href="ulysses.html#cb153-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb153-41"><a href="ulysses.html#cb153-41" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(cars_pWAIC)</span></code></pre></div>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="ulysses.html#cb173-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb173-2"><a href="ulysses.html#cb173-2" aria-hidden="true" tabindex="-1"></a> m_moderate <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb173-3"><a href="ulysses.html#cb173-3" aria-hidden="true" tabindex="-1"></a> dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb173-4"><a href="ulysses.html#cb173-4" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
+<span id="cb173-5"><a href="ulysses.html#cb173-5" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">5</span>), </span>
+<span id="cb173-6"><a href="ulysses.html#cb173-6" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">5</span>,<span class="fl">2.5</span>), </span>
+<span id="cb173-7"><a href="ulysses.html#cb173-7" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb173-8"><a href="ulysses.html#cb173-8" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>cars )</span>
+<span id="cb173-9"><a href="ulysses.html#cb173-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-10"><a href="ulysses.html#cb173-10" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb173-11"><a href="ulysses.html#cb173-11" aria-hidden="true" tabindex="-1"></a> m_concentrated <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb173-12"><a href="ulysses.html#cb173-12" aria-hidden="true" tabindex="-1"></a> dist <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb173-13"><a href="ulysses.html#cb173-13" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>speed, </span>
+<span id="cb173-14"><a href="ulysses.html#cb173-14" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="fl">0.5</span>), </span>
+<span id="cb173-15"><a href="ulysses.html#cb173-15" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">5</span>,<span class="fl">0.5</span>), </span>
+<span id="cb173-16"><a href="ulysses.html#cb173-16" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb173-17"><a href="ulysses.html#cb173-17" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>cars )</span>
+<span id="cb173-18"><a href="ulysses.html#cb173-18" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb173-19"><a href="ulysses.html#cb173-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-20"><a href="ulysses.html#cb173-20" aria-hidden="true" tabindex="-1"></a>moderate_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_moderate,<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb173-21"><a href="ulysses.html#cb173-21" aria-hidden="true" tabindex="-1"></a>concentrated_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_concentrated,<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb173-22"><a href="ulysses.html#cb173-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-23"><a href="ulysses.html#cb173-23" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
+<span id="cb173-24"><a href="ulysses.html#cb173-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-25"><a href="ulysses.html#cb173-25" aria-hidden="true" tabindex="-1"></a>moderate_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
+<span id="cb173-26"><a href="ulysses.html#cb173-26" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> moderate_post<span class="sc">$</span>a[s] <span class="sc">+</span> moderate_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
+<span id="cb173-27"><a href="ulysses.html#cb173-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , moderate_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
+<span id="cb173-28"><a href="ulysses.html#cb173-28" aria-hidden="true" tabindex="-1"></a>} )</span>
+<span id="cb173-29"><a href="ulysses.html#cb173-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-30"><a href="ulysses.html#cb173-30" aria-hidden="true" tabindex="-1"></a>concentrated_logprob <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_samples , <span class="cf">function</span>(s) { </span>
+<span id="cb173-31"><a href="ulysses.html#cb173-31" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> concentrated_post<span class="sc">$</span>a[s] <span class="sc">+</span> concentrated_post<span class="sc">$</span>b[s]<span class="sc">*</span>cars<span class="sc">$</span>speed </span>
+<span id="cb173-32"><a href="ulysses.html#cb173-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( cars<span class="sc">$</span>dist , mu , concentrated_post<span class="sc">$</span>sigma[s] , <span class="at">log=</span><span class="cn">TRUE</span> )</span>
+<span id="cb173-33"><a href="ulysses.html#cb173-33" aria-hidden="true" tabindex="-1"></a>} )</span>
+<span id="cb173-34"><a href="ulysses.html#cb173-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-35"><a href="ulysses.html#cb173-35" aria-hidden="true" tabindex="-1"></a>n_cases <span class="ot">&lt;-</span> <span class="fu">nrow</span>(cars) </span>
+<span id="cb173-36"><a href="ulysses.html#cb173-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-37"><a href="ulysses.html#cb173-37" aria-hidden="true" tabindex="-1"></a>moderate_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(moderate_logprob[i,]) )</span>
+<span id="cb173-38"><a href="ulysses.html#cb173-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-39"><a href="ulysses.html#cb173-39" aria-hidden="true" tabindex="-1"></a>concentrated_pWAIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span>n_cases , <span class="cf">function</span>(i) <span class="fu">var</span>(concentrated_logprob[i,]) )</span>
+<span id="cb173-40"><a href="ulysses.html#cb173-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-41"><a href="ulysses.html#cb173-41" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(cars_pWAIC)</span></code></pre></div>
 <pre><code>## [1] 4.780675</code></pre>
-<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="ulysses.html#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(moderate_pWAIC)</span></code></pre></div>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="ulysses.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(moderate_pWAIC)</span></code></pre></div>
 <pre><code>## [1] 3.732736</code></pre>
-<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="ulysses.html#cb157-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(concentrated_pWAIC)</span></code></pre></div>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="ulysses.html#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(concentrated_pWAIC)</span></code></pre></div>
 <pre><code>## [1] 3.662483</code></pre>
-<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="ulysses.html#cb159-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compare(m,m_moderate,m_concentrated, func = PSIS)</span></span></code></pre></div>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="ulysses.html#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compare(m,m_moderate,m_concentrated, func = PSIS)</span></span></code></pre></div>
 <p>As expected, the effective number of parameters (in the WAIC calculation) decreases as the prior becomes more concentrated.</p>
 <p>Running the commented-out compare function shows the same for PSIS.</p>
 </div>
@@ -833,72 +836,72 @@ These priors are very flat. Let’s make them more concentrated.</p>
 </div>
 <div id="answer-70" class="section level4 unnumbered">
 <h4>Answer</h4>
-<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="ulysses.html#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Laffer)</span>
-<span id="cb160-2"><a href="ulysses.html#cb160-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb160-3"><a href="ulysses.html#cb160-3" aria-hidden="true" tabindex="-1"></a><span class="co">#laffer_prior1 &lt;- tibble(a=rnorm(100,1,0.5),b=rnorm(100,0.3,0.2),mu=a+b)</span></span>
-<span id="cb160-4"><a href="ulysses.html#cb160-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb160-5"><a href="ulysses.html#cb160-5" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot()+</span></span>
-<span id="cb160-6"><a href="ulysses.html#cb160-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_abline(data=laffer_prior1, mapping=aes(slope=b,intercept=a))+</span></span>
-<span id="cb160-7"><a href="ulysses.html#cb160-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 1.2*max(Laffer$tax_revenue) ,colour=&quot;red&quot;)+</span></span>
-<span id="cb160-8"><a href="ulysses.html#cb160-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 0.8*min(Laffer$tax_revenue),colour=&quot;red&quot;)+</span></span>
-<span id="cb160-9"><a href="ulysses.html#cb160-9" aria-hidden="true" tabindex="-1"></a><span class="co">#  xlim(min(Laffer$tax_rate),max(Laffer$tax_rate))</span></span>
-<span id="cb160-10"><a href="ulysses.html#cb160-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb160-11"><a href="ulysses.html#cb160-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb160-12"><a href="ulysses.html#cb160-12" aria-hidden="true" tabindex="-1"></a> m_laffer1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb160-13"><a href="ulysses.html#cb160-13" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb160-14"><a href="ulysses.html#cb160-14" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate, </span>
-<span id="cb160-15"><a href="ulysses.html#cb160-15" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
-<span id="cb160-16"><a href="ulysses.html#cb160-16" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.3</span>,<span class="fl">0.2</span>), </span>
-<span id="cb160-17"><a href="ulysses.html#cb160-17" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb160-18"><a href="ulysses.html#cb160-18" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
-<span id="cb160-19"><a href="ulysses.html#cb160-19" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-20"><a href="ulysses.html#cb160-20" aria-hidden="true" tabindex="-1"></a> laffer1_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer1)</span>
-<span id="cb160-21"><a href="ulysses.html#cb160-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb160-22"><a href="ulysses.html#cb160-22" aria-hidden="true" tabindex="-1"></a><span class="co">#laffer_prior2 &lt;- tibble(a=rnorm(100,1,0.5),b=rnorm(100,0.01,1),c=rnorm(100,0.01,1))</span></span>
-<span id="cb160-23"><a href="ulysses.html#cb160-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb160-24"><a href="ulysses.html#cb160-24" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot()+</span></span>
-<span id="cb160-25"><a href="ulysses.html#cb160-25" aria-hidden="true" tabindex="-1"></a><span class="co">#  purrr::map(1:nrow(laffer_prior2), ~geom_function(fun = function(x) laffer_prior2$a[.x] + laffer_prior2$b[.x] * x + laffer_prior2$c[.x] * x^2 ))+</span></span>
-<span id="cb160-26"><a href="ulysses.html#cb160-26" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 1.2*max(Laffer$tax_revenue) ,colour=&quot;red&quot;)+</span></span>
-<span id="cb160-27"><a href="ulysses.html#cb160-27" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 0.8*min(Laffer$tax_revenue),colour=&quot;red&quot;)+</span></span>
-<span id="cb160-28"><a href="ulysses.html#cb160-28" aria-hidden="true" tabindex="-1"></a><span class="co">#  xlim(min(Laffer$tax_rate),max(Laffer$tax_rate))</span></span>
-<span id="cb160-29"><a href="ulysses.html#cb160-29" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-30"><a href="ulysses.html#cb160-30" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb160-31"><a href="ulysses.html#cb160-31" aria-hidden="true" tabindex="-1"></a> m_laffer2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb160-32"><a href="ulysses.html#cb160-32" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb160-33"><a href="ulysses.html#cb160-33" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span>, </span>
-<span id="cb160-34"><a href="ulysses.html#cb160-34" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
-<span id="cb160-35"><a href="ulysses.html#cb160-35" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
-<span id="cb160-36"><a href="ulysses.html#cb160-36" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
-<span id="cb160-37"><a href="ulysses.html#cb160-37" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb160-38"><a href="ulysses.html#cb160-38" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
-<span id="cb160-39"><a href="ulysses.html#cb160-39" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-40"><a href="ulysses.html#cb160-40" aria-hidden="true" tabindex="-1"></a> laffer2_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer2)</span>
-<span id="cb160-41"><a href="ulysses.html#cb160-41" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-42"><a href="ulysses.html#cb160-42" aria-hidden="true" tabindex="-1"></a> laffer2_mean <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>d))</span>
-<span id="cb160-43"><a href="ulysses.html#cb160-43" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-44"><a href="ulysses.html#cb160-44" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">101</span>)</span>
-<span id="cb160-45"><a href="ulysses.html#cb160-45" aria-hidden="true" tabindex="-1"></a> m_laffer3 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb160-46"><a href="ulysses.html#cb160-46" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
-<span id="cb160-47"><a href="ulysses.html#cb160-47" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span>d<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">3</span>, </span>
-<span id="cb160-48"><a href="ulysses.html#cb160-48" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
-<span id="cb160-49"><a href="ulysses.html#cb160-49" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
-<span id="cb160-50"><a href="ulysses.html#cb160-50" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
-<span id="cb160-51"><a href="ulysses.html#cb160-51" aria-hidden="true" tabindex="-1"></a> d <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
-<span id="cb160-52"><a href="ulysses.html#cb160-52" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb160-53"><a href="ulysses.html#cb160-53" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
-<span id="cb160-54"><a href="ulysses.html#cb160-54" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-55"><a href="ulysses.html#cb160-55" aria-hidden="true" tabindex="-1"></a> laffer3_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer3)</span>
-<span id="cb160-56"><a href="ulysses.html#cb160-56" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-57"><a href="ulysses.html#cb160-57" aria-hidden="true" tabindex="-1"></a> laffer3_mean <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>d))</span>
-<span id="cb160-58"><a href="ulysses.html#cb160-58" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb160-59"><a href="ulysses.html#cb160-59" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb160-60"><a href="ulysses.html#cb160-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>Laffer, <span class="at">mapping=</span><span class="fu">aes</span>(tax_rate,tax_revenue))<span class="sc">+</span></span>
-<span id="cb160-61"><a href="ulysses.html#cb160-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>laffer1_post, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span><span class="fu">mean</span>(b),<span class="at">intercept=</span><span class="fu">mean</span>(a)),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb160-62"><a href="ulysses.html#cb160-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer2_mean<span class="sc">$</span>a <span class="sc">+</span> laffer2_mean<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer2_mean<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span>, <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
-<span id="cb160-63"><a href="ulysses.html#cb160-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer3_mean<span class="sc">$</span>a <span class="sc">+</span> laffer3_mean<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer3_mean<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> laffer3_mean<span class="sc">$</span>d<span class="sc">*</span>x<span class="sc">^</span><span class="dv">3</span>, <span class="at">colour =</span> <span class="st">&quot;green&quot;</span>)<span class="sc">+</span></span>
-<span id="cb160-64"><a href="ulysses.html#cb160-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(Laffer<span class="sc">$</span>tax_rate),<span class="fu">max</span>(Laffer<span class="sc">$</span>tax_rate)) </span></code></pre></div>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="ulysses.html#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Laffer)</span>
+<span id="cb180-2"><a href="ulysses.html#cb180-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-3"><a href="ulysses.html#cb180-3" aria-hidden="true" tabindex="-1"></a><span class="co">#laffer_prior1 &lt;- tibble(a=rnorm(100,1,0.5),b=rnorm(100,0.3,0.2),mu=a+b)</span></span>
+<span id="cb180-4"><a href="ulysses.html#cb180-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-5"><a href="ulysses.html#cb180-5" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot()+</span></span>
+<span id="cb180-6"><a href="ulysses.html#cb180-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_abline(data=laffer_prior1, mapping=aes(slope=b,intercept=a))+</span></span>
+<span id="cb180-7"><a href="ulysses.html#cb180-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 1.2*max(Laffer$tax_revenue) ,colour=&quot;red&quot;)+</span></span>
+<span id="cb180-8"><a href="ulysses.html#cb180-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 0.8*min(Laffer$tax_revenue),colour=&quot;red&quot;)+</span></span>
+<span id="cb180-9"><a href="ulysses.html#cb180-9" aria-hidden="true" tabindex="-1"></a><span class="co">#  xlim(min(Laffer$tax_rate),max(Laffer$tax_rate))</span></span>
+<span id="cb180-10"><a href="ulysses.html#cb180-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-11"><a href="ulysses.html#cb180-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb180-12"><a href="ulysses.html#cb180-12" aria-hidden="true" tabindex="-1"></a> m_laffer1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb180-13"><a href="ulysses.html#cb180-13" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb180-14"><a href="ulysses.html#cb180-14" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate, </span>
+<span id="cb180-15"><a href="ulysses.html#cb180-15" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
+<span id="cb180-16"><a href="ulysses.html#cb180-16" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.3</span>,<span class="fl">0.2</span>), </span>
+<span id="cb180-17"><a href="ulysses.html#cb180-17" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb180-18"><a href="ulysses.html#cb180-18" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
+<span id="cb180-19"><a href="ulysses.html#cb180-19" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-20"><a href="ulysses.html#cb180-20" aria-hidden="true" tabindex="-1"></a> laffer1_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer1)</span>
+<span id="cb180-21"><a href="ulysses.html#cb180-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-22"><a href="ulysses.html#cb180-22" aria-hidden="true" tabindex="-1"></a><span class="co">#laffer_prior2 &lt;- tibble(a=rnorm(100,1,0.5),b=rnorm(100,0.01,1),c=rnorm(100,0.01,1))</span></span>
+<span id="cb180-23"><a href="ulysses.html#cb180-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-24"><a href="ulysses.html#cb180-24" aria-hidden="true" tabindex="-1"></a><span class="co">#ggplot()+</span></span>
+<span id="cb180-25"><a href="ulysses.html#cb180-25" aria-hidden="true" tabindex="-1"></a><span class="co">#  purrr::map(1:nrow(laffer_prior2), ~geom_function(fun = function(x) laffer_prior2$a[.x] + laffer_prior2$b[.x] * x + laffer_prior2$c[.x] * x^2 ))+</span></span>
+<span id="cb180-26"><a href="ulysses.html#cb180-26" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 1.2*max(Laffer$tax_revenue) ,colour=&quot;red&quot;)+</span></span>
+<span id="cb180-27"><a href="ulysses.html#cb180-27" aria-hidden="true" tabindex="-1"></a><span class="co">#  geom_hline(yintercept = 0.8*min(Laffer$tax_revenue),colour=&quot;red&quot;)+</span></span>
+<span id="cb180-28"><a href="ulysses.html#cb180-28" aria-hidden="true" tabindex="-1"></a><span class="co">#  xlim(min(Laffer$tax_rate),max(Laffer$tax_rate))</span></span>
+<span id="cb180-29"><a href="ulysses.html#cb180-29" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-30"><a href="ulysses.html#cb180-30" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb180-31"><a href="ulysses.html#cb180-31" aria-hidden="true" tabindex="-1"></a> m_laffer2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb180-32"><a href="ulysses.html#cb180-32" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb180-33"><a href="ulysses.html#cb180-33" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span>, </span>
+<span id="cb180-34"><a href="ulysses.html#cb180-34" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
+<span id="cb180-35"><a href="ulysses.html#cb180-35" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
+<span id="cb180-36"><a href="ulysses.html#cb180-36" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
+<span id="cb180-37"><a href="ulysses.html#cb180-37" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb180-38"><a href="ulysses.html#cb180-38" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
+<span id="cb180-39"><a href="ulysses.html#cb180-39" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-40"><a href="ulysses.html#cb180-40" aria-hidden="true" tabindex="-1"></a> laffer2_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer2)</span>
+<span id="cb180-41"><a href="ulysses.html#cb180-41" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-42"><a href="ulysses.html#cb180-42" aria-hidden="true" tabindex="-1"></a> laffer2_mean <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer2_post<span class="sc">$</span>d))</span>
+<span id="cb180-43"><a href="ulysses.html#cb180-43" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-44"><a href="ulysses.html#cb180-44" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">101</span>)</span>
+<span id="cb180-45"><a href="ulysses.html#cb180-45" aria-hidden="true" tabindex="-1"></a> m_laffer3 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb180-46"><a href="ulysses.html#cb180-46" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dnorm</span>(mu,sigma), </span>
+<span id="cb180-47"><a href="ulysses.html#cb180-47" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span>d<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">3</span>, </span>
+<span id="cb180-48"><a href="ulysses.html#cb180-48" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
+<span id="cb180-49"><a href="ulysses.html#cb180-49" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
+<span id="cb180-50"><a href="ulysses.html#cb180-50" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
+<span id="cb180-51"><a href="ulysses.html#cb180-51" aria-hidden="true" tabindex="-1"></a> d <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
+<span id="cb180-52"><a href="ulysses.html#cb180-52" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb180-53"><a href="ulysses.html#cb180-53" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
+<span id="cb180-54"><a href="ulysses.html#cb180-54" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-55"><a href="ulysses.html#cb180-55" aria-hidden="true" tabindex="-1"></a> laffer3_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer3)</span>
+<span id="cb180-56"><a href="ulysses.html#cb180-56" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-57"><a href="ulysses.html#cb180-57" aria-hidden="true" tabindex="-1"></a> laffer3_mean <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer3_post<span class="sc">$</span>d))</span>
+<span id="cb180-58"><a href="ulysses.html#cb180-58" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb180-59"><a href="ulysses.html#cb180-59" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb180-60"><a href="ulysses.html#cb180-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>Laffer, <span class="at">mapping=</span><span class="fu">aes</span>(tax_rate,tax_revenue))<span class="sc">+</span></span>
+<span id="cb180-61"><a href="ulysses.html#cb180-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>laffer1_post, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span><span class="fu">mean</span>(b),<span class="at">intercept=</span><span class="fu">mean</span>(a)),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb180-62"><a href="ulysses.html#cb180-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer2_mean<span class="sc">$</span>a <span class="sc">+</span> laffer2_mean<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer2_mean<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span>, <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
+<span id="cb180-63"><a href="ulysses.html#cb180-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer3_mean<span class="sc">$</span>a <span class="sc">+</span> laffer3_mean<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer3_mean<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> laffer3_mean<span class="sc">$</span>d<span class="sc">*</span>x<span class="sc">^</span><span class="dv">3</span>, <span class="at">colour =</span> <span class="st">&quot;green&quot;</span>)<span class="sc">+</span></span>
+<span id="cb180-64"><a href="ulysses.html#cb180-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(Laffer<span class="sc">$</span>tax_rate),<span class="fu">max</span>(Laffer<span class="sc">$</span>tax_rate)) </span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="ulysses.html#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1,m_laffer2,m_laffer3)</span></code></pre></div>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="ulysses.html#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1,m_laffer2,m_laffer3)</span></code></pre></div>
 <pre><code>##               WAIC       SE    dWAIC      dSE    pWAIC    weight
 ## m_laffer1 124.1184 23.65623 0.000000       NA 6.365137 0.4870995
 ## m_laffer2 125.1519 25.68798 1.033533 3.284146 7.971944 0.2905286
@@ -919,7 +922,7 @@ These priors are very flat. Let’s make them more concentrated.</p>
 <div id="answer-71" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>We get warnings about high Pareto k values when using PSIS to compare the models:</p>
-<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="ulysses.html#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1,m_laffer2,m_laffer3, <span class="at">func=</span>PSIS)</span></code></pre></div>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="ulysses.html#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1,m_laffer2,m_laffer3, <span class="at">func=</span>PSIS)</span></code></pre></div>
 <pre><code>## Some Pareto k values are very high (&gt;1). Set pointwise=TRUE to inspect individual points.
 ## Some Pareto k values are very high (&gt;1). Set pointwise=TRUE to inspect individual points.
 ## Some Pareto k values are very high (&gt;1). Set pointwise=TRUE to inspect individual points.</code></pre>
@@ -927,55 +930,55 @@ These priors are very flat. Let’s make them more concentrated.</p>
 ## m_laffer1 126.3576 26.21755 0.0000000       NA  7.411442 0.55631136
 ## m_laffer2 127.1612 28.19643 0.8036119 3.263653  9.026825 0.37223382
 ## m_laffer3 130.4621 30.29146 4.1045255 5.320317 11.297844 0.07145482</code></pre>
-<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="ulysses.html#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">24071847</span>) </span>
-<span id="cb166-2"><a href="ulysses.html#cb166-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb166-3"><a href="ulysses.html#cb166-3" aria-hidden="true" tabindex="-1"></a>PSIS_m_laffer1 <span class="ot">&lt;-</span> <span class="fu">PSIS</span>(m_laffer1,<span class="at">pointwise=</span><span class="cn">TRUE</span>) </span>
-<span id="cb166-4"><a href="ulysses.html#cb166-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb166-5"><a href="ulysses.html#cb166-5" aria-hidden="true" tabindex="-1"></a>WAIC_m_laffer1 <span class="ot">&lt;-</span> <span class="fu">WAIC</span>(m_laffer1,<span class="at">pointwise=</span><span class="cn">TRUE</span>) </span>
-<span id="cb166-6"><a href="ulysses.html#cb166-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb166-7"><a href="ulysses.html#cb166-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span> </span>
-<span id="cb166-8"><a href="ulysses.html#cb166-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>PSIS_m_laffer1<span class="sc">$</span>k , <span class="at">y=</span>WAIC_m_laffer1<span class="sc">$</span>penalty), <span class="at">colour=</span><span class="fu">if_else</span>(PSIS_m_laffer1<span class="sc">$</span>k<span class="sc">&gt;</span><span class="fl">0.5</span>,<span class="st">&quot;red&quot;</span>,<span class="st">&quot;dark blue&quot;</span>))<span class="sc">+</span></span>
-<span id="cb166-9"><a href="ulysses.html#cb166-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span><span class="fl">0.5</span>),<span class="at">linetype=</span><span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb166-10"><a href="ulysses.html#cb166-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;PSIS Pareto k&quot;</span>)<span class="sc">+</span></span>
-<span id="cb166-11"><a href="ulysses.html#cb166-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;WAIC penalty&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="ulysses.html#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">24071847</span>) </span>
+<span id="cb186-2"><a href="ulysses.html#cb186-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb186-3"><a href="ulysses.html#cb186-3" aria-hidden="true" tabindex="-1"></a>PSIS_m_laffer1 <span class="ot">&lt;-</span> <span class="fu">PSIS</span>(m_laffer1,<span class="at">pointwise=</span><span class="cn">TRUE</span>) </span>
+<span id="cb186-4"><a href="ulysses.html#cb186-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb186-5"><a href="ulysses.html#cb186-5" aria-hidden="true" tabindex="-1"></a>WAIC_m_laffer1 <span class="ot">&lt;-</span> <span class="fu">WAIC</span>(m_laffer1,<span class="at">pointwise=</span><span class="cn">TRUE</span>) </span>
+<span id="cb186-6"><a href="ulysses.html#cb186-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb186-7"><a href="ulysses.html#cb186-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span> </span>
+<span id="cb186-8"><a href="ulysses.html#cb186-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>PSIS_m_laffer1<span class="sc">$</span>k , <span class="at">y=</span>WAIC_m_laffer1<span class="sc">$</span>penalty), <span class="at">colour=</span><span class="fu">if_else</span>(PSIS_m_laffer1<span class="sc">$</span>k<span class="sc">&gt;</span><span class="fl">0.5</span>,<span class="st">&quot;red&quot;</span>,<span class="st">&quot;dark blue&quot;</span>))<span class="sc">+</span></span>
+<span id="cb186-9"><a href="ulysses.html#cb186-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span><span class="fl">0.5</span>),<span class="at">linetype=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb186-10"><a href="ulysses.html#cb186-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;PSIS Pareto k&quot;</span>)<span class="sc">+</span></span>
+<span id="cb186-11"><a href="ulysses.html#cb186-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;WAIC penalty&quot;</span>)</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>We alter the models fit above to use a Student’s t distribution with shape parameter 2.</p>
-<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="ulysses.html#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Laffer)</span>
-<span id="cb167-2"><a href="ulysses.html#cb167-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb167-3"><a href="ulysses.html#cb167-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb167-4"><a href="ulysses.html#cb167-4" aria-hidden="true" tabindex="-1"></a> m_laffer1_t <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb167-5"><a href="ulysses.html#cb167-5" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dstudent</span>(<span class="dv">2</span>,mu,sigma), </span>
-<span id="cb167-6"><a href="ulysses.html#cb167-6" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate, </span>
-<span id="cb167-7"><a href="ulysses.html#cb167-7" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
-<span id="cb167-8"><a href="ulysses.html#cb167-8" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.3</span>,<span class="fl">0.2</span>), </span>
-<span id="cb167-9"><a href="ulysses.html#cb167-9" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb167-10"><a href="ulysses.html#cb167-10" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
-<span id="cb167-11"><a href="ulysses.html#cb167-11" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb167-12"><a href="ulysses.html#cb167-12" aria-hidden="true" tabindex="-1"></a> laffer1_post_t <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer1_t)</span>
-<span id="cb167-13"><a href="ulysses.html#cb167-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb167-14"><a href="ulysses.html#cb167-14" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb167-15"><a href="ulysses.html#cb167-15" aria-hidden="true" tabindex="-1"></a> m_laffer2_t <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb167-16"><a href="ulysses.html#cb167-16" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dstudent</span>(<span class="dv">2</span>,mu,sigma), </span>
-<span id="cb167-17"><a href="ulysses.html#cb167-17" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span>, </span>
-<span id="cb167-18"><a href="ulysses.html#cb167-18" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
-<span id="cb167-19"><a href="ulysses.html#cb167-19" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
-<span id="cb167-20"><a href="ulysses.html#cb167-20" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
-<span id="cb167-21"><a href="ulysses.html#cb167-21" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb167-22"><a href="ulysses.html#cb167-22" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
-<span id="cb167-23"><a href="ulysses.html#cb167-23" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb167-24"><a href="ulysses.html#cb167-24" aria-hidden="true" tabindex="-1"></a> laffer2_post_t <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer2_t)</span>
-<span id="cb167-25"><a href="ulysses.html#cb167-25" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb167-26"><a href="ulysses.html#cb167-26" aria-hidden="true" tabindex="-1"></a> laffer2_mean_t <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>d))</span>
-<span id="cb167-27"><a href="ulysses.html#cb167-27" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb167-28"><a href="ulysses.html#cb167-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb167-29"><a href="ulysses.html#cb167-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>Laffer, <span class="at">mapping=</span><span class="fu">aes</span>(tax_rate,tax_revenue))<span class="sc">+</span></span>
-<span id="cb167-30"><a href="ulysses.html#cb167-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>laffer1_post_t, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span><span class="fu">mean</span>(b),<span class="at">intercept=</span><span class="fu">mean</span>(a)),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb167-31"><a href="ulysses.html#cb167-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer2_mean_t<span class="sc">$</span>a <span class="sc">+</span> laffer2_mean_t<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer2_mean_t<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span>, <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
-<span id="cb167-32"><a href="ulysses.html#cb167-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(Laffer<span class="sc">$</span>tax_rate),<span class="fu">max</span>(Laffer<span class="sc">$</span>tax_rate)) </span></code></pre></div>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="ulysses.html#cb187-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Laffer)</span>
+<span id="cb187-2"><a href="ulysses.html#cb187-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb187-3"><a href="ulysses.html#cb187-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb187-4"><a href="ulysses.html#cb187-4" aria-hidden="true" tabindex="-1"></a> m_laffer1_t <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb187-5"><a href="ulysses.html#cb187-5" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dstudent</span>(<span class="dv">2</span>,mu,sigma), </span>
+<span id="cb187-6"><a href="ulysses.html#cb187-6" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate, </span>
+<span id="cb187-7"><a href="ulysses.html#cb187-7" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
+<span id="cb187-8"><a href="ulysses.html#cb187-8" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.3</span>,<span class="fl">0.2</span>), </span>
+<span id="cb187-9"><a href="ulysses.html#cb187-9" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb187-10"><a href="ulysses.html#cb187-10" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
+<span id="cb187-11"><a href="ulysses.html#cb187-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb187-12"><a href="ulysses.html#cb187-12" aria-hidden="true" tabindex="-1"></a> laffer1_post_t <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer1_t)</span>
+<span id="cb187-13"><a href="ulysses.html#cb187-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb187-14"><a href="ulysses.html#cb187-14" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb187-15"><a href="ulysses.html#cb187-15" aria-hidden="true" tabindex="-1"></a> m_laffer2_t <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb187-16"><a href="ulysses.html#cb187-16" aria-hidden="true" tabindex="-1"></a> tax_revenue <span class="sc">~</span> <span class="fu">dstudent</span>(<span class="dv">2</span>,mu,sigma), </span>
+<span id="cb187-17"><a href="ulysses.html#cb187-17" aria-hidden="true" tabindex="-1"></a> mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>tax_rate <span class="sc">+</span>c<span class="sc">*</span>tax_rate<span class="sc">^</span><span class="dv">2</span>, </span>
+<span id="cb187-18"><a href="ulysses.html#cb187-18" aria-hidden="true" tabindex="-1"></a> a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">1</span>,<span class="fl">0.5</span>), </span>
+<span id="cb187-19"><a href="ulysses.html#cb187-19" aria-hidden="true" tabindex="-1"></a> b <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>), </span>
+<span id="cb187-20"><a href="ulysses.html#cb187-20" aria-hidden="true" tabindex="-1"></a> c <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="fl">0.1</span>,<span class="dv">1</span>),</span>
+<span id="cb187-21"><a href="ulysses.html#cb187-21" aria-hidden="true" tabindex="-1"></a> sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb187-22"><a href="ulysses.html#cb187-22" aria-hidden="true" tabindex="-1"></a> ) , <span class="at">data=</span>Laffer )</span>
+<span id="cb187-23"><a href="ulysses.html#cb187-23" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb187-24"><a href="ulysses.html#cb187-24" aria-hidden="true" tabindex="-1"></a> laffer2_post_t <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m_laffer2_t)</span>
+<span id="cb187-25"><a href="ulysses.html#cb187-25" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb187-26"><a href="ulysses.html#cb187-26" aria-hidden="true" tabindex="-1"></a> laffer2_mean_t <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>a),<span class="at">b=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>b),<span class="at">c=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>c),<span class="at">d=</span><span class="fu">mean</span>(laffer2_post_t<span class="sc">$</span>d))</span>
+<span id="cb187-27"><a href="ulysses.html#cb187-27" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb187-28"><a href="ulysses.html#cb187-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb187-29"><a href="ulysses.html#cb187-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>Laffer, <span class="at">mapping=</span><span class="fu">aes</span>(tax_rate,tax_revenue))<span class="sc">+</span></span>
+<span id="cb187-30"><a href="ulysses.html#cb187-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>laffer1_post_t, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span><span class="fu">mean</span>(b),<span class="at">intercept=</span><span class="fu">mean</span>(a)),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb187-31"><a href="ulysses.html#cb187-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> <span class="cf">function</span>(x) laffer2_mean_t<span class="sc">$</span>a <span class="sc">+</span> laffer2_mean_t<span class="sc">$</span>b<span class="sc">*</span>x <span class="sc">+</span> laffer2_mean_t<span class="sc">$</span>c<span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span>, <span class="at">colour =</span> <span class="st">&quot;blue&quot;</span>)<span class="sc">+</span></span>
+<span id="cb187-32"><a href="ulysses.html#cb187-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="fu">min</span>(Laffer<span class="sc">$</span>tax_rate),<span class="fu">max</span>(Laffer<span class="sc">$</span>tax_rate)) </span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="ulysses.html#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compare(m_laffer1_t,m_laffer2_t)</span></span>
-<span id="cb168-2"><a href="ulysses.html#cb168-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb168-3"><a href="ulysses.html#cb168-3" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1_t,m_laffer2_t, <span class="at">func =</span> PSIS)</span></code></pre></div>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="ulysses.html#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="co">#compare(m_laffer1_t,m_laffer2_t)</span></span>
+<span id="cb188-2"><a href="ulysses.html#cb188-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb188-3"><a href="ulysses.html#cb188-3" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m_laffer1_t,m_laffer2_t, <span class="at">func =</span> PSIS)</span></code></pre></div>
 <pre><code>##                 PSIS       SE     dPSIS      dSE    pPSIS    weight
 ## m_laffer1_t 108.2617 13.64436 0.0000000       NA 3.077506 0.6003157
 ## m_laffer2_t 109.0752 12.20443 0.8135611 2.118027 3.755171 0.3996843</code></pre>
@@ -1036,10 +1039,10 @@ These priors are very flat. Let’s make them more concentrated.</p>
 <div id="answer-72" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>First we calculate the entropy of the bird distributions:</p>
-<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="ulysses.html#cb170-1" aria-hidden="true" tabindex="-1"></a>island_birds_en <span class="ot">&lt;-</span> island_birds<span class="sc">%&gt;%</span><span class="fu">rowwise</span>()<span class="sc">%&gt;%</span></span>
-<span id="cb170-2"><a href="ulysses.html#cb170-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Entropy=</span> <span class="sc">-</span><span class="fu">sum</span>( <span class="fu">c_across</span>(<span class="fu">contains</span>(<span class="st">&quot;Species&quot;</span>)) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">c_across</span>(<span class="fu">contains</span>(<span class="st">&quot;Species&quot;</span>))) ))</span>
-<span id="cb170-3"><a href="ulysses.html#cb170-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb170-4"><a href="ulysses.html#cb170-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(island_birds_en,<span class="at">digits=</span><span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="ulysses.html#cb190-1" aria-hidden="true" tabindex="-1"></a>island_birds_en <span class="ot">&lt;-</span> island_birds<span class="sc">%&gt;%</span><span class="fu">rowwise</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb190-2"><a href="ulysses.html#cb190-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Entropy=</span> <span class="sc">-</span><span class="fu">sum</span>( <span class="fu">c_across</span>(<span class="fu">contains</span>(<span class="st">&quot;Species&quot;</span>)) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">c_across</span>(<span class="fu">contains</span>(<span class="st">&quot;Species&quot;</span>))) ))</span>
+<span id="cb190-3"><a href="ulysses.html#cb190-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb190-4"><a href="ulysses.html#cb190-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(island_birds_en,<span class="at">digits=</span><span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1083,32 +1086,32 @@ These priors are very flat. Let’s make them more concentrated.</p>
 </tbody>
 </table>
 <p>Entropy here can be interpreted as a measure of biodiversity. Island 1 has the highest entropy, with no one species dominating any other. Island 2, where species A accounts for 80% of all birds, has the lowest entropy.</p>
-<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="ulysses.html#cb171-1" aria-hidden="true" tabindex="-1"></a>island_KL <span class="ot">&lt;-</span> <span class="cf">function</span>(a,b){ <span class="fu">sum</span>( island_birds[a,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">*</span> <span class="fu">log</span>( island_birds[a,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> island_birds[b,<span class="sc">-</span><span class="dv">1</span>]) )}</span>
-<span id="cb171-2"><a href="ulysses.html#cb171-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb171-3"><a href="ulysses.html#cb171-3" aria-hidden="true" tabindex="-1"></a><span class="co"># island_KL(a,b) estimates the divergence of distribution in row a using the distribution in row b  </span></span>
-<span id="cb171-4"><a href="ulysses.html#cb171-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb171-5"><a href="ulysses.html#cb171-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 1</span></span>
-<span id="cb171-6"><a href="ulysses.html#cb171-6" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="ulysses.html#cb191-1" aria-hidden="true" tabindex="-1"></a>island_KL <span class="ot">&lt;-</span> <span class="cf">function</span>(a,b){ <span class="fu">sum</span>( island_birds[a,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">*</span> <span class="fu">log</span>( island_birds[a,<span class="sc">-</span><span class="dv">1</span>] <span class="sc">/</span> island_birds[b,<span class="sc">-</span><span class="dv">1</span>]) )}</span>
+<span id="cb191-2"><a href="ulysses.html#cb191-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb191-3"><a href="ulysses.html#cb191-3" aria-hidden="true" tabindex="-1"></a><span class="co"># island_KL(a,b) estimates the divergence of distribution in row a using the distribution in row b  </span></span>
+<span id="cb191-4"><a href="ulysses.html#cb191-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb191-5"><a href="ulysses.html#cb191-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 1</span></span>
+<span id="cb191-6"><a href="ulysses.html#cb191-6" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## [1] 0.866434</code></pre>
-<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="ulysses.html#cb173-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="ulysses.html#cb193-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## [1] 0.6258376</code></pre>
-<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="ulysses.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 2</span></span>
-<span id="cb175-2"><a href="ulysses.html#cb175-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb175-3"><a href="ulysses.html#cb175-3" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="ulysses.html#cb195-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 2</span></span>
+<span id="cb195-2"><a href="ulysses.html#cb195-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-3"><a href="ulysses.html#cb195-3" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## [1] 0.9704061</code></pre>
-<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="ulysses.html#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="ulysses.html#cb197-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## [1] 1.838845</code></pre>
-<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="ulysses.html#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 3</span></span>
-<span id="cb179-2"><a href="ulysses.html#cb179-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb179-3"><a href="ulysses.html#cb179-3" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="ulysses.html#cb199-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Divergence from Island 3</span></span>
+<span id="cb199-2"><a href="ulysses.html#cb199-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb199-3"><a href="ulysses.html#cb199-3" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## [1] 0.6387604</code></pre>
-<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="ulysses.html#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="ulysses.html#cb201-1" aria-hidden="true" tabindex="-1"></a><span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## [1] 2.010914</code></pre>
-<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="ulysses.html#cb183-1" aria-hidden="true" tabindex="-1"></a>island_birds_KL <span class="ot">&lt;-</span> island_birds_en<span class="sc">%&gt;%</span> <span class="fu">bind_cols</span>( <span class="st">`</span><span class="at">Sum of Divergences</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">1</span>)),</span>
-<span id="cb183-2"><a href="ulysses.html#cb183-2" aria-hidden="true" tabindex="-1"></a>                                                    <span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">2</span>)),</span>
-<span id="cb183-3"><a href="ulysses.html#cb183-3" aria-hidden="true" tabindex="-1"></a>                                                    <span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">3</span>),<span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">3</span>))))</span>
-<span id="cb183-4"><a href="ulysses.html#cb183-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb183-5"><a href="ulysses.html#cb183-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(island_birds_KL,<span class="at">digits=</span><span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb203-1"><a href="ulysses.html#cb203-1" aria-hidden="true" tabindex="-1"></a>island_birds_KL <span class="ot">&lt;-</span> island_birds_en<span class="sc">%&gt;%</span> <span class="fu">bind_cols</span>( <span class="st">`</span><span class="at">Sum of Divergences</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">1</span>)),</span>
+<span id="cb203-2"><a href="ulysses.html#cb203-2" aria-hidden="true" tabindex="-1"></a>                                                    <span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="fu">island_KL</span>(<span class="dv">3</span>,<span class="dv">2</span>)),</span>
+<span id="cb203-3"><a href="ulysses.html#cb203-3" aria-hidden="true" tabindex="-1"></a>                                                    <span class="fu">sum</span>(<span class="fu">island_KL</span>(<span class="dv">1</span>,<span class="dv">3</span>),<span class="fu">island_KL</span>(<span class="dv">2</span>,<span class="dv">3</span>))))</span>
+<span id="cb203-4"><a href="ulysses.html#cb203-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb203-5"><a href="ulysses.html#cb203-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(island_birds_KL,<span class="at">digits=</span><span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1169,7 +1172,7 @@ These priors are very flat. Let’s make them more concentrated.</p>
 </div>
 <div id="answer-73" class="section level4 unnumbered">
 <h4>Answer</h4>
-<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="ulysses.html#cb184-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m6<span class="fl">.9</span>, m6<span class="fl">.10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="ulysses.html#cb204-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m6<span class="fl">.9</span>, m6<span class="fl">.10</span>)</span></code></pre></div>
 <pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
 ## m6.9  2713.759 37.50349   0.0000       NA 3.614323 1.000000e+00
 ## m6.10 3102.039 27.84842 388.2804 35.39789 2.419089 4.852645e-85</code></pre>
@@ -1195,14 +1198,14 @@ These priors are very flat. Let’s make them more concentrated.</p>
 </div>
 <div id="answer-74" class="section level4 unnumbered">
 <h4>Answer</h4>
-<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="ulysses.html#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m7H5<span class="fl">.1</span>,m7H5<span class="fl">.2</span>,m7H5<span class="fl">.3</span>,m7H5<span class="fl">.4</span>,m7H5<span class="fl">.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="ulysses.html#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m7H5<span class="fl">.1</span>,m7H5<span class="fl">.2</span>,m7H5<span class="fl">.3</span>,m7H5<span class="fl">.4</span>,m7H5<span class="fl">.5</span>)</span></code></pre></div>
 <pre><code>##            WAIC       SE     dWAIC       dSE    pWAIC      weight
 ## m7H5.3 323.3126 19.58726  0.000000        NA 4.566105 0.608394357
 ## m7H5.1 324.4759 19.50192  1.163270 0.6420368 5.139118 0.340082478
 ## m7H5.2 328.7308 18.31676  5.418239 4.0042524 4.166766 0.040516271
 ## m7H5.4 331.8269 17.87634  8.514287 5.0679471 3.241450 0.008616508
 ## m7H5.5 334.3913 18.30572 11.078738 5.5154867 3.561676 0.002390385</code></pre>
-<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="ulysses.html#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>( dag_foxes )</span></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="ulysses.html#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>( dag_foxes )</span></code></pre></div>
 <p><img src="07-ulysses_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>Surprising! Comparing the WAIC difference and the standard errors of the difference, it looks like 3 is expected to be a more accurate model than 1. Both contain group size and area, but 1 also contains food. Adding a predictor can lower the expected out-of-sample performance if the predictor has little association with the outcome, but this is unusual in light of the DAG in chapter 6, which suggests that the only influence of area is via food. It’s not clear why adding area would be useful if adding food is not useful. Perhaps the DAG is incorrect, and there is also a direct line from area to group size.</p>
 <p>I’ll revisit this later and see if I can make sense of it.</p>

@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -454,7 +457,7 @@ The higher the value of <span class="math inline">\(\theta\)</span>, the more co
 ## phi    0.9966260 0.7846515  0.07746409 2.3980537 1659.046 1.0004995
 ## theta  2.9966260 0.7846514  2.07745965 4.3980537 1659.046 1.0004995</code></pre>
 <p>The probability of admission increases with the value of <span class="math inline">\(\alpha\)</span>. The difference between <span class="math inline">\(\alpha\)</span> for men and women is</p>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="monsters_mixtures.html#cb223-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(post_UCB<span class="sc">$</span>diff_a)</span></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="monsters_mixtures.html#cb243-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(post_UCB<span class="sc">$</span>diff_a)</span></code></pre></div>
 <pre><code>## [1] -0.1079617</code></pre>
 <p>suggesting the model believes women are more likely to be admitted. However the standard deviation of this value is 0.5710928;the model is very uncertain. We contrast this with model m11.7 in the last chapter, which predicted that men were more likely to be admitted, and was quite a bit more confident about this. Even though we haven’t included department in the model, allowing <span class="math inline">\(p\)</span> to vary by department / gender combination has captured some of the variation between departments.</p>
 <p>Here’s a plot:</p>
@@ -500,17 +503,17 @@ y_i &amp; \sim \text{ZIPoisson}(p_i,\lambda_i) \\
 <p>Here I’ve reproduced some charts in the chapter that show the counts of each response, the cumulative proportion, and then the log cumulative odds.</p>
 <p><img src="12-monsters_mixtures_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>A model with no predictors is introduced, to check that we can recover the cumulative proportions in the data in the posterior distribution:</p>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="monsters_mixtures.html#cb225-1" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
-<span id="cb225-2"><a href="monsters_mixtures.html#cb225-2" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( <span class="dv">0</span> , cutpoints ), </span>
-<span id="cb225-3"><a href="monsters_mixtures.html#cb225-3" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
-<span id="cb225-4"><a href="monsters_mixtures.html#cb225-4" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span><span class="fu">list</span>( <span class="at">R=</span>data_trol<span class="sc">$</span>response ), <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>,<span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb225-5"><a href="monsters_mixtures.html#cb225-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-6"><a href="monsters_mixtures.html#cb225-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-7"><a href="monsters_mixtures.html#cb225-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cumulative proportions in the data</span></span>
-<span id="cb225-8"><a href="monsters_mixtures.html#cb225-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(hist_trol<span class="sc">$</span>prop_cum, <span class="dv">3</span>)</span>
-<span id="cb225-9"><a href="monsters_mixtures.html#cb225-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-10"><a href="monsters_mixtures.html#cb225-10" aria-hidden="true" tabindex="-1"></a><span class="co"># model expectations for cumulative proportions</span></span>
-<span id="cb225-11"><a href="monsters_mixtures.html#cb225-11" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>( <span class="fu">inverse_logit</span>(<span class="fu">coef</span>(m12<span class="fl">.4</span>)) , <span class="dv">3</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="monsters_mixtures.html#cb245-1" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
+<span id="cb245-2"><a href="monsters_mixtures.html#cb245-2" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( <span class="dv">0</span> , cutpoints ), </span>
+<span id="cb245-3"><a href="monsters_mixtures.html#cb245-3" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
+<span id="cb245-4"><a href="monsters_mixtures.html#cb245-4" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span><span class="fu">list</span>( <span class="at">R=</span>data_trol<span class="sc">$</span>response ), <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>,<span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb245-5"><a href="monsters_mixtures.html#cb245-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb245-6"><a href="monsters_mixtures.html#cb245-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb245-7"><a href="monsters_mixtures.html#cb245-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cumulative proportions in the data</span></span>
+<span id="cb245-8"><a href="monsters_mixtures.html#cb245-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(hist_trol<span class="sc">$</span>prop_cum, <span class="dv">3</span>)</span>
+<span id="cb245-9"><a href="monsters_mixtures.html#cb245-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb245-10"><a href="monsters_mixtures.html#cb245-10" aria-hidden="true" tabindex="-1"></a><span class="co"># model expectations for cumulative proportions</span></span>
+<span id="cb245-11"><a href="monsters_mixtures.html#cb245-11" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>( <span class="fu">inverse_logit</span>(<span class="fu">coef</span>(m12<span class="fl">.4</span>)) , <span class="dv">3</span> )</span></code></pre></div>
 <p>Then the chapter explains how to include predictors in this kind of model. The log cumulative odds for each response k is modelled as a linear combination of it’s intercept <span class="math inline">\(\alpha_k\)</span> and a standard linear model:</p>
 <p><span class="math display">\[
 \begin{aligned}

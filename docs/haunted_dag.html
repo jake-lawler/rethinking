@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-01-27" />
+<meta name="date" content="2022-02-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -231,7 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="haunted_dag.html"><a href="haunted_dag.html"><i class="fa fa-check"></i><b>6</b> The Haunted DAG &amp; The Causal Terror</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a></li>
+<li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
+<ul>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#e1-4"><i class="fa fa-check"></i>6E1</a></li>
@@ -431,19 +434,197 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 6</span> The Haunted DAG &amp; The Causal Terror</h1>
 <div id="chapter-notes-5" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span> Chapter Notes</h2>
-<p>Figure 6.1 Selection Bias</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>Parameters estimates for effect of leg length on height.</p>
+<p>The chapter opens with an example of a selection effect. Assuming that journal editors and peer reviewers care about both novelty and rigour, we can expect to see a negative correlation between the two in published papers.</p>
+<p>Here’s a simulation and a chart:</p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="haunted_dag.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1914</span>) </span>
+<span id="cb116-2"><a href="haunted_dag.html#cb116-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># we simulate 200 papers</span></span>
+<span id="cb116-3"><a href="haunted_dag.html#cb116-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fl">0.1</span> </span>
+<span id="cb116-4"><a href="haunted_dag.html#cb116-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-5"><a href="haunted_dag.html#cb116-5" aria-hidden="true" tabindex="-1"></a>nw <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N) <span class="co"># we create a newsworthiness figure for each paper</span></span>
+<span id="cb116-6"><a href="haunted_dag.html#cb116-6" aria-hidden="true" tabindex="-1"></a>tw <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N) <span class="co"># we create a trustworthiness figure for each paper</span></span>
+<span id="cb116-7"><a href="haunted_dag.html#cb116-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-8"><a href="haunted_dag.html#cb116-8" aria-hidden="true" tabindex="-1"></a><span class="co"># note that there is no correlation between the two in the simualation</span></span>
+<span id="cb116-9"><a href="haunted_dag.html#cb116-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-10"><a href="haunted_dag.html#cb116-10" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> nw <span class="sc">+</span> tw </span>
+<span id="cb116-11"><a href="haunted_dag.html#cb116-11" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">quantile</span>( s , <span class="dv">1</span><span class="sc">-</span>p ) <span class="co"># the top 10% of papers are accepted</span></span>
+<span id="cb116-12"><a href="haunted_dag.html#cb116-12" aria-hidden="true" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">ifelse</span>( s <span class="sc">&gt;=</span> q , <span class="st">&quot;Yes&quot;</span> , <span class="st">&quot;No&quot;</span> ) <span class="co"># are the papers selected? i.e. published</span></span>
+<span id="cb116-13"><a href="haunted_dag.html#cb116-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-14"><a href="haunted_dag.html#cb116-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-15"><a href="haunted_dag.html#cb116-15" aria-hidden="true" tabindex="-1"></a>data_pub <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">Trustworthiness =</span> tw, <span class="at">Newsworthiness=</span> nw,<span class="at">Selected =</span>selected)</span>
+<span id="cb116-16"><a href="haunted_dag.html#cb116-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-17"><a href="haunted_dag.html#cb116-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(Newsworthiness,Trustworthiness,<span class="at">colour=</span>Selected))<span class="sc">+</span></span>
+<span id="cb116-18"><a href="haunted_dag.html#cb116-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>data_pub)<span class="sc">+</span></span>
+<span id="cb116-19"><a href="haunted_dag.html#cb116-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">data=</span><span class="fu">filter</span>(data_pub,Selected<span class="sc">==</span><span class="st">&quot;Yes&quot;</span>),<span class="at">method=</span>lm,<span class="at">formula =</span><span class="st">&#39;y ~ x&#39;</span>,<span class="at">se=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+The blue line is the negative correlation between newsworthiness and trustworthiness induced by the selection process. This effect can occur inside of a multiple regression, where it is called collider bias.</p>
+<div id="multicollinearity" class="section level3 unnumbered">
+<h3>Multicollinearity</h3>
+<p>How to multiple regression models behave when the predictor variables are highly correlated?</p>
+<p>The chapter contains a simulation for the effect of leg length on height.</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="haunted_dag.html#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">909</span>) </span>
+<span id="cb117-2"><a href="haunted_dag.html#cb117-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="co"># we have 100 people</span></span>
+<span id="cb117-3"><a href="haunted_dag.html#cb117-3" aria-hidden="true" tabindex="-1"></a>height <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N,<span class="dv">10</span>,<span class="dv">2</span>) <span class="co"># we simulate their heights</span></span>
+<span id="cb117-4"><a href="haunted_dag.html#cb117-4" aria-hidden="true" tabindex="-1"></a>leg_prop <span class="ot">&lt;-</span> <span class="fu">runif</span>(N,<span class="fl">0.4</span>,<span class="fl">0.5</span>) <span class="co">#we simulate their leg length as a proportion of their height</span></span>
+<span id="cb117-5"><a href="haunted_dag.html#cb117-5" aria-hidden="true" tabindex="-1"></a>leg_left <span class="ot">&lt;-</span> leg_prop<span class="sc">*</span>height <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> ) <span class="co"># we calculate the length of each leg using the above </span></span>
+<span id="cb117-6"><a href="haunted_dag.html#cb117-6" aria-hidden="true" tabindex="-1"></a>leg_right <span class="ot">&lt;-</span> leg_prop<span class="sc">*</span>height <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> ) <span class="co"># making sure to include a little error</span></span>
+<span id="cb117-7"><a href="haunted_dag.html#cb117-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-8"><a href="haunted_dag.html#cb117-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-9"><a href="haunted_dag.html#cb117-9" aria-hidden="true" tabindex="-1"></a>data_leg <span class="ot">&lt;-</span> <span class="fu">tibble</span>(height,leg_left,leg_right)</span>
+<span id="cb117-10"><a href="haunted_dag.html#cb117-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-11"><a href="haunted_dag.html#cb117-11" aria-hidden="true" tabindex="-1"></a><span class="co"># we fit a model and plot the parameters</span></span>
+<span id="cb117-12"><a href="haunted_dag.html#cb117-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-13"><a href="haunted_dag.html#cb117-13" aria-hidden="true" tabindex="-1"></a>m6_1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb117-14"><a href="haunted_dag.html#cb117-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb117-15"><a href="haunted_dag.html#cb117-15" aria-hidden="true" tabindex="-1"></a>    height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb117-16"><a href="haunted_dag.html#cb117-16" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bl<span class="sc">*</span>leg_left <span class="sc">+</span> br<span class="sc">*</span>leg_right , </span>
+<span id="cb117-17"><a href="haunted_dag.html#cb117-17" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">10</span> , <span class="dv">100</span> ) , </span>
+<span id="cb117-18"><a href="haunted_dag.html#cb117-18" aria-hidden="true" tabindex="-1"></a>    bl <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">2</span> , <span class="dv">10</span> ) , </span>
+<span id="cb117-19"><a href="haunted_dag.html#cb117-19" aria-hidden="true" tabindex="-1"></a>    br <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">2</span> , <span class="dv">10</span> ) , </span>
+<span id="cb117-20"><a href="haunted_dag.html#cb117-20" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb117-21"><a href="haunted_dag.html#cb117-21" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_leg )</span>
+<span id="cb117-22"><a href="haunted_dag.html#cb117-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-23"><a href="haunted_dag.html#cb117-23" aria-hidden="true" tabindex="-1"></a><span class="fu">gather_draws</span>(m6_1,a, bl, br, sigma) <span class="sc">%&gt;%</span></span>
+<span id="cb117-24"><a href="haunted_dag.html#cb117-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb117-25"><a href="haunted_dag.html#cb117-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper), )<span class="sc">+</span></span>
+<span id="cb117-26"><a href="haunted_dag.html#cb117-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">colour =</span> <span class="st">&quot;dark grey&quot;</span>)<span class="sc">+</span></span>
+<span id="cb117-27"><a href="haunted_dag.html#cb117-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;parameters&quot;</span>)</span></code></pre></div>
 <p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>Figure 6.2 Posterior of height~leg Model</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-4-1.png" width="672" /><img src="06-haunted_dag_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
-<p>Figure 6.3</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Primate Milk DAG</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:</p>
+<p><span class="math display">\[
+\begin{aligned}
+y_i &amp;∼ \text{Normal}(\mu_i, \sigma) \\
+\mu_i &amp;= \alpha + \beta_1 x_i + \beta_2 x_i
+\end{aligned}
+\]</span>
+or</p>
+<p><span class="math display">\[
+\mu_i = \alpha + (\beta_1  + \beta_2 )x_i
+\]</span>
+There are a huge number of combinations of <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> that could produce the data.</p>
+<p>Here’s the chapter:</p>
+<blockquote>
+<p>Recall that a multiple linear regression answers the question: <em>What is the value of knowing each predictor, after already knowing all of the other predictors?</em></p>
+</blockquote>
+<p>Here we sample the model parameters <span class="math inline">\(b_l\)</span> and <span class="math inline">\(b_r\)</span> and plot them and their sum. There are highly correlated, and their sum is centered on the true parameter value for regressing leg length on height.</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="haunted_dag.html#cb118-1" aria-hidden="true" tabindex="-1"></a>data_leg_post <span class="ot">&lt;-</span> <span class="fu">spread_draws</span>(m6_1,br,bl) <span class="sc">%&gt;%</span></span>
+<span id="cb118-2"><a href="haunted_dag.html#cb118-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">sum of bl and br</span><span class="st">`</span><span class="ot">=</span>br<span class="sc">+</span>bl)</span>
+<span id="cb118-3"><a href="haunted_dag.html#cb118-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-4"><a href="haunted_dag.html#cb118-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_leg_post)<span class="sc">+</span></span>
+<span id="cb118-5"><a href="haunted_dag.html#cb118-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>br,<span class="at">y=</span>bl),<span class="at">col=</span><span class="st">&#39;#77AADD&#39;</span>,<span class="at">alpha=</span><span class="fl">0.2</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="haunted_dag.html#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_leg_post)<span class="sc">+</span></span>
+<span id="cb119-2"><a href="haunted_dag.html#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="st">`</span><span class="at">sum of bl and br</span><span class="st">`</span>),<span class="at">col=</span><span class="st">&#39;#77AADD&#39;</span>,<span class="at">size=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<p>The chapter reintroduces the primate milk example from chapter 5.</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="haunted_dag.html#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb120-2"><a href="haunted_dag.html#cb120-2" aria-hidden="true" tabindex="-1"></a>data_milk <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;data/milk.csv&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;;&quot;</span>,<span class="at">col_names =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb120-3"><a href="haunted_dag.html#cb120-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">K=</span><span class="fu">standardize</span>(kcal.per.g),</span>
+<span id="cb120-4"><a href="haunted_dag.html#cb120-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">F=</span><span class="fu">standardize</span>(perc.fat),</span>
+<span id="cb120-5"><a href="haunted_dag.html#cb120-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">L=</span><span class="fu">standardize</span>(perc.lactose))</span></code></pre></div>
+<pre><code>## Rows: 29 Columns: 8</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;;&quot;
+## chr (2): clade, species
+## dbl (6): kcal.per.g, perc.fat, perc.protein, perc.lactose, mass, neocortex.perc</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="haunted_dag.html#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co"># kcal.per.g regressed on perc.fat </span></span>
+<span id="cb124-2"><a href="haunted_dag.html#cb124-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-3"><a href="haunted_dag.html#cb124-3" aria-hidden="true" tabindex="-1"></a>m6_3 <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb124-4"><a href="haunted_dag.html#cb124-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb124-5"><a href="haunted_dag.html#cb124-5" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ), </span>
+<span id="cb124-6"><a href="haunted_dag.html#cb124-6" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bF<span class="sc">*</span>F, </span>
+<span id="cb124-7"><a href="haunted_dag.html#cb124-7" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ), </span>
+<span id="cb124-8"><a href="haunted_dag.html#cb124-8" aria-hidden="true" tabindex="-1"></a>    bF <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ), </span>
+<span id="cb124-9"><a href="haunted_dag.html#cb124-9" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb124-10"><a href="haunted_dag.html#cb124-10" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_milk )</span>
+<span id="cb124-11"><a href="haunted_dag.html#cb124-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-12"><a href="haunted_dag.html#cb124-12" aria-hidden="true" tabindex="-1"></a><span class="co"># kcal.per.g regressed on perc.lactose </span></span>
+<span id="cb124-13"><a href="haunted_dag.html#cb124-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-14"><a href="haunted_dag.html#cb124-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-15"><a href="haunted_dag.html#cb124-15" aria-hidden="true" tabindex="-1"></a>m6_4 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb124-16"><a href="haunted_dag.html#cb124-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb124-17"><a href="haunted_dag.html#cb124-17" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma )</span>
+<span id="cb124-18"><a href="haunted_dag.html#cb124-18" aria-hidden="true" tabindex="-1"></a>    , mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bL<span class="sc">*</span>L, </span>
+<span id="cb124-19"><a href="haunted_dag.html#cb124-19" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ), </span>
+<span id="cb124-20"><a href="haunted_dag.html#cb124-20" aria-hidden="true" tabindex="-1"></a>    bL <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ), </span>
+<span id="cb124-21"><a href="haunted_dag.html#cb124-21" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb124-22"><a href="haunted_dag.html#cb124-22" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_milk )</span>
+<span id="cb124-23"><a href="haunted_dag.html#cb124-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-24"><a href="haunted_dag.html#cb124-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-25"><a href="haunted_dag.html#cb124-25" aria-hidden="true" tabindex="-1"></a><span class="co"># kcal.per.g regressed on both </span></span>
+<span id="cb124-26"><a href="haunted_dag.html#cb124-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-27"><a href="haunted_dag.html#cb124-27" aria-hidden="true" tabindex="-1"></a>m6_5 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb124-28"><a href="haunted_dag.html#cb124-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb124-29"><a href="haunted_dag.html#cb124-29" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma )</span>
+<span id="cb124-30"><a href="haunted_dag.html#cb124-30" aria-hidden="true" tabindex="-1"></a>    , mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bF<span class="sc">*</span>F <span class="sc">+</span> bL<span class="sc">*</span>L, </span>
+<span id="cb124-31"><a href="haunted_dag.html#cb124-31" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ),</span>
+<span id="cb124-32"><a href="haunted_dag.html#cb124-32" aria-hidden="true" tabindex="-1"></a>    bF <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb124-33"><a href="haunted_dag.html#cb124-33" aria-hidden="true" tabindex="-1"></a>    bL <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ), </span>
+<span id="cb124-34"><a href="haunted_dag.html#cb124-34" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb124-35"><a href="haunted_dag.html#cb124-35" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_milk )</span></code></pre></div>
+<p>Here is the parameter summary for regression of kcal per gram of milk on the fat percentage of the milk:</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="haunted_dag.html#cb125-1" aria-hidden="true" tabindex="-1"></a>summary_6_3 <span class="ot">&lt;-</span> m6_3<span class="sc">%&gt;%</span></span>
+<span id="cb125-2"><a href="haunted_dag.html#cb125-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a,bF,sigma)<span class="sc">%&gt;%</span></span>
+<span id="cb125-3"><a href="haunted_dag.html#cb125-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width =</span> <span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb125-4"><a href="haunted_dag.html#cb125-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model=</span><span class="st">&quot;Fat&quot;</span>)</span>
+<span id="cb125-5"><a href="haunted_dag.html#cb125-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-6"><a href="haunted_dag.html#cb125-6" aria-hidden="true" tabindex="-1"></a>summary_6_3</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 8
+##   .variable   .value .lower .upper .width .point .interval model
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
+## 1 a         0.000384 -0.124  0.124   0.89 mean   qi        Fat  
+## 2 bF        0.861     0.725  0.999   0.89 mean   qi        Fat  
+## 3 sigma     0.450     0.356  0.545   0.89 mean   qi        Fat</code></pre>
+<p>And here’s the summary for the regression of kcals on lactose content:</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="haunted_dag.html#cb127-1" aria-hidden="true" tabindex="-1"></a>summary_6_4 <span class="ot">&lt;-</span> m6_4<span class="sc">%&gt;%</span></span>
+<span id="cb127-2"><a href="haunted_dag.html#cb127-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a,bL,sigma)<span class="sc">%&gt;%</span></span>
+<span id="cb127-3"><a href="haunted_dag.html#cb127-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width =</span> <span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb127-4"><a href="haunted_dag.html#cb127-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model=</span><span class="st">&quot;Lactose&quot;</span>)</span>
+<span id="cb127-5"><a href="haunted_dag.html#cb127-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb127-6"><a href="haunted_dag.html#cb127-6" aria-hidden="true" tabindex="-1"></a>summary_6_4</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 8
+##   .variable    .value .lower .upper .width .point .interval model  
+##   &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;  
+## 1 a         -0.000894 -0.106  0.104   0.89 mean   qi        Lactose
+## 2 bL        -0.902    -1.01  -0.789   0.89 mean   qi        Lactose
+## 3 sigma      0.380     0.300  0.458   0.89 mean   qi        Lactose</code></pre>
+<p>The parameters are almost mirror images of each other: the more fat content of the milk the higher the calories, the higher lactose content the lower the calories. This makes sense since fat is more energy dense than carbohydrate and fat and lactose contents are negatively correlated.</p>
+<p>Here’s what happens when both are included in the same model:</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="haunted_dag.html#cb129-1" aria-hidden="true" tabindex="-1"></a>summary_6_5 <span class="ot">&lt;-</span> m6_5<span class="sc">%&gt;%</span></span>
+<span id="cb129-2"><a href="haunted_dag.html#cb129-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a,bF,bL,sigma)<span class="sc">%&gt;%</span></span>
+<span id="cb129-3"><a href="haunted_dag.html#cb129-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width =</span> <span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb129-4"><a href="haunted_dag.html#cb129-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model=</span><span class="st">&quot;Both&quot;</span>)</span>
+<span id="cb129-5"><a href="haunted_dag.html#cb129-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb129-6"><a href="haunted_dag.html#cb129-6" aria-hidden="true" tabindex="-1"></a>summary_6_5</span></code></pre></div>
+<pre><code>## # A tibble: 4 x 8
+##   .variable    .value  .lower .upper .width .point .interval model
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
+## 1 a          0.000589 -0.108   0.104   0.89 mean   qi        Both 
+## 2 bF         0.245    -0.0567  0.541   0.89 mean   qi        Both 
+## 3 bL        -0.676    -0.970  -0.386   0.89 mean   qi        Both 
+## 4 sigma      0.378     0.301   0.456   0.89 mean   qi        Both</code></pre>
+<p>Here’s a plot:</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="haunted_dag.html#cb131-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(summary_6_3, summary_6_4,summary_6_5) <span class="sc">%&gt;%</span></span>
+<span id="cb131-2"><a href="haunted_dag.html#cb131-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">color =</span> model)) <span class="sc">+</span></span>
+<span id="cb131-3"><a href="haunted_dag.html#cb131-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="sc">-</span><span class="fl">0.3</span>))<span class="sc">+</span></span>
+<span id="cb131-4"><a href="haunted_dag.html#cb131-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb131-5"><a href="haunted_dag.html#cb131-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;parameters&quot;</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Including both fat and lactose contents in the model pulls the parameter estimates <span class="math inline">\(b_F\)</span> and <span class="math inline">\(b_L\)</span> towards zero, and about doubles the uncertainty around both.</p>
+<p>Here’s a pairs plot of the two variables:</p>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="haunted_dag.html#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(<span class="at">data=</span><span class="fu">select</span>(data_milk,kcal.per.g,perc.fat,perc.lactose))</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>The chapter summarises:</p>
+<blockquote>
+<p>These two variables are negatively correlated, and so strongly so that they are nearly redundant. Either helps in predicting kcal.per.g, but neither helps as much once you already know the other…. The problem of multicollinearity is amember of a family of problems with fitting models, a family sometimes known as non-identifiability. When a parameter is non-identifiable, it means that the structure of the data and model do not make it possible to estimate the parameter’s value.</p>
+</blockquote>
+<p>And here’s a DAG the chapter suggests for this case. D here is how dense the milk needs to be, and is related to how frequently the species nurses. Species that nurse more often tend to have relatively more lactose and less fat in their milk.</p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Simulating Colliinearity</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="06-haunted_dag_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="06-haunted_dag_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-13-1.png" width="672" /><img src="06-haunted_dag_files/figure-html/unnamed-chunk-13-2.png" width="672" /><img src="06-haunted_dag_files/figure-html/unnamed-chunk-13-3.png" width="672" /></p>
 <p>Here’s my very rough attempt at explaining to myself why conditioning on fungus makes treatment appear to have a small positive effect.</p>
 <p>If fungus is present we may have:</p>
 <ul>
@@ -456,6 +637,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>treatment present and moisture either way (leaning towards absent)</li>
 </ul>
 <p>So once we know fungus there is a weak positive correlation between treatment and moisture. Since moisture is good for plant growth, this means a positive relationship between treatment and growth.</p>
+</div>
 </div>
 <div id="questions-5" class="section level2" number="6.2">
 <h2><span class="header-section-number">6.2</span> Questions</h2>
@@ -489,19 +671,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol style="list-style-type: decimal">
 <li>Fork - X and Y are independent, once we condition on Z.</li>
 </ol>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: decimal">
 <li>Pipe - X and Y are independent, once we condition on Z.</li>
 </ol>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Collider - Conditioning on Z creates an association between X and Y.</li>
 </ol>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Descendant - Conditioning on D partly conditions on Z.</li>
 </ol>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 </div>
 <div id="e4-4" class="section level3 unnumbered">
@@ -530,12 +712,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="answer-52" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>Here’s the original DAG:</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>Now we add the unobserved V:</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>Previously, we could condition on either A or C to find the direct casual effect of X on Y. Now C is a collider, so we should condition on A.</p>
 <p>The dagitty package corrobates this:</p>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="haunted_dag.html#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>( dag_6M1B , <span class="at">exposure=</span><span class="st">&quot;X&quot;</span> , <span class="at">outcome=</span><span class="st">&quot;Y&quot;</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="haunted_dag.html#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>( dag_6M1B , <span class="at">exposure=</span><span class="st">&quot;X&quot;</span> , <span class="at">outcome=</span><span class="st">&quot;Y&quot;</span> )</span></code></pre></div>
 <pre><code>## { A }</code></pre>
 </div>
 </div>
@@ -551,38 +733,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="answer-53" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>Modifying the leg example:</p>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="haunted_dag.html#cb115-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
-<span id="cb115-2"><a href="haunted_dag.html#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">909</span>) </span>
-<span id="cb115-3"><a href="haunted_dag.html#cb115-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-4"><a href="haunted_dag.html#cb115-4" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N,<span class="dv">10</span>,<span class="dv">2</span>)</span>
-<span id="cb115-5"><a href="haunted_dag.html#cb115-5" aria-hidden="true" tabindex="-1"></a>Y_prop <span class="ot">&lt;-</span> <span class="fu">runif</span>(N,<span class="fl">0.4</span>,<span class="fl">0.5</span>) </span>
-<span id="cb115-6"><a href="haunted_dag.html#cb115-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-7"><a href="haunted_dag.html#cb115-7" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> Y_prop<span class="sc">*</span>Y <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> )</span>
-<span id="cb115-8"><a href="haunted_dag.html#cb115-8" aria-hidden="true" tabindex="-1"></a>Z_prop <span class="ot">&lt;-</span> <span class="fu">runif</span>(N,<span class="fl">0.8</span>,<span class="fl">0.9</span>) </span>
-<span id="cb115-9"><a href="haunted_dag.html#cb115-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-10"><a href="haunted_dag.html#cb115-10" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="sc">-</span>Z_prop<span class="sc">*</span>Z <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> )</span>
-<span id="cb115-11"><a href="haunted_dag.html#cb115-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-12"><a href="haunted_dag.html#cb115-12" aria-hidden="true" tabindex="-1"></a>data_6M2 <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">X=</span>X,<span class="at">Z=</span>Z,<span class="at">Y=</span>Y)</span>
-<span id="cb115-13"><a href="haunted_dag.html#cb115-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb115-14"><a href="haunted_dag.html#cb115-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data_6M2)</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="haunted_dag.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb116-2"><a href="haunted_dag.html#cb116-2" aria-hidden="true" tabindex="-1"></a>m6M2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb116-3"><a href="haunted_dag.html#cb116-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb116-4"><a href="haunted_dag.html#cb116-4" aria-hidden="true" tabindex="-1"></a>    Y <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb116-5"><a href="haunted_dag.html#cb116-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bX<span class="sc">*</span>X <span class="sc">+</span> bZ<span class="sc">*</span>Z , </span>
-<span id="cb116-6"><a href="haunted_dag.html#cb116-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">10</span> , <span class="dv">100</span> ) , </span>
-<span id="cb116-7"><a href="haunted_dag.html#cb116-7" aria-hidden="true" tabindex="-1"></a>    bX <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="sc">-</span><span class="dv">3</span> , <span class="dv">10</span> ) , </span>
-<span id="cb116-8"><a href="haunted_dag.html#cb116-8" aria-hidden="true" tabindex="-1"></a>    bZ <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">2</span> , <span class="dv">10</span> ) , </span>
-<span id="cb116-9"><a href="haunted_dag.html#cb116-9" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb116-10"><a href="haunted_dag.html#cb116-10" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_6M2 )</span>
-<span id="cb116-11"><a href="haunted_dag.html#cb116-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb116-12"><a href="haunted_dag.html#cb116-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb116-13"><a href="haunted_dag.html#cb116-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m6M2))<span class="sc">+</span></span>
-<span id="cb116-14"><a href="haunted_dag.html#cb116-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m6M2)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
-<span id="cb116-15"><a href="haunted_dag.html#cb116-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb116-16"><a href="haunted_dag.html#cb116-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
-<span id="cb116-17"><a href="haunted_dag.html#cb116-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="haunted_dag.html#cb135-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
+<span id="cb135-2"><a href="haunted_dag.html#cb135-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">909</span>) </span>
+<span id="cb135-3"><a href="haunted_dag.html#cb135-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-4"><a href="haunted_dag.html#cb135-4" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb135-5"><a href="haunted_dag.html#cb135-5" aria-hidden="true" tabindex="-1"></a>Y_prop <span class="ot">&lt;-</span> <span class="fu">runif</span>(N,<span class="fl">0.4</span>,<span class="fl">0.5</span>) </span>
+<span id="cb135-6"><a href="haunted_dag.html#cb135-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-7"><a href="haunted_dag.html#cb135-7" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> Y_prop<span class="sc">*</span>Y <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> )</span>
+<span id="cb135-8"><a href="haunted_dag.html#cb135-8" aria-hidden="true" tabindex="-1"></a>Z_prop <span class="ot">&lt;-</span> <span class="fu">runif</span>(N,<span class="fl">0.8</span>,<span class="fl">0.9</span>) </span>
+<span id="cb135-9"><a href="haunted_dag.html#cb135-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-10"><a href="haunted_dag.html#cb135-10" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="sc">-</span>Z_prop<span class="sc">*</span>Z <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">0</span> , <span class="fl">0.02</span> )</span>
+<span id="cb135-11"><a href="haunted_dag.html#cb135-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-12"><a href="haunted_dag.html#cb135-12" aria-hidden="true" tabindex="-1"></a>data_6M2 <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(<span class="at">X=</span>X,<span class="at">Z=</span>Z,<span class="at">Y=</span>Y)</span>
+<span id="cb135-13"><a href="haunted_dag.html#cb135-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb135-14"><a href="haunted_dag.html#cb135-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data_6M2)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="haunted_dag.html#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb136-2"><a href="haunted_dag.html#cb136-2" aria-hidden="true" tabindex="-1"></a>m6M2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb136-3"><a href="haunted_dag.html#cb136-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb136-4"><a href="haunted_dag.html#cb136-4" aria-hidden="true" tabindex="-1"></a>    Y <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb136-5"><a href="haunted_dag.html#cb136-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bX<span class="sc">*</span>X <span class="sc">+</span> bZ<span class="sc">*</span>Z , </span>
+<span id="cb136-6"><a href="haunted_dag.html#cb136-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">10</span> , <span class="dv">100</span> ) , </span>
+<span id="cb136-7"><a href="haunted_dag.html#cb136-7" aria-hidden="true" tabindex="-1"></a>    bX <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="sc">-</span><span class="dv">3</span> , <span class="dv">10</span> ) , </span>
+<span id="cb136-8"><a href="haunted_dag.html#cb136-8" aria-hidden="true" tabindex="-1"></a>    bZ <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">2</span> , <span class="dv">10</span> ) , </span>
+<span id="cb136-9"><a href="haunted_dag.html#cb136-9" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb136-10"><a href="haunted_dag.html#cb136-10" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_6M2 )</span>
+<span id="cb136-11"><a href="haunted_dag.html#cb136-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-12"><a href="haunted_dag.html#cb136-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-13"><a href="haunted_dag.html#cb136-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m6M2))<span class="sc">+</span></span>
+<span id="cb136-14"><a href="haunted_dag.html#cb136-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m6M2)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb136-15"><a href="haunted_dag.html#cb136-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb136-16"><a href="haunted_dag.html#cb136-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
+<span id="cb136-17"><a href="haunted_dag.html#cb136-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
 <pre><code>## Warning in sqrt(diag(vcov(model))): NaNs produced
 
 ## Warning in sqrt(diag(vcov(model))): NaNs produced
@@ -601,7 +783,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 ## Warning in sqrt(diag(vcov(model))): NaNs produced</code></pre>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_segment).</code></pre>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
 <p>In the legs example, the model was very uncertain about the parameter values for both legs. This is not the case here, the parameter estimate for the influence of Z is about as expected, 2-2.5. The model has correctly identified that the only influence of X on Y is through Z, and so produces parameter estimates for X much smaller than expected. We have a pipe, and including Z blocks the path from X to Y, but we don’t have the problems with identifiability that we had in the legs example.</p>
 <p>There is no way to tell this scenario apart from the legs example simply from looking at the pairwise correlations.</p>
 </div>
@@ -619,30 +801,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol style="list-style-type: decimal">
 <li>We should condition on Z to block the backdoor path.</li>
 </ol>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="haunted_dag.html#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.1</span>)</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="haunted_dag.html#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.1</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="haunted_dag.html#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.1</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="haunted_dag.html#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.1</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
 <pre><code>## { Z }</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>We no longer want to condition on Z - it is a collider.</li>
 </ol>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="haunted_dag.html#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.2</span>)</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="haunted_dag.html#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.2</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="haunted_dag.html#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.2</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="haunted_dag.html#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.2</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
 <pre><code>##  {}</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>We no longer want to condition on Z - it is a collider.</li>
 </ol>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="haunted_dag.html#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.3</span>)</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="haunted_dag.html#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.3</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="haunted_dag.html#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.3</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="haunted_dag.html#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.3</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
 <pre><code>##  {}</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>We don’t want to condition on Z here because we are looking for the <em>total</em> casual influence of X on Y - one route of this influence goes through Z. We should condition on A however, to block the backdoor path.</li>
 </ol>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="haunted_dag.html#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.4</span>)</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="haunted_dag.html#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.4</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="haunted_dag.html#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_6M3<span class="fl">.4</span>)</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="haunted_dag.html#cb149-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_6M3<span class="fl">.4</span>,<span class="at">exposure =</span> <span class="st">&quot;X&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;Y&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
 <pre><code>## { A }</code></pre>
 </div>
 </div>
@@ -663,33 +845,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 * Marriage rate (M)
 * Median age of marriage (A)</p>
 <p>Here’s my proposed DAG:</p>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="haunted_dag.html#cb131-1" aria-hidden="true" tabindex="-1"></a>dag_waf <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {S -&gt; W; S -&gt; M; S-&gt;A; W -&gt; D ; M -&gt; D; A -&gt; D;}&quot;</span>)</span>
-<span id="cb131-2"><a href="haunted_dag.html#cb131-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_waf) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">W=</span><span class="dv">0</span>,<span class="at">S=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">1</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">A=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">S=</span><span class="dv">0</span>,<span class="at">W=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">1</span>,<span class="at">A=</span><span class="dv">1</span>,<span class="at">D=</span><span class="dv">2</span>) )</span>
-<span id="cb131-3"><a href="haunted_dag.html#cb131-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb131-4"><a href="haunted_dag.html#cb131-4" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_waf )</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="haunted_dag.html#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_waf,<span class="at">exposure =</span> <span class="st">&quot;W&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;D&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="haunted_dag.html#cb151-1" aria-hidden="true" tabindex="-1"></a>dag_waf <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {S -&gt; W; S -&gt; M; S-&gt;A; W -&gt; D ; M -&gt; D; A -&gt; D;}&quot;</span>)</span>
+<span id="cb151-2"><a href="haunted_dag.html#cb151-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_waf) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">W=</span><span class="dv">0</span>,<span class="at">S=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">1</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">A=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">S=</span><span class="dv">0</span>,<span class="at">W=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">1</span>,<span class="at">A=</span><span class="dv">1</span>,<span class="at">D=</span><span class="dv">2</span>) )</span>
+<span id="cb151-3"><a href="haunted_dag.html#cb151-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb151-4"><a href="haunted_dag.html#cb151-4" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_waf )</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="haunted_dag.html#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>(dag_waf,<span class="at">exposure =</span> <span class="st">&quot;W&quot;</span>,<span class="at">outcome =</span> <span class="st">&quot;D&quot;</span>,<span class="at">effect =</span> <span class="st">&quot;total&quot;</span>)</span></code></pre></div>
 <pre><code>## { A, M }
 ## { S }</code></pre>
 <p>So we need to include S in the model, to block the backdoor path through A and M.</p>
 <p>After loading the data, standardising, and doing some prior simulation, I have the model below:</p>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="haunted_dag.html#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb134-2"><a href="haunted_dag.html#cb134-2" aria-hidden="true" tabindex="-1"></a>m6H1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb134-3"><a href="haunted_dag.html#cb134-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb134-4"><a href="haunted_dag.html#cb134-4" aria-hidden="true" tabindex="-1"></a>    Divorce <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb134-5"><a href="haunted_dag.html#cb134-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses, </span>
-<span id="cb134-6"><a href="haunted_dag.html#cb134-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
-<span id="cb134-7"><a href="haunted_dag.html#cb134-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
-<span id="cb134-8"><a href="haunted_dag.html#cb134-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb134-9"><a href="haunted_dag.html#cb134-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
-<span id="cb134-10"><a href="haunted_dag.html#cb134-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb134-11"><a href="haunted_dag.html#cb134-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb134-12"><a href="haunted_dag.html#cb134-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m6H1,<span class="at">depth =</span> <span class="dv">2</span>))<span class="sc">+</span></span>
-<span id="cb134-13"><a href="haunted_dag.html#cb134-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m6H1,<span class="at">depth =</span> <span class="dv">2</span>)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
-<span id="cb134-14"><a href="haunted_dag.html#cb134-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb134-15"><a href="haunted_dag.html#cb134-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
-<span id="cb134-16"><a href="haunted_dag.html#cb134-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="haunted_dag.html#cb154-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb154-2"><a href="haunted_dag.html#cb154-2" aria-hidden="true" tabindex="-1"></a>m6H1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb154-3"><a href="haunted_dag.html#cb154-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb154-4"><a href="haunted_dag.html#cb154-4" aria-hidden="true" tabindex="-1"></a>    Divorce <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb154-5"><a href="haunted_dag.html#cb154-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses, </span>
+<span id="cb154-6"><a href="haunted_dag.html#cb154-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
+<span id="cb154-7"><a href="haunted_dag.html#cb154-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
+<span id="cb154-8"><a href="haunted_dag.html#cb154-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb154-9"><a href="haunted_dag.html#cb154-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
+<span id="cb154-10"><a href="haunted_dag.html#cb154-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-11"><a href="haunted_dag.html#cb154-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb154-12"><a href="haunted_dag.html#cb154-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m6H1,<span class="at">depth =</span> <span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb154-13"><a href="haunted_dag.html#cb154-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m6H1,<span class="at">depth =</span> <span class="dv">2</span>)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb154-14"><a href="haunted_dag.html#cb154-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb154-15"><a href="haunted_dag.html#cb154-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
+<span id="cb154-16"><a href="haunted_dag.html#cb154-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <p>This is consistent with the number of Waffle Houses having no causal effect on the divorce rate.</p>
 </div>
 </div>
@@ -704,54 +886,54 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="answer-56" class="section level4 unnumbered">
 <h4>Answer</h4>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="haunted_dag.html#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_waf)</span></code></pre></div>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="haunted_dag.html#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>(dag_waf)</span></code></pre></div>
 <pre><code>## A _||_ M | S
 ## A _||_ W | S
 ## D _||_ S | A, M, W
 ## M _||_ W | S</code></pre>
 <p>We’ll first test that the divorce rate is independent of being in the South, conditional on number of waffle houses, median age of marriage, and marriage rate.</p>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="haunted_dag.html#cb137-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb137-2"><a href="haunted_dag.html#cb137-2" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb137-3"><a href="haunted_dag.html#cb137-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb137-4"><a href="haunted_dag.html#cb137-4" aria-hidden="true" tabindex="-1"></a>    Divorce <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb137-5"><a href="haunted_dag.html#cb137-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses <span class="sc">+</span> bM<span class="sc">*</span>Marriage <span class="sc">+</span> bA<span class="sc">*</span>MedianAgeMarriage, </span>
-<span id="cb137-6"><a href="haunted_dag.html#cb137-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
-<span id="cb137-7"><a href="haunted_dag.html#cb137-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
-<span id="cb137-8"><a href="haunted_dag.html#cb137-8" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
-<span id="cb137-9"><a href="haunted_dag.html#cb137-9" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
-<span id="cb137-10"><a href="haunted_dag.html#cb137-10" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb137-11"><a href="haunted_dag.html#cb137-11" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
-<span id="cb137-12"><a href="haunted_dag.html#cb137-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb137-13"><a href="haunted_dag.html#cb137-13" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span>_post <span class="ot">&lt;-</span> post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m6H2<span class="fl">.1</span>)</span>
-<span id="cb137-14"><a href="haunted_dag.html#cb137-14" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span>_post<span class="sc">$</span>diff_south <span class="ot">&lt;-</span> m6H2<span class="fl">.1</span>_post<span class="sc">$</span>a[,<span class="dv">1</span>] <span class="sc">-</span> m6H2<span class="fl">.1</span>_post<span class="sc">$</span>a[,<span class="dv">2</span>]</span>
-<span id="cb137-15"><a href="haunted_dag.html#cb137-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb137-16"><a href="haunted_dag.html#cb137-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>( m6H2<span class="fl">.1</span>_post , <span class="at">depth=</span><span class="dv">2</span> ))<span class="sc">+</span></span>
-<span id="cb137-17"><a href="haunted_dag.html#cb137-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>( m6H2<span class="fl">.1</span>_post , <span class="at">depth=</span><span class="dv">2</span> )),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
-<span id="cb137-18"><a href="haunted_dag.html#cb137-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb137-19"><a href="haunted_dag.html#cb137-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
-<span id="cb137-20"><a href="haunted_dag.html#cb137-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="haunted_dag.html#cb157-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb157-2"><a href="haunted_dag.html#cb157-2" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb157-3"><a href="haunted_dag.html#cb157-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb157-4"><a href="haunted_dag.html#cb157-4" aria-hidden="true" tabindex="-1"></a>    Divorce <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb157-5"><a href="haunted_dag.html#cb157-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses <span class="sc">+</span> bM<span class="sc">*</span>Marriage <span class="sc">+</span> bA<span class="sc">*</span>MedianAgeMarriage, </span>
+<span id="cb157-6"><a href="haunted_dag.html#cb157-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
+<span id="cb157-7"><a href="haunted_dag.html#cb157-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) , </span>
+<span id="cb157-8"><a href="haunted_dag.html#cb157-8" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb157-9"><a href="haunted_dag.html#cb157-9" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb157-10"><a href="haunted_dag.html#cb157-10" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb157-11"><a href="haunted_dag.html#cb157-11" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
+<span id="cb157-12"><a href="haunted_dag.html#cb157-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb157-13"><a href="haunted_dag.html#cb157-13" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span>_post <span class="ot">&lt;-</span> post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m6H2<span class="fl">.1</span>)</span>
+<span id="cb157-14"><a href="haunted_dag.html#cb157-14" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.1</span>_post<span class="sc">$</span>diff_south <span class="ot">&lt;-</span> m6H2<span class="fl">.1</span>_post<span class="sc">$</span>a[,<span class="dv">1</span>] <span class="sc">-</span> m6H2<span class="fl">.1</span>_post<span class="sc">$</span>a[,<span class="dv">2</span>]</span>
+<span id="cb157-15"><a href="haunted_dag.html#cb157-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb157-16"><a href="haunted_dag.html#cb157-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>( m6H2<span class="fl">.1</span>_post , <span class="at">depth=</span><span class="dv">2</span> ))<span class="sc">+</span></span>
+<span id="cb157-17"><a href="haunted_dag.html#cb157-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>( m6H2<span class="fl">.1</span>_post , <span class="at">depth=</span><span class="dv">2</span> )),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb157-18"><a href="haunted_dag.html#cb157-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb157-19"><a href="haunted_dag.html#cb157-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
+<span id="cb157-20"><a href="haunted_dag.html#cb157-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <p>The values of the diff_south parameter are consistent with the conditional independence, but I’m not completely happy that I’ve caught all the ways that being in the South can influence the divorce rate. Perhaps I should add an arrow directly from the South to the divorce rate, or add in an unobserved variable to stand in for cultural/ religious attitudes towards divorce.</p>
 <p>We’ll test one more conditional independence, one that I think is more likely to be true. Let’s see if the median age of marriage is independent of the number of waffle houses, once we condition on being in the south.</p>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="haunted_dag.html#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb138-2"><a href="haunted_dag.html#cb138-2" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
-<span id="cb138-3"><a href="haunted_dag.html#cb138-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb138-4"><a href="haunted_dag.html#cb138-4" aria-hidden="true" tabindex="-1"></a>    MedianAgeMarriage <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb138-5"><a href="haunted_dag.html#cb138-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses, </span>
-<span id="cb138-6"><a href="haunted_dag.html#cb138-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
-<span id="cb138-7"><a href="haunted_dag.html#cb138-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) , </span>
-<span id="cb138-8"><a href="haunted_dag.html#cb138-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb138-9"><a href="haunted_dag.html#cb138-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
-<span id="cb138-10"><a href="haunted_dag.html#cb138-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb138-11"><a href="haunted_dag.html#cb138-11" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span>_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m6H2<span class="fl">.2</span>)</span>
-<span id="cb138-12"><a href="haunted_dag.html#cb138-12" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span>_post<span class="sc">$</span>diff_south <span class="ot">&lt;-</span> m6H2<span class="fl">.2</span>_post<span class="sc">$</span>a[,<span class="dv">1</span>] <span class="sc">-</span> m6H2<span class="fl">.2</span>_post<span class="sc">$</span>a[,<span class="dv">2</span>]</span>
-<span id="cb138-13"><a href="haunted_dag.html#cb138-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb138-14"><a href="haunted_dag.html#cb138-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>( m6H2<span class="fl">.2</span>_post , <span class="at">depth=</span><span class="dv">2</span> ))<span class="sc">+</span></span>
-<span id="cb138-15"><a href="haunted_dag.html#cb138-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>( m6H2<span class="fl">.2</span>_post , <span class="at">depth=</span><span class="dv">2</span> )),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
-<span id="cb138-16"><a href="haunted_dag.html#cb138-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb138-17"><a href="haunted_dag.html#cb138-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
-<span id="cb138-18"><a href="haunted_dag.html#cb138-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="haunted_dag.html#cb158-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb158-2"><a href="haunted_dag.html#cb158-2" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( </span>
+<span id="cb158-3"><a href="haunted_dag.html#cb158-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb158-4"><a href="haunted_dag.html#cb158-4" aria-hidden="true" tabindex="-1"></a>    MedianAgeMarriage <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb158-5"><a href="haunted_dag.html#cb158-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[South] <span class="sc">+</span> bW<span class="sc">*</span>WaffleHouses, </span>
+<span id="cb158-6"><a href="haunted_dag.html#cb158-6" aria-hidden="true" tabindex="-1"></a>    a[South] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.6</span> ) , </span>
+<span id="cb158-7"><a href="haunted_dag.html#cb158-7" aria-hidden="true" tabindex="-1"></a>    bW <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) , </span>
+<span id="cb158-8"><a href="haunted_dag.html#cb158-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb158-9"><a href="haunted_dag.html#cb158-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_waf )</span>
+<span id="cb158-10"><a href="haunted_dag.html#cb158-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb158-11"><a href="haunted_dag.html#cb158-11" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span>_post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m6H2<span class="fl">.2</span>)</span>
+<span id="cb158-12"><a href="haunted_dag.html#cb158-12" aria-hidden="true" tabindex="-1"></a>m6H2<span class="fl">.2</span>_post<span class="sc">$</span>diff_south <span class="ot">&lt;-</span> m6H2<span class="fl">.2</span>_post<span class="sc">$</span>a[,<span class="dv">1</span>] <span class="sc">-</span> m6H2<span class="fl">.2</span>_post<span class="sc">$</span>a[,<span class="dv">2</span>]</span>
+<span id="cb158-13"><a href="haunted_dag.html#cb158-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb158-14"><a href="haunted_dag.html#cb158-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>( m6H2<span class="fl">.2</span>_post , <span class="at">depth=</span><span class="dv">2</span> ))<span class="sc">+</span></span>
+<span id="cb158-15"><a href="haunted_dag.html#cb158-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>( m6H2<span class="fl">.2</span>_post , <span class="at">depth=</span><span class="dv">2</span> )),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb158-16"><a href="haunted_dag.html#cb158-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,<span class="at">col=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb158-17"><a href="haunted_dag.html#cb158-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
+<span id="cb158-18"><a href="haunted_dag.html#cb158-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <p>The parameter bW is estimated to be quite close to zero.</p>
 </div>
 </div>
@@ -767,9 +949,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="answer-57" class="section level4 unnumbered">
 <h4>Answer</h4>
 <p>We don’t need to condition on any other parameters since we’re looking for the total causal effect.</p>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <pre><code>##  {}</code></pre>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-33-2.png" width="672" /></p>
 <p>Unexpectedly, the total causal impact of area on weight appears to be zero, or slightly negative. Increasing area would not make foxes heavier.</p>
 </div>
 </div>
@@ -785,7 +967,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h4>Answer</h4>
 <p>We don’t need to condition on any other parameters assuming the DAG we’re given is correct.</p>
 <pre><code>##  {}</code></pre>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <p>The total causal impact of food on weight again appears to be negative. Increasing food would not make foxes heavier.</p>
 </div>
 </div>
@@ -801,7 +983,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h4>Answer</h4>
 <p>Now we have to condition on food to block the backdoor path.</p>
 <pre><code>## { F }</code></pre>
-<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="06-haunted_dag_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <p>We see that the causal impact of group size is negative, and that the direct effect of food is zero or slightly positive. It is at least not so negative as the total causal effect.</p>
 <p>I’d suggest that what’s happening here is that the main effect of an increase in food (either directly or by an increase in area) would be to increase group size, which has a detrimental effect on weight. This effect seems to overwhelm any direct effect of increasing food on weight.</p>
 </div>
