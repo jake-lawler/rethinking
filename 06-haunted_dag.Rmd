@@ -4,7 +4,6 @@
 
 library(tidyverse)
 library(rethinking)
-library(vroom)
 library(GGally)
 library(dagitty)
 library(tidybayes)
@@ -43,12 +42,13 @@ ggplot(mapping=aes(Newsworthiness,Trustworthiness,colour=Selected))+
     geom_smooth(data=filter(data_pub,Selected=="Yes"),method=lm,formula ='y ~ x',se=FALSE)
   
 ```
+
 The blue line is the negative correlation between newsworthiness and trustworthiness induced by the selection process. This effect can occur inside of a multiple regression, where it is called collider bias.
 
 
 ### Multicollinearity {-}
 
-How to multiple regression models behave when the predictor variables are highly correlated?
+How do multiple regression models behave when the predictor variables are highly correlated?
 
 The chapter contains a simulation for the effect of leg length on height.
 
@@ -84,7 +84,7 @@ ggplot(aes(y = fct_rev(.variable), x = .value, xmin = .lower, xmax = .upper), )+
   
 ```
 
-Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
+Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg ($b_r$ and $b_l$) on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
 
 $$
 \begin{aligned}
@@ -121,7 +121,7 @@ ggplot(data_leg_post)+
 
 The chapter reintroduces the primate milk example from chapter 5.
 
-```{r}
+```{r message=FALSE}
 
 # load data
 data_milk <- read_delim("data/milk.csv", delim = ";",col_names = TRUE)%>%
@@ -175,7 +175,8 @@ summary_6_3 <- m6_3%>%
   mean_qi(.width = 0.89)%>%
   mutate(model="Fat")
 
-summary_6_3
+summary_6_3%>%
+  print(digits = 3)
 
 ```
 
@@ -187,7 +188,8 @@ summary_6_4 <- m6_4%>%
   mean_qi(.width = 0.89)%>%
   mutate(model="Lactose")
 
-summary_6_4
+summary_6_4%>%
+  print(digits = 3)
 
 ```
 The parameters are almost mirror images of each other: the more fat content of the milk the higher the calories, the higher lactose content the lower the calories. This makes sense since fat is more energy dense than carbohydrate and fat and lactose contents are negatively correlated. 
@@ -200,7 +202,8 @@ summary_6_5 <- m6_5%>%
   mean_qi(.width = 0.89)%>%
   mutate(model="Both")
 
-summary_6_5
+summary_6_5%>%
+  print(digits = 3)
 ```
 
 Here's a plot:
@@ -237,53 +240,62 @@ drawdag( dag_milk )
 
 ```
 
-Simulating Colliinearity
+### Post-Treatment Bias {-}
 
-```{r echo=FALSE,message=FALSE}
+The chapter describes bias that can result from the *inclusion* of varibels in a model that should be omitted. One example of this is post-treatment bias.
 
-data_milk <- vroom("data/milk.csv")%>%
-  mutate(K=standardize(kcal.per.g),
-         F=standardize(perc.fat),
-         L=standardize(perc.lactose))
+The case study in the chapter concerns anti-fungal soil treatments, and their effect on plant height. Plants are sprouted and their initial heights are measured. Various treatments are applied, the plants' final heights are measured, and the presence or absence of fungus is noted.
 
-sim.coll <- function( r=0.9 ) { 
-  data_milk$x <- rnorm( nrow(data_milk) , mean=r*data_milk$perc.fat , sd=sqrt( (1-r^2)*var(data_milk$perc.fat) ) )
-  m <- lm( kcal.per.g ~ perc.fat + x , data=data_milk ) 
-  sqrt( diag( vcov(m) ) )[2] # stddev of parameter
-}
+The fungus should *not* be included in a model designed to estimate the effect of the anti-fungal treatment on plant  height. The proposed mechanism by which anti-fungal treatment would lead to more plant growth is by killing fungus. By including the presence/absence in the model we are in effect asking "how helpful is the anti-fungal treatment, relative to some default treatment, assuming fungal growth is the same in each case". This is not the question we need to answer. Here's a DAG:    
 
-rep.sim.coll <- function( r=0.9 , n=100 ) { 
-  stddev <- replicate( n , sim.coll(r) ) 
-  mean(stddev)
-}
+```{r}
 
-r.seq <- seq(from=0,to=0.99,by=0.01) 
-stddev <- sapply( r.seq , rep.sim.coll, n=100 )
-
-
-ggplot(mapping=aes(x=r.seq,y=stddev))+
-  geom_line(col="blue")+
-  xlab("Correlation")
-
-
+dag_fungus <- dagitty("dag{H_0 -> H_1; F -> H_1; T -> F; }")
+coordinates(dag_fungus) <- list( x=c(H_0=0,H_1=1, F=2, T=3) , y=c(H_0=0,H_1=0,F=0, T=0) )
+drawdag( dag_fungus)
 ```
 
-```{r echo=FALSE,message=FALSE, cache = TRUE}
+Here:
 
-dag_fungus <- dagitty("dag{M [unobserved]; H_0 -> H_1; M -> H_1; M -> F; T -> F; }")
-coordinates(dag_fungus) <- list( x=c(H_0=0,H_1=1,M=1.5, F=2, T=3) , y=c(H_0=0,H_1=0,M=1.1, F=0, T=0) )
-drawdag( dag_fungus)
+* $H_0$ and $H_1$ are initial and final heights
+* $F$ is presence or absence of fungus
+* $T$ is the treatment applied to the soil
+
+By including the fungus in the treatment we are blocking the causal path between treatment and final height.
+
+Here's a simulation from the chapter:
+
+```{r}
 
 set.seed(71) 
-N <- 1000 
+N <- 1000 #1,000 plants
+# inital heights
 h0 <- rnorm(N,10,2) 
-treatment <- rep( 0:1 , each=N/2 ) 
-M <- rbern(N) 
-fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 + 0.4*M ) 
-h1 <- h0 + rnorm( N , 5 + 3*M )
-d2 <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+treatment <- rep( 0:1 , each=N/2 ) # 0 is no treatment, 1 is the anti-fungal treatment
+#anti-fungal treatment reduces probability of fungus
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4) 
+# final height depends on initial height and fungus
+h1 <- h0 + rnorm( N , 5 -3*fungus) 
 
-set.seed(100)
+data_fungus <- tibble( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+```
+
+And here's a linear model using the proportion of plant growth $p$.
+
+$$
+\begin{aligned}
+h_{1,i} &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= h_{0,i} \times p\\
+p &= \alpha + \beta_T T_i + \beta_F F_i \\
+\alpha &\sim \text{Log-Normal}(0,0.2)\\
+\beta_T &\sim \text{Normal}(0,0.5)\\
+\beta_F &\sim \text{Normal}(0,0.5) \\
+\sigma &=\text{Exponential}(1)
+\end{aligned}
+$$
+
+And here's the model in quap, with the parameter estimates:
+```{r}
 m6_7 <- quap( alist( 
   h1 ~ dnorm( mu , sigma ), 
   mu <- h0 * p, 
@@ -292,9 +304,24 @@ m6_7 <- quap( alist(
   bt ~ dnorm( 0 , 0.5 ), 
   bf ~ dnorm( 0 , 0.5 ), 
   sigma ~ dexp( 1 )
-), data=d2 )
+), data=data_fungus )
 
-set.seed(100)
+summary_6_7 <- m6_7%>%
+  gather_draws(a,bt,bf,sigma)%>%
+  mean_qi(.width=0.89)%>%
+  mutate(model="Including Fungus")
+
+summary_6_7%>%
+  print(digits = 3)
+
+```
+
+The effect of the treatment, $b_t$ is very close to zero which we know from the simulation is not correct.
+
+Here's the same model, omitting fungus as a variable:
+
+```{r}
+
 m6_8 <- quap( alist( 
   h1 ~ dnorm( mu , sigma ), 
   mu <- h0 * p, 
@@ -302,40 +329,113 @@ m6_8 <- quap( alist(
   a ~ dlnorm( 0 , 0.2 ), 
   bt ~ dnorm( 0 , 0.5 ), 
   sigma ~ dexp( 1 )
-), data=d2 )
+), data=data_fungus )
 
-ggplot(data=precis( m6_7 , depth=2 ))+
-  geom_pointrange(aes(x=rownames(precis( m6_7 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
-  geom_hline(yintercept = 0,col="red")+
-  xlab("parameter")+
-  coord_flip()+
-  ggtitle("Including Fungus as Variable")
+summary_6_8 <- m6_8%>%
+  gather_draws(a,bt,sigma)%>%
+  mean_qi(.width=0.89)%>%
+  mutate(model="Omitting Fungus")
 
-ggplot(data=precis( m6_8 , depth=2 ))+
-  geom_pointrange(aes(x=rownames(precis( m6_8 , depth=2 )),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
-  geom_hline(yintercept = 0,col="red")+
-  xlab("parameter")+
-  coord_flip()+
-  ggtitle("Excluding Fungus as Variable")  
+
+bind_rows(summary_6_7, summary_6_8) %>%
+  ggplot(aes(y = fct_rev(.variable), x = .value, xmin = .lower, xmax = .upper, color = model)) +
+  geom_pointinterval(position = position_dodge(width = -0.1))+
+  geom_vline(xintercept=0, linetype = "dashed")+
+  ylab("parameters")
 
 ```
 
-Here's my very rough attempt at explaining to myself why conditioning on fungus makes treatment appear to have a small positive effect.
+Moving from the model that includes fungus to one that omits it, the model changes from being very confident that treatment doesn't make a difference, to being very confident that it does.
 
-If fungus is present we may have:
+Let's revisit the DAG from earlier, and look at the conditional independencies that it implies:
 
-* treatment present and moisture present
-* treatment absent and moisture either way (leaning towards present)
+```{r}
+impliedConditionalIndependencies(dag_fungus)
+```
+The third one here means that final height is independent from treatment, conditioning on fungus.
 
-If fungus is absent we may have:
+This section in the chapter closes with an example where conditioning on a post-treatment variable gives the false impression that a treatment *does* work:
 
-* treatment absent and moisture absent
-* treatment present and moisture either way (leaning towards absent)
+```{r}
 
-So once we know fungus there is a weak positive correlation between treatment and moisture. Since moisture is good for plant growth, this means a positive relationship between treatment and growth.
+dag_fungus_M <- dagitty("dag{M [unobserved]; H_0 -> H_1; M -> H_1; M -> F; T -> F; }")
+coordinates(dag_fungus_M) <- list( x=c(H_0=0,H_1=1,M=1.5, F=2, T=3) , y=c(H_0=0,H_1=0,M=1.1, F=0, T=0) )
+drawdag( dag_fungus_M)
+```
 
+The unobserved variable here is moisture. In this DAG, treatment does not affect plant growth at all, but both plant growth and fungal growth are encouraged by moisture. From the chapter:
 
+> A regression of $H_1$ on $T$ will show no association between the treatment and plant growth. But if we include $F$ in the model, suddenly there will be an association. 
 
+This is an example of collider bias. The rest of the chapter walks through a couple of examples of collider bias, including one where a measured variable becomes a collider because of the influence of an unmeasured one.
+
+### Collider Bias {-}
+
+Here are the four elemental relations that make up DAGs:
+
+1. The Fork
+```{r echo = FALSE}
+dag_fork <- dagitty("dag{Z -> X; Z -> Y}")
+coordinates(dag_fork) <- list( x=c(X=0,Z=1, Y=2) , y=c(X=0,Y=0,Z=1) )
+drawdag(dag_fork)
+```
+
+In a fork, $Z$ is a common cause of $X$ and $Y$, and this creates a correlation between them. However $X$ and $Y$ are independent, conditional on $Z$.
+
+2. The Pipe
+```{r echo = FALSE}
+dag_pipe <- dagitty("dag{X -> Z; Z -> Y}")
+coordinates(dag_pipe) <- list( x=c(X=0,Z=1, Y=2) , y=c(X=0,Z=1,Y=2) )
+drawdag(dag_pipe)
+```
+
+In a pipe, conditioning on $Z$ blocks the causal path between $X$ and $Y$. This is like the fungus example from earlier.
+
+3. The Collider
+```{r echo = FALSE}
+dag_collider <- dagitty("dag{X -> Z; Y -> Z}")
+coordinates(dag_collider) <- list( x=c(X=0,Z=1, Y=2) , y=c(X=1,Z=0,Y=1) )
+drawdag(dag_collider)
+```
+
+In a collider, there will be no association between $X$ and $Y$, *unless* you condition on $Z$. Think about the academic paper example from the start of the chapter.
+
+4. The Descendant
+```{r echo = FALSE}
+dag_descend <- dagitty("dag{X -> Z; Y -> Z;Z ->D}")
+coordinates(dag_descend) <- list( x=c(X=0,Z=1,D=1, Y=2) , y=c(X=1,Z=0,D=0.75,Y=1) )
+drawdag(dag_descend)
+```
+
+From the chapter:
+
+> A descendent is a variable influenced by another variable. Conditioning on a descendent partly conditions on its parent ... in [this DAG], conditioning on $D$ will also condition, to a lesser extent, on $Z$. The reason is that $D$ has some information about $Z$. In this example, this will partially open the path from $X$ to $Y$, because $Z$ is a collider. But in general the consequence of conditioning on a descendent depends upon the nature of its parent. 
+
+The chapter closes with a recipe for deciding which variables to condition on, along with some practice examples:
+
+> (1) List all of the paths connecting $X$ (the potential cause of interest) and $Y$ (the outcome).
+>
+> (2) Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+>
+> (3) Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering $X$.
+>
+> (4) If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible).
+
+Here's an example from the chapter:
+
+```{r}
+dag_6_1 <- dagitty("dag { U [unobserved] X -> Y X <- U <- A -> C -> Y U -> B <- C}")
+coordinates(dag_6_1) <- list( x=c(X=0,U=0,A=1,B=1, C=2, Y=2) , y=c(X=1,U=0.5,A=0.25,B=0.75, C=0.5, Y=1) )
+drawdag(dag_6_1)
+```
+
+We are interested in the causal effect of $X$ on $Y$. To close the open backdoor path through $A$, we can condition on either $A$ or $C$. The dagitty package can tell us this: 
+
+```{r}
+adjustmentSets( dag_6_1 , exposure="X" , outcome="Y" )
+```
+
+We must not condition on $B$, this would open a backdoor path that is currently closed.
 
 ## Questions
 

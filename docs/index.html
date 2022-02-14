@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-04" />
+<meta name="date" content="2022-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -234,6 +234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#post-treatment-bias"><i class="fa fa-check"></i>Post-Treatment Bias</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#collider-bias"><i class="fa fa-check"></i>Collider Bias</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
@@ -258,6 +260,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#predicting-predicitve-accuracy"><i class="fa fa-check"></i>Predicting Predicitve Accuracy</a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
 <ul>
@@ -433,14 +436,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Statistical Rethinking Notes</h1>
 <p class="author"><em>Jake Lawler</em></p>
-<p class="date"><em>2022-02-04</em></p>
+<p class="date"><em>2022-02-14</em></p>
 </div>
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
 <p>These are my notes on Richard McElreath’s ‘Statistical Rethinking.’ They are currently incomplete. In particular:</p>
 <ul>
-<li>There are no chapter notes for the first five chapters.</li>
-<li>Until chapter 9 the chapter notes are just implementations of the models, and recreations of the graphs in tidyverse, rather than summaries of the chapter material.</li>
 <li>I haven’t done the question sets of the final few chapters yet.</li>
 </ul>
 <p>If you are a student working through Rethinking and happen to stumble across these notes, please be careful! I am not a statistician, and this book was my first exposure to a lot of this material - my summaries and answers to end-of-chapter questions are probably wrong in many places (!)</p>

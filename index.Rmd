@@ -25,8 +25,6 @@ serve_book(dir = ".", output_dir = "_book", preview = TRUE, in_session = TRUE, q
 
 These are my notes on Richard McElreath's 'Statistical Rethinking'. They are currently incomplete. In particular:
 
-* There are no chapter notes for the first five chapters.
-* Until chapter 9 the chapter notes are just implementations of the models, and recreations of the graphs in tidyverse, rather than summaries of the chapter material.
 * I haven't done the question sets of the final few chapters yet.
 
 If you are a student working through Rethinking and happen to stumble across these notes, please be careful! I am not a statistician, and this book was my first exposure to a lot of this material - my summaries and answers to end-of-chapter questions are probably wrong in many places (!)

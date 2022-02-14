@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-04" />
+<meta name="date" content="2022-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -234,6 +234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#post-treatment-bias"><i class="fa fa-check"></i>Post-Treatment Bias</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#collider-bias"><i class="fa fa-check"></i>Collider Bias</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
@@ -258,6 +260,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#predicting-predicitve-accuracy"><i class="fa fa-check"></i>Predicting Predicitve Accuracy</a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
 <ul>
@@ -618,32 +621,34 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <pre><code>## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1     NA         NA     1  154.  7.40
-##  2     NA         NA     2  155.  7.96
-##  3     NA         NA     3  155.  7.77
-##  4     NA         NA     4  155.  7.64
-##  5     NA         NA     5  154.  8.13
-##  6     NA         NA     6  154.  8.07
-##  7     NA         NA     7  155.  7.73
-##  8     NA         NA     8  154.  7.56
-##  9     NA         NA     9  155.  7.77
-## 10     NA         NA    10  154.  8.13</code></pre>
+##  1     NA         NA     1  155.  7.80
+##  2     NA         NA     2  154.  7.90
+##  3     NA         NA     3  155.  7.90
+##  4     NA         NA     4  154.  7.69
+##  5     NA         NA     5  154.  7.82
+##  6     NA         NA     6  154.  7.77
+##  7     NA         NA     7  154.  7.41
+##  8     NA         NA     8  154.  7.72
+##  9     NA         NA     9  155.  7.81
+## 10     NA         NA    10  155.  8.13</code></pre>
 <p>Here’s a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="geocentric.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>)</span>
 <span id="cb70-2"><a href="geocentric.html#cb70-2" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
 <span id="cb70-3"><a href="geocentric.html#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(mu, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb70-4"><a href="geocentric.html#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)</span></code></pre></div>
+<span id="cb70-4"><a href="geocentric.html#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb70-5"><a href="geocentric.html#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 2 x 7
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 mu        155.   154.   155.     0.89 median qi       
-## 2 sigma       7.73   7.27   8.20   0.89 median qi</code></pre>
+## 2 sigma       7.74   7.27   8.20   0.89 median qi</code></pre>
 <p>Here we return the parameter median in the .value column, and an 89% equi-tailed interval for our two parameters, in the .lower and .higher columns.</p>
 <p>We can instead return the mean or mode in the .value column:</p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="geocentric.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>)</span>
 <span id="cb72-2"><a href="geocentric.html#cb72-2" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
 <span id="cb72-3"><a href="geocentric.html#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(mu, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb72-4"><a href="geocentric.html#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mode_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)</span></code></pre></div>
+<span id="cb72-4"><a href="geocentric.html#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mode_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb72-5"><a href="geocentric.html#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 2 x 7
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
@@ -659,13 +664,14 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 mu        155.   154.   155.     0.89 median hdi      
-## 2 sigma       7.73   7.27   8.20   0.89 median hdi</code></pre>
+## 2 sigma       7.74   7.27   8.20   0.89 median hdi</code></pre>
 <p>The summary function names are really intuitive, but if we don’t want to remember them we can use the point_interval() function only with arguments .point = mean/mode/median and .interval = qi/hdi.</p>
 <p>The posterior figures above are those produced by quadratic approximation. This means that they represent Gaussian approximations for the marginal distribution of each parameter. This works fine when the posterior is broadly Gaussian.</p>
 <p>Here we compare the results from quap:</p>
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="geocentric.html#cb76-1" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
 <span id="cb76-2"><a href="geocentric.html#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(mu, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb76-3"><a href="geocentric.html#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)</span></code></pre></div>
+<span id="cb76-3"><a href="geocentric.html#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb76-4"><a href="geocentric.html#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 2 x 7
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
@@ -681,7 +687,7 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <pre><code>## [1] sigma</code></pre>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="geocentric.html#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(sample_sigma, <span class="at">probs=</span><span class="fu">c</span>(<span class="fl">0.055</span>,<span class="fl">0.945</span>))</span></code></pre></div>
 <pre><code>##     5.5%    94.5% 
-## 7.303030 8.252525</code></pre>
+## 7.323232 8.252525</code></pre>
 <p>These are very close, especially for mu. We would expect this since mu is the outcome of a Gaussian likelihood and prior, whereas sigma was given a uniform prior with lower bound at zero. We might expect then that it would have a longer right tail than the quadratic approximation allows.</p>
 </div>
 <div id="adding-predictors" class="section level3" number="4.1.3">
@@ -789,7 +795,8 @@ We feed it to quap and create a table of the parameters using tidybayes:</p>
 <span id="cb89-10"><a href="geocentric.html#cb89-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb89-11"><a href="geocentric.html#cb89-11" aria-hidden="true" tabindex="-1"></a>m4_3 <span class="sc">%&gt;%</span></span>
 <span id="cb89-12"><a href="geocentric.html#cb89-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, b, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb89-13"><a href="geocentric.html#cb89-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)</span></code></pre></div>
+<span id="cb89-13"><a href="geocentric.html#cb89-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb89-14"><a href="geocentric.html#cb89-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 3 x 7
 ##   .variable  .value  .lower  .upper .width .point .interval
 ##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
@@ -869,14 +876,15 @@ h_i &amp;= \text{Normal}(\mu_i, \sigma)\\
 <span id="cb94-14"><a href="geocentric.html#cb94-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-15"><a href="geocentric.html#cb94-15" aria-hidden="true" tabindex="-1"></a>m4_5 <span class="sc">%&gt;%</span></span>
 <span id="cb94-16"><a href="geocentric.html#cb94-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, b1, b2, sigma) <span class="sc">%&gt;%</span></span>
-<span id="cb94-17"><a href="geocentric.html#cb94-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)</span></code></pre></div>
+<span id="cb94-17"><a href="geocentric.html#cb94-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb94-18"><a href="geocentric.html#cb94-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 4 x 7
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 a         146.   145.   147.     0.89 median qi       
 ## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.79  -8.25  -7.37   0.89 median qi       
-## 4 sigma       5.77   5.49   6.06   0.89 median qi</code></pre>
+## 3 b2         -7.81  -8.25  -7.36   0.89 median qi       
+## 4 sigma       5.77   5.49   6.05   0.89 median qi</code></pre>
 <p>Here’s a plot of draws from the posterior:</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="geocentric.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_howell,<span class="at">weight_s=</span><span class="fu">seq_range</span>(weight_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> <span class="co"># grid of standardised weights to range over</span></span>
 <span id="cb96-2"><a href="geocentric.html#cb96-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_s2 =</span> weight_s<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%&gt;%</span> <span class="co"># the add_predicted_draws() function expects both weight_s and weight_s2</span></span>

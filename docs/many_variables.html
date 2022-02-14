@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-04" />
+<meta name="date" content="2022-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -234,6 +234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#post-treatment-bias"><i class="fa fa-check"></i>Post-Treatment Bias</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#collider-bias"><i class="fa fa-check"></i>Collider Bias</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
@@ -258,6 +260,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#predicting-predicitve-accuracy"><i class="fa fa-check"></i>Predicting Predicitve Accuracy</a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
 <ul>
@@ -564,14 +567,15 @@ D_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <span id="cb110-13"><a href="many_variables.html#cb110-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">median_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
 <span id="cb110-14"><a href="many_variables.html#cb110-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">&quot;m5_3&quot;</span>)</span>
 <span id="cb110-15"><a href="many_variables.html#cb110-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb110-16"><a href="many_variables.html#cb110-16" aria-hidden="true" tabindex="-1"></a>summary_5_3</span></code></pre></div>
+<span id="cb110-16"><a href="many_variables.html#cb110-16" aria-hidden="true" tabindex="-1"></a>summary_5_3<span class="sc">%&gt;%</span></span>
+<span id="cb110-17"><a href="many_variables.html#cb110-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 4 x 8
 ##   .variable   .value .lower .upper .width .point .interval model
 ##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
-## 1 a          0.00250 -0.157  0.154   0.89 median qi        m5_3 
-## 2 bA        -0.615   -0.854 -0.376   0.89 median qi        m5_3 
-## 3 bM        -0.0652  -0.303  0.172   0.89 median qi        m5_3 
-## 4 sigma      0.787    0.664  0.906   0.89 median qi        m5_3</code></pre>
+## 1 a         -0.00123 -0.155  0.155   0.89 median qi        m5_3 
+## 2 bA        -0.610   -0.846 -0.364   0.89 median qi        m5_3 
+## 3 bM        -0.0634  -0.301  0.179   0.89 median qi        m5_3 
+## 4 sigma      0.784    0.661  0.910   0.89 median qi        m5_3</code></pre>
 <p>Here’s a plot for the three models:</p>
 <div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="many_variables.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(summary_5_1, summary_5_2,summary_5_3) <span class="sc">%&gt;%</span></span>
 <span id="cb112-2"><a href="many_variables.html#cb112-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">color =</span> model)) <span class="sc">+</span></span>
@@ -590,28 +594,42 @@ D_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <span id="cb113-2"><a href="many_variables.html#cb113-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Loc, divorce_s, marriage_s, age_s)<span class="sc">%&gt;%</span></span>
 <span id="cb113-3"><a href="many_variables.html#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_linpred_draws</span>(m5_3)<span class="sc">%&gt;%</span> <span class="co"># add the predicted mean divorce rates</span></span>
 <span id="cb113-4"><a href="many_variables.html#cb113-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Loc, divorce_s)<span class="sc">%&gt;%</span></span>
-<span id="cb113-5"><a href="many_variables.html#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">x=</span>.linpred, <span class="at">.width =</span> <span class="fl">0.89</span>) <span class="co"># summarise each group in the df </span></span>
-<span id="cb113-6"><a href="many_variables.html#cb113-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb113-7"><a href="many_variables.html#cb113-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plot_data_m5_3) <span class="co"># x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits</span></span></code></pre></div>
+<span id="cb113-5"><a href="many_variables.html#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">x=</span>.linpred, <span class="at">.width =</span> <span class="fl">0.89</span>)<span class="sc">%&gt;%</span> <span class="co"># summarise each group in the df </span></span>
+<span id="cb113-6"><a href="many_variables.html#cb113-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 50 x 8
+##    Loc   divorce_s      x   .lower  .upper .width .point .interval
+##    &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+##  1 AK        1.54   0.318 -0.00724  0.638    0.89 mean   qi       
+##  2 AL        1.65   0.372  0.162    0.578    0.89 mean   qi       
+##  3 AR        2.09   0.756  0.427    1.09     0.89 mean   qi       
+##  4 AZ        0.611  0.122 -0.0378   0.279    0.89 mean   qi       
+##  5 CA       -0.927 -0.351 -0.540   -0.161    0.89 mean   qi       
+##  6 CO        1.05   0.115 -0.119    0.347    0.89 mean   qi       
+##  7 CT       -1.64  -0.711 -0.982   -0.443    0.89 mean   qi       
+##  8 DC       -1.86  -1.76  -2.38    -1.13     0.89 mean   qi       
+##  9 DE       -0.433 -0.323 -0.638   -0.0119   0.89 mean   qi       
+## 10 FL       -0.652 -0.116 -0.341    0.106    0.89 mean   qi       
+## # ... with 40 more rows</code></pre>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="many_variables.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plot_data_m5_3) <span class="co"># x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits</span></span></code></pre></div>
 <pre><code>## # A tibble: 6 x 8
 ##   Loc   divorce_s      x   .lower .upper .width .point .interval
 ##   &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
-## 1 AK        1.54   0.321 -0.00462  0.646   0.89 mean   qi       
-## 2 AL        1.65   0.371  0.163    0.576   0.89 mean   qi       
-## 3 AR        2.09   0.758  0.420    1.09    0.89 mean   qi       
-## 4 AZ        0.611  0.123 -0.0370   0.283   0.89 mean   qi       
-## 5 CA       -0.927 -0.349 -0.540   -0.160   0.89 mean   qi       
-## 6 CO        1.05   0.118 -0.116    0.350   0.89 mean   qi</code></pre>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="many_variables.html#cb115-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_data_m5_3)<span class="sc">+</span></span>
-<span id="cb115-2"><a href="many_variables.html#cb115-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>divorce_s, <span class="at">y=</span>x,<span class="at">ymin=</span>.lower,<span class="at">ymax=</span>.upper), </span>
-<span id="cb115-3"><a href="many_variables.html#cb115-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">orientation =</span> <span class="st">&quot;vertical&quot;</span>,</span>
-<span id="cb115-4"><a href="many_variables.html#cb115-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">colour =</span> <span class="st">&#39;#EE8866&#39;</span>)<span class="sc">+</span></span>
-<span id="cb115-5"><a href="many_variables.html#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Observed Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
-<span id="cb115-6"><a href="many_variables.html#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Predicted Mean Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
-<span id="cb115-7"><a href="many_variables.html#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>,<span class="at">intercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
-<span id="cb115-8"><a href="many_variables.html#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data=</span>   plot_data_m5_3<span class="sc">%&gt;%</span></span>
-<span id="cb115-9"><a href="many_variables.html#cb115-9" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">filter</span>(Loc <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;UT&quot;</span>,<span class="st">&quot;RI&quot;</span>,<span class="st">&quot;ME&quot;</span>)),</span>
-<span id="cb115-10"><a href="many_variables.html#cb115-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span> divorce_s, <span class="at">y=</span> x, <span class="at">label =</span> Loc ), <span class="at">nudge_x =</span> <span class="sc">-</span><span class="fl">0.1</span>)</span></code></pre></div>
+## 1 AK        1.54   0.318 -0.00724  0.638   0.89 mean   qi       
+## 2 AL        1.65   0.372  0.162    0.578   0.89 mean   qi       
+## 3 AR        2.09   0.756  0.427    1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.122 -0.0378   0.279   0.89 mean   qi       
+## 5 CA       -0.927 -0.351 -0.540   -0.161   0.89 mean   qi       
+## 6 CO        1.05   0.115 -0.119    0.347   0.89 mean   qi</code></pre>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="many_variables.html#cb117-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_data_m5_3)<span class="sc">+</span></span>
+<span id="cb117-2"><a href="many_variables.html#cb117-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>divorce_s, <span class="at">y=</span>x,<span class="at">ymin=</span>.lower,<span class="at">ymax=</span>.upper), </span>
+<span id="cb117-3"><a href="many_variables.html#cb117-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">orientation =</span> <span class="st">&quot;vertical&quot;</span>,</span>
+<span id="cb117-4"><a href="many_variables.html#cb117-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">colour =</span> <span class="st">&#39;#EE8866&#39;</span>)<span class="sc">+</span></span>
+<span id="cb117-5"><a href="many_variables.html#cb117-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Observed Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb117-6"><a href="many_variables.html#cb117-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Predicted Mean Divorce Rate (std)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb117-7"><a href="many_variables.html#cb117-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>,<span class="at">intercept=</span><span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb117-8"><a href="many_variables.html#cb117-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data=</span>   plot_data_m5_3<span class="sc">%&gt;%</span></span>
+<span id="cb117-9"><a href="many_variables.html#cb117-9" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">filter</span>(Loc <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;UT&quot;</span>,<span class="st">&quot;RI&quot;</span>,<span class="st">&quot;ME&quot;</span>)),</span>
+<span id="cb117-10"><a href="many_variables.html#cb117-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span> divorce_s, <span class="at">y=</span> x, <span class="at">label =</span> Loc ), <span class="at">nudge_x =</span> <span class="sc">-</span><span class="fl">0.1</span>)</span></code></pre></div>
 <p><img src="05-many_variables_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>States above the line have lower divorce rates than the model expects, given marriage rate and median age at marriage. States below the line have a higher divorce rate than the model expects.</p>
 <p>There is a section in the chapter on variables that mask the influence of each other on the outcome of interest. A case study of primate milk and brain size is used to illustrate.</p>

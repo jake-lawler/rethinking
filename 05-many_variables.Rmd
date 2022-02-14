@@ -174,7 +174,8 @@ summary_5_3 <- m5_3 %>%
   median_qi(.width=0.89)%>%
   mutate(model = "m5_3")
 
-summary_5_3
+summary_5_3%>%
+  print(digits = 3)
 ```
 
 Here's a plot for the three models:
@@ -204,7 +205,8 @@ plot_data_m5_3 <- data_divorce%>%
   select(Loc, divorce_s, marriage_s, age_s)%>%
   add_linpred_draws(m5_3)%>% # add the predicted mean divorce rates
   group_by(Loc, divorce_s)%>%
-  mean_qi(x=.linpred, .width = 0.89) # summarise each group in the df 
+  mean_qi(x=.linpred, .width = 0.89)%>% # summarise each group in the df 
+  print(digits = 3)
 
 head(plot_data_m5_3) # x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits
 

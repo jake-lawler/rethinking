@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-04" />
+<meta name="date" content="2022-02-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -234,6 +234,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="haunted_dag.html"><a href="haunted_dag.html#chapter-notes-5"><i class="fa fa-check"></i><b>6.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#post-treatment-bias"><i class="fa fa-check"></i>Post-Treatment Bias</a></li>
+<li class="chapter" data-level="" data-path="haunted_dag.html"><a href="haunted_dag.html#collider-bias"><i class="fa fa-check"></i>Collider Bias</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2" data-path="haunted_dag.html"><a href="haunted_dag.html#questions-5"><i class="fa fa-check"></i><b>6.2</b> Questions</a>
 <ul>
@@ -258,6 +260,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#brain-volume-model"><i class="fa fa-check"></i>Brain Volume model</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#log-pointwise-predictive-density"><i class="fa fa-check"></i>Log Pointwise Predictive Density</a></li>
 <li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#simulating-in-and-out-of-sample-deviance-for-varying-parameter-numbers"><i class="fa fa-check"></i>Simulating in and out of sample deviance for varying parameter numbers</a></li>
+<li class="chapter" data-level="" data-path="ulysses.html"><a href="ulysses.html#predicting-predicitve-accuracy"><i class="fa fa-check"></i>Predicting Predicitve Accuracy</a></li>
 </ul></li>
 <li class="chapter" data-level="7.2" data-path="ulysses.html"><a href="ulysses.html#questions-6"><i class="fa fa-check"></i><b>7.2</b> Questions</a>
 <ul>
@@ -456,7 +459,7 @@ S_i &amp;\sim \text{Binomial}(N_i,p_i) \\
 \]</span></p>
 <p>In the first model survival is modelled as binomial, each tank is assigned its own intercept, with each of these intercepts sharing the same fixed prior.</p>
 <p>In the multi-level model, the intercept prior is a function of two <em>hyperpriors</em>, <span class="math inline">\(\bar{\alpha}\)</span> and <span class="math inline">\(\sigma\)</span>. The model updates both “levels” of the model as it sees the data. We fit both models and compare.</p>
-<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="models_memory.html#cb246-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m13<span class="fl">.1</span>,m13<span class="fl">.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="models_memory.html#cb262-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m13<span class="fl">.1</span>,m13<span class="fl">.2</span>)</span></code></pre></div>
 <pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
 ## m13.2 199.8403 7.029993  0.00000       NA 20.81333 0.9995300343
 ## m13.1 215.1651 4.569440 15.32476 3.704447 25.86906 0.0004699657</code></pre>
@@ -499,9 +502,9 @@ L_i &amp;\sim \text{Binomial}(1,p_i) \\
 <li>Reparameterisation of the model, to use non-centered priors</li>
 </ol>
 <p>We start by increasing the target acceptance rate, to 99% compared to the ulam default 95%:</p>
-<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="models_memory.html#cb248-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>) </span>
-<span id="cb248-2"><a href="models_memory.html#cb248-2" aria-hidden="true" tabindex="-1"></a>m13<span class="fl">.4</span>b <span class="ot">&lt;-</span> <span class="fu">ulam</span>( m13<span class="fl">.4</span> , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span> , <span class="at">control=</span><span class="fu">list</span>(<span class="at">adapt_delta=</span><span class="fl">0.99</span>), <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb248-3"><a href="models_memory.html#cb248-3" aria-hidden="true" tabindex="-1"></a><span class="fu">divergent</span>(m13<span class="fl">.4</span>b)</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="models_memory.html#cb264-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>) </span>
+<span id="cb264-2"><a href="models_memory.html#cb264-2" aria-hidden="true" tabindex="-1"></a>m13<span class="fl">.4</span>b <span class="ot">&lt;-</span> <span class="fu">ulam</span>( m13<span class="fl">.4</span> , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span> , <span class="at">control=</span><span class="fu">list</span>(<span class="at">adapt_delta=</span><span class="fl">0.99</span>), <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb264-3"><a href="models_memory.html#cb264-3" aria-hidden="true" tabindex="-1"></a><span class="fu">divergent</span>(m13<span class="fl">.4</span>b)</span></code></pre></div>
 <p>Creating a non-centered version of the chimp models requires taking <span class="math inline">\(\bar{\alpha}\)</span>, <span class="math inline">\(\sigma_\alpha\)</span> and <span class="math inline">\(\sigma_\gamma\)</span> out of the intercepts:</p>
 <p><span class="math display">\[
 \begin{aligned}

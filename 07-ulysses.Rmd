@@ -1,50 +1,236 @@
 # Ulysses' Compass {#ulysses}
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-
 library(tidyverse)
 library(rethinking)
 library(GGally)
 library(dagitty)
-library(knitr)
+library(tidybayes)
+library(tidybayes.rethinking)
+library(modelr)
+library(ggdist)
+```
+
+```{r}
+# Colours by Paul Tol.
+# Defined in R by Joachim Goedhart 
+# Source: doi 10.5281/zenodo.3381072
+
+tol_light <- c('#BBCC33', '#AAAA00', '#77AADD', '#EE8866', '#EEDD88', '#FFAABB', '#99DDFF', '#44BB99', '#DDDDDD')
 ```
 
 ## Chapter Notes
 
+This chapter is all about model selection. The title refers to our need to navigate between the Scylla of overfitting and the Charybdis of underfitting. Respectively learning too much and too little from the data.
+
+In the previous chapter about confounding, we learned that in some cases adding predictor variables to your model can makes inferences worse. However if we only care about prediction, and not inference, these variables can still help. So should we just add all plausible predictors to our models?
+
+This chapter answers no. Even if all we care about is prediction, we are at risk of overfitting to the training data set, which will make our model worse when predicting on new data.
+
+Here's an example from the chapter, on hominin brain volumes, and body mass:
+
 ### Brain Volume model {-}
 
-```{r echo=FALSE, warning=FALSE,message=FALSE}
+```{r}
 
-sppnames <- c( "afarensis","africanus","habilis","boisei", "rudolfensis","ergaster","sapiens")
-brainvolcc <- c( 438 , 452 , 612, 521, 752, 871, 1350 ) 
-masskg <- c( 37.0 , 35.5 , 34.5 , 41.5 , 55.5 , 61.0 , 53.5 )
-brain_volume <- data.frame( species=sppnames , brain=brainvolcc , mass=masskg )
-brain_volume$mass_std <- (brain_volume$mass - mean(brain_volume$mass))/sd(brain_volume$mass) 
-brain_volume$brain_std <- brain_volume$brain / max(brain_volume$brain)
-
+data_hominin <- tibble(
+  species = c( "afarensis","africanus","habilis","boisei", "rudolfensis","ergaster","sapiens"),
+  brain_vol = c( 438 , 452 , 612, 521, 752, 871, 1350 ), # brain volume
+  body_size = c( 37.0 , 35.5 , 34.5 , 41.5 , 55.5 , 61.0 , 53.5 ), # body mass
+  vol_std = brain_vol/max(brain_vol), # keeping zero brain volume as a reference point
+  mass_std = (body_size - mean(body_size))/sd(body_size)
+)
 
 ```
 
-We fit the linear brain volume model since it is used to illustrate various concepts later in the chapter:
+The structure of this section is that we're going to regress brain volume on body mass using increasingly higher-order polynomials and see what happens to $R^2$. Here's a simple linear regression:
 
-```{r warning=FALSE,message=FALSE, cache = TRUE}
+$$
+\begin{aligned}
+b_i &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta m_i \\
+\alpha &\sim \text{Normal}(0.5,1)&& (\text{Centred on approx. mean brain volume.})\\
+\beta &\sim \text{Normal}(0,10)&& (\text{Very flat.})\\
+\sigma &\sim \text{Log-Normal}(0,1)\\
+\end{aligned}
+$$
 
-set.seed(100)
-m7.1 <- quap( alist(
-  brain_std ~ dnorm( mu , exp(log_sigma) ), 
+
+
+```{r }
+
+set.seed(71)
+
+m7_1 <- quap( alist(
+  vol_std ~ dnorm( mu , exp(log_sigma) ), 
   mu <- a + b*mass_std, 
   a ~ dnorm( 0.5 , 1 ), 
   b ~ dnorm( 0 , 10 ), 
   log_sigma ~ dnorm( 0 , 1 )
-), data=brain_volume )
+), data=data_hominin )
 
 
 ```
 
+We calculate the $R^2$ of this model:
 
+```{r}
+
+# we define a function for the empirical variace
+# since var() in R uses the denominator n-1
+var_n <- function(vector){
+  mean((mean(vector)-vector)^2)
+}
+
+# we define a function to produce the R^2 of each model we'll be fitting
+hominin_r_squared <- function(model){
+  
+  pred_hominin <- add_predicted_draws(data_hominin,model)%>% # predict brain volume using observed body weights
+  group_by(species,vol_std)%>%
+  summarise(pred_vol=mean(.prediction), .groups = "keep")%>% # we'll use the mean of our predictions
+  mutate(residuals = pred_vol-vol_std)
+  
+  1 - var_n(pred_hominin$residuals)/var_n(pred_hominin$vol_std) # our R^2 calc
+}
+
+hominin_r_squared(m7_1)
+
+```
+
+We then do the same for polynomials of increasing order, starting with a model like this one:
+
+$$
+\begin{aligned}
+b_i &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta_1 m_i + \beta_2 m_i^2 && (\text{A second degree polynomial})\\
+\alpha &\sim \text{Normal}(0.5,1)\\
+\beta &\sim \text{Normal}(0,10)\\
+\sigma &\sim \text{Log-Normal}(0,1)\\
+\end{aligned}
+$$
+
+We fit all these models, up to a polynomial of degree six and calculate the $R^2$. I'll hide this code because it's pretty repetitive.
+
+```{r echo = FALSE}
+
+m7_2 <- quap(
+    alist(
+        vol_std ~ dnorm( mu , exp(log_sigma) ),
+        mu <- a + b[1]*mass_std + b[2]*mass_std^2,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=data_hominin , start=list(b=rep(0,2)) ) # start tells quap how long our b vector is
+
+
+m7_3 <- quap(
+    alist(
+        vol_std ~ dnorm( mu , exp(log_sigma) ),
+        mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=data_hominin , start=list(b=rep(0,3)) )
+
+m7_4 <- quap(
+    alist(
+        vol_std ~ dnorm( mu , exp(log_sigma) ),
+        mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=data_hominin , start=list(b=rep(0,4)) )
+
+m7_5 <- quap(
+    alist(
+        vol_std ~ dnorm( mu , exp(log_sigma) ),
+        mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4 +
+                  b[5]*mass_std^5,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 ),
+        log_sigma ~ dnorm( 0 , 1 )
+    ), data=data_hominin , start=list(b=rep(0,5)) )
+
+m7_6 <- quap(
+    alist(
+        vol_std ~ dnorm( mu , 0.001 ), # must set sd to a fixed number in this one
+        mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+                  b[3]*mass_std^3 + b[4]*mass_std^4 +
+                  b[5]*mass_std^5 + b[6]*mass_std^6,
+        a ~ dnorm( 0.5 , 1 ),
+        b ~ dnorm( 0 , 10 )
+    ), data=data_hominin , start=list(b=rep(0,6)) )
+
+```
+
+Now we plot the models:
+
+```{r}
+
+# Calculating R^2
+
+values_r_square <- tibble(model = paste0("m7_",1:6))%>%
+  rowwise()%>%
+  mutate(r_squared = hominin_r_squared(get(model)), # get() allows us to refer to our models dynamically
+         labels = paste("R^2 =",round(r_squared,2))) # labels for our plot later
+
+# Create our data frame of draws from the posterior
+
+grid_hominin <- data_grid(data_hominin,mass_std=seq_range(mass_std, n = 51))
+
+draws_hominin <- add_predicted_draws(grid_hominin,m7_1)%>%
+  mutate(model = "m7_1") # this loop be made more efficient I'm sure
+  
+for (i in 2:6){
+    # I've also used get() here 
+  draws_int <- add_predicted_draws(grid_hominin,get(paste0("m7_",i)))%>% 
+    mutate(model = paste0("m7_",i))
+  
+  draws_hominin <- bind_rows(draws_hominin,draws_int)
+}
+  
+
+draws_hominin%>%
+  mutate(brain_vol = .prediction * max(data_hominin$brain_vol), # undoing the previous transformations
+         body_size = mass_std*sd(data_hominin$body_size)+mean(data_hominin$body_size))%>%
+  ggplot(aes(x = body_size, y=brain_vol)) +
+  stat_lineribbon(aes(y = brain_vol)) +
+  geom_point(data = data_hominin, colour = tol_light[[4]],size=2) +
+  geom_text(data=values_r_square, # adding our R^2 lables from earlier
+            aes(x=40,y=1900,label=labels),size=3)+
+  facet_wrap(~model)+
+  scale_fill_brewer(palette = "Greys")+
+  xlab("body mass (kg)")+
+  ylab("brain volumne (cc)")
+  
+
+```
+
+With higher order polynomials we get an increasingly good fit to the data, eventually reaching $R^2 =1$. But some of these models make no sense. Model m7_6 predicts negative brain volume at body mass 58kg. If a new hominin was discovered at around this weight, this model would make horrific predictions of brain volume, even though the model perfectly retrodicts all of the training data.
+
+Having set up the concern, the chapter goes on to outline some model selection tools: regularisation and information criteria. The first step is to define information entropy as a measure of uncertainty:
+
+$$
+H(p) = -E\log(p_i) = -\sum_{i=1}^n p_i \log(p_i)
+$$
+ The chapter summarises:
+ 
+ > The uncertainty contained in a probability distribution is the average log-probability of an event.
+
+And then Kullback-Leibler divergence as a measure of the additional uncertainty induced by using probabilities from one distribution to describe another distribution:
+
+$$
+D_{KL}(p,q) = \sum_{i} p_i ( \log(p_i) - \log(q_i))= \sum_{i} p_i  \log(\frac{p_i}{q_i}) 
+$$
+
+This is the average difference in log-probability between our target $p$ and model $q$, and we can use it to compare the accuracy of different models.
 
 ### Log Pointwise Predictive Density {-}
 
+Revisit this section.
 
 Computing the log pointwise predictive density. With data $y = \{y_i\}$ and posterior distribution $\Theta$:
 
@@ -57,17 +243,14 @@ For an observation say $y_1$, you calculate the average probability of seeing th
 
 Here is the calculation done in R, from the "Overthinking: Computing the lppd" box:
 
-```{r warning=FALSE, message=FALSE}
+```{r message=FALSE, warning= FALSE}
 
 set.seed(1) 
 
-# Using the lppd function built into the Rethinking package
-lppd1 <- lppd( m7.1 , n=1e4 )
-
-
+lppd1 <- lppd( m7_1 , n=1e4 )
 # Extracting posterior samples and calculating manually
 
-logprob <- sim( m7.1 , ll=TRUE , n=1e4 )   # logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each
+logprob <- sim( m7_1 , ll=TRUE , n=1e4 )   # logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each
                                            # of the seven observations. 
 
 n <- ncol(logprob) 
@@ -90,28 +273,36 @@ Summing over these seven observations will give the total lppd.
 
 The idea here is to simulate from the following model with two parameters:
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 y_i & \sim \text{Normal}(\mu_i,1) \\
 \mu_i &= (0.15)x_{1,i} - (0.4)x_{2,i}
-\end{aligned}$$
+\end{aligned}
+$$
 
-To the data produced, we try to fit linear regressions with between 1 and 5 parameters, and compare the in and out of sample deviance for these five models.
+We fit linear regressions with between 1 and 5 parameters to the simulated data, and compare the in and out of sample deviance for these five models.
 
-```{r warning=FALSE, message=FALSE}
+```{r eval = FALSE}
 
 N <- 20 
 kseq <- 1:5 
 
-# sim_train_test simulates Gaussian data with N cases and fits a model with k parameters, returning the in sample and out of sample lppd (can also do WAIC criteria)
+# sim_train_test is a function from the rethinking package.
+# it simulates Gaussian data with N cases and fits a model with k parameters, 
+# returning the in sample and out of sample lppd (can also do WAIC criteria)
 
-# dev contains the mean in sample deviance, mean out of sample deviance, sd of in sample deviance, and sd of out of sample deviance for each model with 1-5 parameters.  
+# data_dev contains the mean in sample deviance, mean out of sample deviance, 
+# sd of in sample deviance, and sd of out of sample deviance for each model with 1-5 parameters.  
 
-dev <- map_dfr( kseq , function(k) {
-  r <- replicate( 100 , sim_train_test( N=N, k=k , cv.cores = 4)); 
+data_dev <- map_dfr( kseq , function(k) {
+  r <- replicate( 100 , sim_train_test( N=N, k=k , cv.cores = 8)); 
   tibble(mean_in = mean(r[1,]) ,mean_out= mean(r[2,]) ,sd_in= sd(r[1,]) ,sd_out= sd(r[2,]) )
 } )
 
-ggplot(data=dev)+
+# Revisit this mess of a function, set eval to TRUE once it works again
+# Add commentary below the graph
+
+ggplot(data=data_dev)+
   geom_pointrange(aes(x=1:5,y=mean_in,ymin=mean_in-sd_in,ymax=mean_in+sd_in), colour = "blue")+
   geom_pointrange(aes(x=1.1:5.1,y=mean_out,ymin=mean_out-sd_out,ymax=mean_out+sd_out))+
   geom_text(aes(x=2.9, y = mean_in[3], label="in"),colour="blue")+
@@ -123,7 +314,26 @@ ggplot(data=dev)+
 
 ```
 
-Overthinking: WAIC calculations.
+There is a section on the role that regularising priors can play in preventing over-fitting.
+
+### Predicting Predicitve Accuracy {-}
+
+This section introduces cross-validation and information criteria as a way to estimating model predictive performance on out-of-sample data. We'll end up at PSIS and WAIC respectively.
+
+Leave-one-out cross-validation is a way to get an estimate of out-of-sample accuracy. However it is computationally expensive. A key insight when trying to approximate LOOCV is that unlikely observations have a larger effect on the posterior distribution. This insight leads to the importance sampling approach, the approach highlighted by the chapter is Pareto-smoothed importance sampling or PSIS. It has a couple of nice features, including the ability to provide diagnostic information and to estimate the standard error of out-of-sample deviance.
+
+Revisit: Overthinking PSIS box 
+
+Aside from cross-validation appraoches, we can also use information criteria to predict predictive accuracy. The Akaike information criterion estimates out-of-sample deviance:
+
+$$
+\text{AIC}=D_\text{train} + 2p = -2\text{lppd}+2p
+$$
+where $p$ is the number of free parameters in the posterior distribution. From the chapter:
+
+> [W]hat AIC tells us is that the dimensionality of the posterior distribution is a natural measure of the model’s overfitting tendency. More complex models tend to overfit more, directly in proportion to the number of parameters... Mechanically, deriving AIC means writing down the goal, which is the expected KL divergence, and then making approximations. The expected bias turns out to be proportional to the number of parameters, provided a number of assumptions are approximately correct.
+
+AIC requires quite strong assumptions - flat priors, approximately Gaussian posterior, large sample size. The chapter introduces Watanabe's widely applicable information criterion (WAIC), which does not make assumptions about the shape of the posterior and in a large sample converges to the cross-validation approximation.
 
 The formula for WAIC is:
 
@@ -131,12 +341,16 @@ $$
 \text{WAIC}(y,\Theta) = -2 \left( \text{lppd} - \sum_i \text{var}_\theta ( \log p(y_i | \theta)) \right)
 $$
 
-where $\text{var}_\theta$ means taking the variance over the set of posterior samples.
+where the $y_i$'s are the observations and $\Theta$ is the posterior distribution. 
 
+> The penalty term means, “compute the variance in log-probabilities for each observation i, and then sum up these variances to get the total penalty.”
 
-The book calculates it for a simple model:
+ $\text{var}_\theta$ means taking the variance over the set of posterior samples. Like PSIS, WAIC is also calculated pointwise - they both split up the data into independent observations. This has benefits - but it's unclear how to interpret this is the case where some observations depend on previous observations (like in a time series).
+ 
+ 
+The book calculates WAIC for a simple model. This code is straight out of the book:
 
-```{r warning=FALSE, message=FALSE, cache= TRUE}
+```{r}
 
 # fit a linear model of stopping distance & speed
 
@@ -180,6 +394,78 @@ cars_pWAIC <- sapply( 1:n_cases , function(i) var(cars_logprob[i,]) )
 
 ```
 
+
+Model Comparison {-}
+
+The chapter revisits the plan growth/ fungus example from chapter 6. In that chapter, including fungus in the model bias inferences against the treatment - the fungus was a post-treatment variable. The models fit were;
+
+* m6_6 - model that didn't include either fungus or treatment as predictors
+* m6_7 - model including both fungus and treatment as predictors
+* m6_8 - model omitting fungus as a predictor
+
+```{r echo = FALSE}
+
+# I#m just copying this code from chapter 6. 
+# Except model m6_6 which I didn't fit there.
+
+set.seed(71) 
+N <- 100 #100 plants
+# inital heights
+h0 <- rnorm(N,10,2) 
+treatment <- rep( 0:1 , each=N/2 ) # 0 is no treatment, 1 is the anti-fungal treatment
+#anti-fungal treatment reduces probability of fungus
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4) 
+# final height depends on initial height and fungus
+h1 <- h0 + rnorm( N , 5 -3*fungus) 
+
+data_fungus <- tibble( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+
+m6_6 <- quap( alist( 
+  h1 ~ dnorm( mu , sigma ), 
+  mu <- h0 * p, 
+  p ~ dlnorm( 0 , 0.25 ), 
+  a ~ dlnorm( 0 , 0.2 ) , 
+  bt ~ dnorm( 0 , 0.5 ), 
+  bf ~ dnorm( 0 , 0.5 ), 
+  sigma ~ dexp( 1 )
+), data=data_fungus )
+
+m6_7 <- quap( alist( 
+  h1 ~ dnorm( mu , sigma ), 
+  mu <- h0 * p, 
+  p <- a + bt*treatment + bf*fungus, 
+  a ~ dlnorm( 0 , 0.2 ) , 
+  bt ~ dnorm( 0 , 0.5 ), 
+  bf ~ dnorm( 0 , 0.5 ), 
+  sigma ~ dexp( 1 )
+), data=data_fungus )
+
+m6_8 <- quap( alist( 
+  h1 ~ dnorm( mu , sigma ), 
+  mu <- h0 * p, 
+  p <- a + bt*treatment, 
+  a ~ dlnorm( 0 , 0.2 ), 
+  bt ~ dnorm( 0 , 0.5 ), 
+  sigma ~ dexp( 1 )
+), data=data_fungus )
+
+```
+
+We compare the models using WAIC:
+
+```{r}
+set.seed(77)
+
+compare( m6_6 , m6_7 , m6_8 , func=WAIC )
+
+```
+What are these figures? The chapter:
+
+> Columns from left to right are: WAIC, standard error (SE) of WAIC, difference of each WAIC from the best model, standard error (dSE) of this difference, prediction penalty (pWAIC), and finally the Akaike weight.
+
+Smaller values of WAIC are better, and the compare function orders them from lowest to highest. The penalty figure in WAIC is sometimes called "effective number of parameters". To tell if the models can be distinguished from each other in their expected prediction performance, we need to compare the WAIC differences in the dWAIC column to the standard error of this difference in the dSE column. Model 6_7 (the confounded model) is a lot better.
+
+As an aside, I originally used 1,000 plants in my simulation instead of the 100 the chapter uses, and I was very surprised to see my WAIC figures on the order of 10 x higher than those printed in the book. A nice, accidental lesson on when WAIC figures are (not) comparable. 
 
 ## Questions
 

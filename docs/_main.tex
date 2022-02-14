@@ -6,7 +6,7 @@
 ]{book}
 \title{Statistical Rethinking Notes}
 \author{Jake Lawler}
-\date{2022-02-04}
+\date{2022-02-14}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -141,10 +141,6 @@ These are my notes on Richard McElreath's `Statistical Rethinking'. They are cur
 
 \begin{itemize}
 \tightlist
-\item
-  There are no chapter notes for the first five chapters.
-\item
-  Until chapter 9 the chapter notes are just implementations of the models, and recreations of the graphs in tidyverse, rather than summaries of the chapter material.
 \item
   I haven't done the question sets of the final few chapters yet.
 \end{itemize}
@@ -2050,16 +2046,16 @@ The {[}tidybayes::{]}spread\_draws() function yields a common format for all mod
 ## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     <int>      <int> <int> <dbl> <dbl>
-##  1     NA         NA     1  155.  7.84
-##  2     NA         NA     2  155.  7.31
-##  3     NA         NA     3  154.  7.34
-##  4     NA         NA     4  155.  8.44
-##  5     NA         NA     5  154.  7.54
-##  6     NA         NA     6  155.  7.78
-##  7     NA         NA     7  155.  8.12
-##  8     NA         NA     8  154.  7.14
-##  9     NA         NA     9  155.  8.28
-## 10     NA         NA    10  154.  8.20
+##  1     NA         NA     1  154.  8.07
+##  2     NA         NA     2  154.  8.26
+##  3     NA         NA     3  155.  7.81
+##  4     NA         NA     4  155.  8.41
+##  5     NA         NA     5  155.  7.49
+##  6     NA         NA     6  155.  7.91
+##  7     NA         NA     7  156.  7.88
+##  8     NA         NA     8  154.  8.13
+##  9     NA         NA     9  155.  7.28
+## 10     NA         NA    10  155.  7.54
 \end{verbatim}
 
 Here's a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:
@@ -2069,7 +2065,8 @@ Here's a summary of the posterior for our parameters using the point and interva
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{74}\NormalTok{)}
 \NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2090,7 +2087,8 @@ We can instead return the mean or mode in the .value column:
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{74}\NormalTok{)}
 \NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mode\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+  \FunctionTok{mode\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2133,7 +2131,8 @@ Here we compare the results from quap:
 \begin{Highlighting}[]
 \NormalTok{m4\_1 }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gather\_draws}\NormalTok{(mu, sigma) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2335,7 +2334,8 @@ We feed it to quap and create a table of the parameters using tidybayes:
 
 \NormalTok{m4\_3 }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gather\_draws}\NormalTok{(a, b, sigma) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2456,7 +2456,8 @@ h_i &= \text{Normal}(\mu_i, \sigma)\\
 
 \NormalTok{m4\_5 }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gather\_draws}\NormalTok{(a, b1, b2, sigma) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}
+  \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2466,8 +2467,8 @@ h_i &= \text{Normal}(\mu_i, \sigma)\\
 ##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
 ## 1 a         146.   145.   147.     0.89 median qi       
 ## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.81  -8.24  -7.36   0.89 median qi       
-## 4 sigma       5.77   5.49   6.05   0.89 median qi
+## 3 b2         -7.80  -8.25  -7.38   0.89 median qi       
+## 4 sigma       5.77   5.50   6.06   0.89 median qi
 \end{verbatim}
 
 Here's a plot of draws from the posterior:
@@ -3094,18 +3095,19 @@ D_i &\sim \text{Normal}(\mu_i, \sigma) \\
   \FunctionTok{median\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"m5\_3"}\NormalTok{)}
 
-\NormalTok{summary\_5\_3}
+\NormalTok{summary\_5\_3}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ## # A tibble: 4 x 8
-##   .variable   .value .lower .upper .width .point .interval model
-##   <chr>        <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
-## 1 a          0.00266 -0.150  0.159   0.89 median qi        m5_3 
-## 2 bA        -0.613   -0.856 -0.373   0.89 median qi        m5_3 
-## 3 bM        -0.0664  -0.310  0.178   0.89 median qi        m5_3 
-## 4 sigma      0.786    0.663  0.909   0.89 median qi        m5_3
+##   .variable     .value .lower .upper .width .point .interval model
+##   <chr>          <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
+## 1 a          0.0000920 -0.153  0.150   0.89 median qi        m5_3 
+## 2 bA        -0.611     -0.853 -0.371   0.89 median qi        m5_3 
+## 3 bM        -0.0671    -0.301  0.185   0.89 median qi        m5_3 
+## 4 sigma      0.783      0.660  0.911   0.89 median qi        m5_3
 \end{verbatim}
 
 Here's a plot for the three models:
@@ -3144,22 +3146,44 @@ For now I'll only recreate the posterior prediction plot.
   \FunctionTok{select}\NormalTok{(Loc, divorce\_s, marriage\_s, age\_s)}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{add\_linpred\_draws}\NormalTok{(m5\_3)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# add the predicted mean divorce rates}
   \FunctionTok{group\_by}\NormalTok{(Loc, divorce\_s)}\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{x=}\NormalTok{.linpred, }\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{) }\CommentTok{\# summarise each group in the df }
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{x=}\NormalTok{.linpred, }\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# summarise each group in the df }
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+## # A tibble: 50 x 8
+##    Loc   divorce_s      x    .lower   .upper .width .point .interval
+##    <fct>     <dbl>  <dbl>     <dbl>    <dbl>  <dbl> <chr>  <chr>    
+##  1 AK        1.54   0.318 -0.000763  0.653     0.89 mean   qi       
+##  2 AL        1.65   0.369  0.164     0.584     0.89 mean   qi       
+##  3 AR        2.09   0.755  0.422     1.09      0.89 mean   qi       
+##  4 AZ        0.611  0.121 -0.0351    0.280     0.89 mean   qi       
+##  5 CA       -0.927 -0.350 -0.535    -0.161     0.89 mean   qi       
+##  6 CO        1.05   0.115 -0.113     0.355     0.89 mean   qi       
+##  7 CT       -1.64  -0.710 -0.972    -0.444     0.89 mean   qi       
+##  8 DC       -1.86  -1.75  -2.39     -1.12      0.89 mean   qi       
+##  9 DE       -0.433 -0.321 -0.631    -0.00503   0.89 mean   qi       
+## 10 FL       -0.652 -0.117 -0.339     0.102     0.89 mean   qi       
+## # ... with 40 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \FunctionTok{head}\NormalTok{(plot\_data\_m5\_3) }\CommentTok{\# x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ## # A tibble: 6 x 8
-##   Loc   divorce_s      x   .lower .upper .width .point .interval
-##   <fct>     <dbl>  <dbl>    <dbl>  <dbl>  <dbl> <chr>  <chr>    
-## 1 AK        1.54   0.319 -0.00911  0.639   0.89 mean   qi       
-## 2 AL        1.65   0.370  0.163    0.577   0.89 mean   qi       
-## 3 AR        2.09   0.757  0.424    1.09    0.89 mean   qi       
-## 4 AZ        0.611  0.121 -0.0393   0.281   0.89 mean   qi       
-## 5 CA       -0.927 -0.352 -0.547   -0.160   0.89 mean   qi       
-## 6 CO        1.05   0.115 -0.122    0.343   0.89 mean   qi
+##   Loc   divorce_s      x    .lower .upper .width .point .interval
+##   <fct>     <dbl>  <dbl>     <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 AK        1.54   0.318 -0.000763  0.653   0.89 mean   qi       
+## 2 AL        1.65   0.369  0.164     0.584   0.89 mean   qi       
+## 3 AR        2.09   0.755  0.422     1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.121 -0.0351    0.280   0.89 mean   qi       
+## 5 CA       -0.927 -0.350 -0.535    -0.161   0.89 mean   qi       
+## 6 CO        1.05   0.115 -0.113     0.355   0.89 mean   qi
 \end{verbatim}
 
 \begin{Shaded}
@@ -3392,13 +3416,14 @@ Here's a simulation and a chart:
 \end{Shaded}
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-2-1.pdf}
+
 The blue line is the negative correlation between newsworthiness and trustworthiness induced by the selection process. This effect can occur inside of a multiple regression, where it is called collider bias.
 
 \hypertarget{multicollinearity}{%
 \subsection*{Multicollinearity}\label{multicollinearity}}
 \addcontentsline{toc}{subsection}{Multicollinearity}
 
-How to multiple regression models behave when the predictor variables are highly correlated?
+How do multiple regression models behave when the predictor variables are highly correlated?
 
 The chapter contains a simulation for the effect of leg length on height.
 
@@ -3436,7 +3461,7 @@ The chapter contains a simulation for the effect of leg length on height.
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-3-1.pdf}
 
-Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
+Our simulation specified that leg length would be highly correlated with height. However, the model is very uncertain about the influence of either leg (\(b_r\) and \(b_l\)) on height. Why is this? The chapter contains a nice explanation. Our predictor variables are so highly correlated that it is almost as if we have only one predictor, used twice:
 
 \[
 \begin{aligned}
@@ -3489,28 +3514,7 @@ The chapter reintroduces the primate milk example from chapter 5.
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{K=}\FunctionTok{standardize}\NormalTok{(kcal.per.g),}
          \AttributeTok{F=}\FunctionTok{standardize}\NormalTok{(perc.fat),}
          \AttributeTok{L=}\FunctionTok{standardize}\NormalTok{(perc.lactose))}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Rows: 29 Columns: 8
-\end{verbatim}
-
-\begin{verbatim}
-## -- Column specification --------------------------------------------------------
-## Delimiter: ";"
-## chr (2): clade, species
-## dbl (6): kcal.per.g, perc.fat, perc.protein, perc.lactose, mass, neocortex.perc
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{\# kcal.per.g regressed on perc.fat }
 
 \NormalTok{m6\_3 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{(}
@@ -3558,7 +3562,8 @@ Here is the parameter summary for regression of kcal per gram of milk on the fat
   \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Fat"}\NormalTok{)}
 
-\NormalTok{summary\_6\_3}
+\NormalTok{summary\_6\_3}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3580,7 +3585,8 @@ And here's the summary for the regression of kcals on lactose content:
   \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Lactose"}\NormalTok{)}
 
-\NormalTok{summary\_6\_4}
+\NormalTok{summary\_6\_4}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3604,7 +3610,8 @@ Here's what happens when both are included in the same model:
   \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width =} \FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Both"}\NormalTok{)}
 
-\NormalTok{summary\_6\_5}
+\NormalTok{summary\_6\_5}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3654,35 +3661,270 @@ And here's a DAG the chapter suggests for this case. D here is how dense the mil
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-11-1.pdf}
 
-Simulating Colliinearity
+\hypertarget{post-treatment-bias}{%
+\subsection*{Post-Treatment Bias}\label{post-treatment-bias}}
+\addcontentsline{toc}{subsection}{Post-Treatment Bias}
+
+The chapter describes bias that can result from the \emph{inclusion} of varibels in a model that should be omitted. One example of this is post-treatment bias.
+
+The case study in the chapter concerns anti-fungal soil treatments, and their effect on plant height. Plants are sprouted and their initial heights are measured. Various treatments are applied, the plants' final heights are measured, and the presence or absence of fungus is noted.
+
+The fungus should \emph{not} be included in a model designed to estimate the effect of the anti-fungal treatment on plant height. The proposed mechanism by which anti-fungal treatment would lead to more plant growth is by killing fungus. By including the presence/absence in the model we are in effect asking ``how helpful is the anti-fungal treatment, relative to some default treatment, assuming fungal growth is the same in each case''. This is not the question we need to answer. Here's a DAG:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dag\_fungus }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{(}\StringTok{"dag\{H\_0 {-}\textgreater{} H\_1; F {-}\textgreater{} H\_1; T {-}\textgreater{} F; \}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_fungus) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{H\_0=}\DecValTok{0}\NormalTok{,}\AttributeTok{H\_1=}\DecValTok{1}\NormalTok{, }\AttributeTok{F=}\DecValTok{2}\NormalTok{, }\AttributeTok{T=}\DecValTok{3}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{H\_0=}\DecValTok{0}\NormalTok{,}\AttributeTok{H\_1=}\DecValTok{0}\NormalTok{,}\AttributeTok{F=}\DecValTok{0}\NormalTok{, }\AttributeTok{T=}\DecValTok{0}\NormalTok{) )}
+\FunctionTok{drawdag}\NormalTok{( dag\_fungus)}
+\end{Highlighting}
+\end{Shaded}
 
 \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-12-1.pdf}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-1.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-2.pdf} \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-13-3.pdf}
-
-Here's my very rough attempt at explaining to myself why conditioning on fungus makes treatment appear to have a small positive effect.
-
-If fungus is present we may have:
+Here:
 
 \begin{itemize}
 \tightlist
 \item
-  treatment present and moisture present
+  \(H_0\) and \(H_1\) are initial and final heights
 \item
-  treatment absent and moisture either way (leaning towards present)
+  \(F\) is presence or absence of fungus
+\item
+  \(T\) is the treatment applied to the soil
 \end{itemize}
 
-If fungus is absent we may have:
+By including the fungus in the treatment we are blocking the causal path between treatment and final height.
 
-\begin{itemize}
+Here's a simulation from the chapter:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{71}\NormalTok{) }
+\NormalTok{N }\OtherTok{\textless{}{-}} \DecValTok{1000} \CommentTok{\#1,000 plants}
+\CommentTok{\# inital heights}
+\NormalTok{h0 }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(N,}\DecValTok{10}\NormalTok{,}\DecValTok{2}\NormalTok{) }
+\NormalTok{treatment }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{( }\DecValTok{0}\SpecialCharTok{:}\DecValTok{1}\NormalTok{ , }\AttributeTok{each=}\NormalTok{N}\SpecialCharTok{/}\DecValTok{2}\NormalTok{ ) }\CommentTok{\# 0 is no treatment, 1 is the anti{-}fungal treatment}
+\CommentTok{\#anti{-}fungal treatment reduces probability of fungus}
+\NormalTok{fungus }\OtherTok{\textless{}{-}} \FunctionTok{rbinom}\NormalTok{( N , }\AttributeTok{size=}\DecValTok{1}\NormalTok{ , }\AttributeTok{prob=}\FloatTok{0.5} \SpecialCharTok{{-}}\NormalTok{ treatment}\SpecialCharTok{*}\FloatTok{0.4}\NormalTok{) }
+\CommentTok{\# final height depends on initial height and fungus}
+\NormalTok{h1 }\OtherTok{\textless{}{-}}\NormalTok{ h0 }\SpecialCharTok{+} \FunctionTok{rnorm}\NormalTok{( N , }\DecValTok{5} \SpecialCharTok{{-}}\DecValTok{3}\SpecialCharTok{*}\NormalTok{fungus) }
+
+\NormalTok{data\_fungus }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{( }\AttributeTok{h0=}\NormalTok{h0 , }\AttributeTok{h1=}\NormalTok{h1 , }\AttributeTok{treatment=}\NormalTok{treatment , }\AttributeTok{fungus=}\NormalTok{fungus )}
+\end{Highlighting}
+\end{Shaded}
+
+And here's a linear model using the proportion of plant growth \(p\).
+
+\[
+\begin{aligned}
+h_{1,i} &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= h_{0,i} \times p\\
+p &= \alpha + \beta_T T_i + \beta_F F_i \\
+\alpha &\sim \text{Log-Normal}(0,0.2)\\
+\beta_T &\sim \text{Normal}(0,0.5)\\
+\beta_F &\sim \text{Normal}(0,0.5) \\
+\sigma &=\text{Exponential}(1)
+\end{aligned}
+\]
+
+And here's the model in quap, with the parameter estimates:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m6\_7 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{( }
+\NormalTok{  h1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ), }
+\NormalTok{  mu }\OtherTok{\textless{}{-}}\NormalTok{ h0 }\SpecialCharTok{*}\NormalTok{ p, }
+\NormalTok{  p }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bt}\SpecialCharTok{*}\NormalTok{treatment }\SpecialCharTok{+}\NormalTok{ bf}\SpecialCharTok{*}\NormalTok{fungus, }
+\NormalTok{  a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dlnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ) , }
+\NormalTok{  bt }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{  bf }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{  sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{), }\AttributeTok{data=}\NormalTok{data\_fungus )}
+
+\NormalTok{summary\_6\_7 }\OtherTok{\textless{}{-}}\NormalTok{ m6\_7}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a,bt,bf,sigma)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Including Fungus"}\NormalTok{)}
+
+\NormalTok{summary\_6\_7}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 8
+##   .variable   .value  .lower  .upper .width .point .interval model           
+##   <chr>        <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>     <chr>           
+## 1 a          1.48     1.46    1.49     0.89 mean   qi        Including Fungus
+## 2 bf        -0.282   -0.298  -0.267    0.89 mean   qi        Including Fungus
+## 3 bt         0.00238 -0.0115  0.0162   0.89 mean   qi        Including Fungus
+## 4 sigma      1.30     1.25    1.35     0.89 mean   qi        Including Fungus
+\end{verbatim}
+
+The effect of the treatment, \(b_t\) is very close to zero which we know from the simulation is not correct.
+
+Here's the same model, omitting fungus as a variable:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m6\_8 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{( }
+\NormalTok{  h1 }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ), }
+\NormalTok{  mu }\OtherTok{\textless{}{-}}\NormalTok{ h0 }\SpecialCharTok{*}\NormalTok{ p, }
+\NormalTok{  p }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bt}\SpecialCharTok{*}\NormalTok{treatment, }
+\NormalTok{  a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dlnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.2}\NormalTok{ ), }
+\NormalTok{  bt }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.5}\NormalTok{ ), }
+\NormalTok{  sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{), }\AttributeTok{data=}\NormalTok{data\_fungus )}
+
+\NormalTok{summary\_6\_8 }\OtherTok{\textless{}{-}}\NormalTok{ m6\_8}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a,bt,sigma)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model=}\StringTok{"Omitting Fungus"}\NormalTok{)}
+
+
+\FunctionTok{bind\_rows}\NormalTok{(summary\_6\_7, summary\_6\_8) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{fct\_rev}\NormalTok{(.variable), }\AttributeTok{x =}\NormalTok{ .value, }\AttributeTok{xmin =}\NormalTok{ .lower, }\AttributeTok{xmax =}\NormalTok{ .upper, }\AttributeTok{color =}\NormalTok{ model)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_pointinterval}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{(}\AttributeTok{width =} \SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept=}\DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"parameters"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+Moving from the model that includes fungus to one that omits it, the model changes from being very confident that treatment doesn't make a difference, to being very confident that it does.
+
+Let's revisit the DAG from earlier, and look at the conditional independencies that it implies:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{impliedConditionalIndependencies}\NormalTok{(dag\_fungus)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## F _||_ H_0
+## H_0 _||_ T
+## H_1 _||_ T | F
+\end{verbatim}
+
+The third one here means that final height is independent from treatment, conditioning on fungus.
+
+This section in the chapter closes with an example where conditioning on a post-treatment variable gives the false impression that a treatment \emph{does} work:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dag\_fungus\_M }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{(}\StringTok{"dag\{M [unobserved]; H\_0 {-}\textgreater{} H\_1; M {-}\textgreater{} H\_1; M {-}\textgreater{} F; T {-}\textgreater{} F; \}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_fungus\_M) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{H\_0=}\DecValTok{0}\NormalTok{,}\AttributeTok{H\_1=}\DecValTok{1}\NormalTok{,}\AttributeTok{M=}\FloatTok{1.5}\NormalTok{, }\AttributeTok{F=}\DecValTok{2}\NormalTok{, }\AttributeTok{T=}\DecValTok{3}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{H\_0=}\DecValTok{0}\NormalTok{,}\AttributeTok{H\_1=}\DecValTok{0}\NormalTok{,}\AttributeTok{M=}\FloatTok{1.1}\NormalTok{, }\AttributeTok{F=}\DecValTok{0}\NormalTok{, }\AttributeTok{T=}\DecValTok{0}\NormalTok{) )}
+\FunctionTok{drawdag}\NormalTok{( dag\_fungus\_M)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+The unobserved variable here is moisture. In this DAG, treatment does not affect plant growth at all, but both plant growth and fungal growth are encouraged by moisture. From the chapter:
+
+\begin{quote}
+A regression of \(H_1\) on \(T\) will show no association between the treatment and plant growth. But if we include \(F\) in the model, suddenly there will be an association.
+\end{quote}
+
+This is an example of collider bias. The rest of the chapter walks through a couple of examples of collider bias, including one where a measured variable becomes a collider because of the influence of an unmeasured one.
+
+\hypertarget{collider-bias}{%
+\subsection*{Collider Bias}\label{collider-bias}}
+\addcontentsline{toc}{subsection}{Collider Bias}
+
+Here are the four elemental relations that make up DAGs:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  treatment absent and moisture absent
-\item
-  treatment present and moisture either way (leaning towards absent)
-\end{itemize}
+  The Fork
+  \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-18-1.pdf}
+\end{enumerate}
 
-So once we know fungus there is a weak positive correlation between treatment and moisture. Since moisture is good for plant growth, this means a positive relationship between treatment and growth.
+In a fork, \(Z\) is a common cause of \(X\) and \(Y\), and this creates a correlation between them. However \(X\) and \(Y\) are independent, conditional on \(Z\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  The Pipe
+  \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-19-1.pdf}
+\end{enumerate}
+
+In a pipe, conditioning on \(Z\) blocks the causal path between \(X\) and \(Y\). This is like the fungus example from earlier.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  The Collider
+  \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-20-1.pdf}
+\end{enumerate}
+
+In a collider, there will be no association between \(X\) and \(Y\), \emph{unless} you condition on \(Z\). Think about the academic paper example from the start of the chapter.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  The Descendant
+  \includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-1.pdf}
+\end{enumerate}
+
+From the chapter:
+
+\begin{quote}
+A descendent is a variable influenced by another variable. Conditioning on a descendent partly conditions on its parent \ldots{} in {[}this DAG{]}, conditioning on \(D\) will also condition, to a lesser extent, on \(Z\). The reason is that \(D\) has some information about \(Z\). In this example, this will partially open the path from \(X\) to \(Y\), because \(Z\) is a collider. But in general the consequence of conditioning on a descendent depends upon the nature of its parent.
+\end{quote}
+
+The chapter closes with a recipe for deciding which variables to condition on, along with some practice examples:
+
+\begin{quote}
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\item
+  List all of the paths connecting \(X\) (the potential cause of interest) and \(Y\) (the outcome).
+\item
+  Classify each path by whether it is open or closed. A path is open unless it contains a collider.
+\item
+  Classify each path by whether it is a backdoor path. A backdoor path has an arrow entering \(X\).
+\item
+  If there are any open backdoor paths, decide which variable(s) to condition on to close it (if possible).
+\end{enumerate}
+\end{quote}
+
+Here's an example from the chapter:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dag\_6\_1 }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{(}\StringTok{"dag \{ U [unobserved] X {-}\textgreater{} Y X \textless{}{-} U \textless{}{-} A {-}\textgreater{} C {-}\textgreater{} Y U {-}\textgreater{} B \textless{}{-} C\}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_6\_1) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{X=}\DecValTok{0}\NormalTok{,}\AttributeTok{U=}\DecValTok{0}\NormalTok{,}\AttributeTok{A=}\DecValTok{1}\NormalTok{,}\AttributeTok{B=}\DecValTok{1}\NormalTok{, }\AttributeTok{C=}\DecValTok{2}\NormalTok{, }\AttributeTok{Y=}\DecValTok{2}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{X=}\DecValTok{1}\NormalTok{,}\AttributeTok{U=}\FloatTok{0.5}\NormalTok{,}\AttributeTok{A=}\FloatTok{0.25}\NormalTok{,}\AttributeTok{B=}\FloatTok{0.75}\NormalTok{, }\AttributeTok{C=}\FloatTok{0.5}\NormalTok{, }\AttributeTok{Y=}\DecValTok{1}\NormalTok{) )}
+\FunctionTok{drawdag}\NormalTok{(dag\_6\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+We are interested in the causal effect of \(X\) on \(Y\). To close the open backdoor path through \(A\), we can condition on either \(A\) or \(C\). The dagitty package can tell us this:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{adjustmentSets}\NormalTok{( dag\_6\_1 , }\AttributeTok{exposure=}\StringTok{"X"}\NormalTok{ , }\AttributeTok{outcome=}\StringTok{"Y"}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## { C }
+## { A }
+\end{verbatim}
+
+We must not condition on \(B\), this would open a backdoor path that is currently closed.
 
 \hypertarget{questions-5}{%
 \section{Questions}\label{questions-5}}
@@ -3736,7 +3978,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Fork - X and Y are independent, once we condition on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-14-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-24-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3746,7 +3988,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Pipe - X and Y are independent, once we condition on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-15-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-25-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3756,7 +3998,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Collider - Conditioning on Z creates an association between X and Y.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-16-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-26-1.pdf}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -3766,7 +4008,7 @@ List the four elemental confounds. Can you explain the conditional dependencies 
   Descendant - Conditioning on D partly conditions on Z.
 \end{enumerate}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-17-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-27-1.pdf}
 
 \hypertarget{e4-4}{%
 \subsection*{6E4}\label{e4-4}}
@@ -3808,11 +4050,11 @@ Modify the DAG on page 186 to include the variable V, an unobserved cause of C a
 
 Here's the original DAG:
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-18-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-28-1.pdf}
 
 Now we add the unobserved V:
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-19-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-29-1.pdf}
 
 Previously, we could condition on either A or C to find the direct casual effect of X on Y. Now C is a collider, so we should condition on A.
 
@@ -3867,7 +4109,7 @@ Modifying the leg example:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3915,7 +4157,7 @@ Modifying the leg example:
 ## Warning: Removed 1 rows containing missing values (geom_segment).
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-21-2.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-31-2.pdf}
 
 In the legs example, the model was very uncertain about the parameter values for both legs. This is not the case here, the parameter estimate for the influence of Z is about as expected, 2-2.5. The model has correctly identified that the only influence of X on Y is through Z, and so produces parameter estimates for X much smaller than expected. We have a pipe, and including Z blocks the path from X to Y, but we don't have the problems with identifiability that we had in the legs example.
 
@@ -3950,7 +4192,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-23-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-33-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3976,7 +4218,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-24-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-34-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4002,7 +4244,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-25-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-35-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4028,7 +4270,7 @@ Learning to analyze DAGs requires practice. For each of the four DAGs below, sta
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-26-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-36-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4074,7 +4316,7 @@ Here's my proposed DAG:
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-27-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-37-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4112,7 +4354,7 @@ After loading the data, standardising, and doing some prior simulation, I have t
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-29-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-39-1.pdf}
 
 This is consistent with the number of Waffle Houses having no causal effect on the divorce rate.
 
@@ -4174,7 +4416,7 @@ We'll first test that the divorce rate is independent of being in the South, con
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-31-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-41-1.pdf}
 
 The values of the diff\_south parameter are consistent with the conditional independence, but I'm not completely happy that I've caught all the ways that being in the South can influence the divorce rate. Perhaps I should add an arrow directly from the South to the divorce rate, or add in an unobserved variable to stand in for cultural/ religious attitudes towards divorce.
 
@@ -4203,7 +4445,7 @@ We'll test one more conditional independence, one that I think is more likely to
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-32-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-42-1.pdf}
 
 The parameter bW is estimated to be quite close to zero.
 
@@ -4227,13 +4469,13 @@ You might want to standardize the variables. Regardless, use prior predictive si
 
 We don't need to condition on any other parameters since we're looking for the total causal effect.
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-33-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-43-1.pdf}
 
 \begin{verbatim}
 ##  {}
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-33-2.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-43-2.pdf}
 
 Unexpectedly, the total causal impact of area on weight appears to be zero, or slightly negative. Increasing area would not make foxes heavier.
 
@@ -4259,7 +4501,7 @@ We don't need to condition on any other parameters assuming the DAG we're given 
 ##  {}
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-34-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-44-1.pdf}
 
 The total causal impact of food on weight again appears to be negative. Increasing food would not make foxes heavier.
 
@@ -4285,7 +4527,7 @@ Now we have to condition on food to block the backdoor path.
 ## { F }
 \end{verbatim}
 
-\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-35-1.pdf}
+\includegraphics{06-haunted_dag_files/figure-latex/unnamed-chunk-45-1.pdf}
 
 We see that the causal impact of group size is negative, and that the direct effect of food is zero or slightly positive. It is at least not so negative as the total causal effect.
 
@@ -4298,31 +4540,182 @@ I'd suggest that what's happening here is that the main effect of an increase in
 \hypertarget{ulysses}{%
 \chapter{Ulysses' Compass}\label{ulysses}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Colours by Paul Tol.}
+\CommentTok{\# Defined in R by Joachim Goedhart }
+\CommentTok{\# Source: doi 10.5281/zenodo.3381072}
+
+\NormalTok{tol\_light }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}\#BBCC33\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#AAAA00\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#77AADD\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#EE8866\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#EEDD88\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#FFAABB\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#99DDFF\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#44BB99\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#DDDDDD\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{chapter-notes-6}{%
 \section{Chapter Notes}\label{chapter-notes-6}}
+
+This chapter is all about model selection. The title refers to our need to navigate between the Scylla of overfitting and the Charybdis of underfitting. Respectively learning too much and too little from the data.
+
+In the previous chapter about confounding, we learned that in some cases adding predictor variables to your model can makes inferences worse. However if we only care about prediction, and not inference, these variables can still help. So should we just add all plausible predictors to our models?
+
+This chapter answers no. Even if all we care about is prediction, we are at risk of overfitting to the training data set, which will make our model worse when predicting on new data.
+
+Here's an example from the chapter, on hominin brain volumes, and body mass:
 
 \hypertarget{brain-volume-model}{%
 \subsection*{Brain Volume model}\label{brain-volume-model}}
 \addcontentsline{toc}{subsection}{Brain Volume model}
 
-We fit the linear brain volume model since it is used to illustrate various concepts later in the chapter:
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_hominin }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{species =} \FunctionTok{c}\NormalTok{( }\StringTok{"afarensis"}\NormalTok{,}\StringTok{"africanus"}\NormalTok{,}\StringTok{"habilis"}\NormalTok{,}\StringTok{"boisei"}\NormalTok{, }\StringTok{"rudolfensis"}\NormalTok{,}\StringTok{"ergaster"}\NormalTok{,}\StringTok{"sapiens"}\NormalTok{),}
+  \AttributeTok{brain\_vol =} \FunctionTok{c}\NormalTok{( }\DecValTok{438}\NormalTok{ , }\DecValTok{452}\NormalTok{ , }\DecValTok{612}\NormalTok{, }\DecValTok{521}\NormalTok{, }\DecValTok{752}\NormalTok{, }\DecValTok{871}\NormalTok{, }\DecValTok{1350}\NormalTok{ ), }\CommentTok{\# brain volume}
+  \AttributeTok{body\_size =} \FunctionTok{c}\NormalTok{( }\FloatTok{37.0}\NormalTok{ , }\FloatTok{35.5}\NormalTok{ , }\FloatTok{34.5}\NormalTok{ , }\FloatTok{41.5}\NormalTok{ , }\FloatTok{55.5}\NormalTok{ , }\FloatTok{61.0}\NormalTok{ , }\FloatTok{53.5}\NormalTok{ ), }\CommentTok{\# body mass}
+  \AttributeTok{vol\_std =}\NormalTok{ brain\_vol}\SpecialCharTok{/}\FunctionTok{max}\NormalTok{(brain\_vol), }\CommentTok{\# keeping zero brain volume as a reference point}
+  \AttributeTok{mass\_std =}\NormalTok{ (body\_size }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(body\_size))}\SpecialCharTok{/}\FunctionTok{sd}\NormalTok{(body\_size)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The structure of this section is that we're going to regress brain volume on body mass using increasingly higher-order polynomials and see what happens to \(R^2\). Here's a simple linear regression:
+
+\[
+\begin{aligned}
+b_i &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta m_i \\
+\alpha &\sim \text{Normal}(0.5,1)&& (\text{Centred on approx. mean brain volume.})\\
+\beta &\sim \text{Normal}(0,10)&& (\text{Very flat.})\\
+\sigma &\sim \text{Log-Normal}(0,1)\\
+\end{aligned}
+\]
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{set.seed}\NormalTok{(}\DecValTok{100}\NormalTok{)}
-\NormalTok{m7}\FloatTok{.1} \OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
-\NormalTok{  brain\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , }\FunctionTok{exp}\NormalTok{(log\_sigma) ), }
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{71}\NormalTok{)}
+
+\NormalTok{m7\_1 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{  vol\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , }\FunctionTok{exp}\NormalTok{(log\_sigma) ), }
 \NormalTok{  mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ b}\SpecialCharTok{*}\NormalTok{mass\_std, }
 \NormalTok{  a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\FloatTok{0.5}\NormalTok{ , }\DecValTok{1}\NormalTok{ ), }
 \NormalTok{  b }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{10}\NormalTok{ ), }
 \NormalTok{  log\_sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\DecValTok{1}\NormalTok{ )}
-\NormalTok{), }\AttributeTok{data=}\NormalTok{brain\_volume )}
+\NormalTok{), }\AttributeTok{data=}\NormalTok{data\_hominin )}
 \end{Highlighting}
 \end{Shaded}
+
+We calculate the \(R^2\) of this model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we define a function for the empirical variace}
+\CommentTok{\# since var() in R uses the denominator n{-}1}
+\NormalTok{var\_n }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(vector)\{}
+  \FunctionTok{mean}\NormalTok{((}\FunctionTok{mean}\NormalTok{(vector)}\SpecialCharTok{{-}}\NormalTok{vector)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{\}}
+
+\CommentTok{\# we define a function to produce the R\^{}2 of each model we\textquotesingle{}ll be fitting}
+\NormalTok{hominin\_r\_squared }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(model)\{}
+  
+\NormalTok{  pred\_hominin }\OtherTok{\textless{}{-}} \FunctionTok{add\_predicted\_draws}\NormalTok{(data\_hominin,model)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# predict brain volume using observed body weights}
+  \FunctionTok{group\_by}\NormalTok{(species,vol\_std)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{pred\_vol=}\FunctionTok{mean}\NormalTok{(.prediction), }\AttributeTok{.groups =} \StringTok{"keep"}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# we\textquotesingle{}ll use the mean of our predictions}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{residuals =}\NormalTok{ pred\_vol}\SpecialCharTok{{-}}\NormalTok{vol\_std)}
+  
+  \DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{var\_n}\NormalTok{(pred\_hominin}\SpecialCharTok{$}\NormalTok{residuals)}\SpecialCharTok{/}\FunctionTok{var\_n}\NormalTok{(pred\_hominin}\SpecialCharTok{$}\NormalTok{vol\_std) }\CommentTok{\# our R\^{}2 calc}
+\NormalTok{\}}
+
+\FunctionTok{hominin\_r\_squared}\NormalTok{(m7\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.484328
+\end{verbatim}
+
+We then do the same for polynomials of increasing order, starting with a model like this one:
+
+\[
+\begin{aligned}
+b_i &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta_1 m_i + \beta_2 m_i^2 && (\text{A second degree polynomial})\\
+\alpha &\sim \text{Normal}(0.5,1)\\
+\beta &\sim \text{Normal}(0,10)\\
+\sigma &\sim \text{Log-Normal}(0,1)\\
+\end{aligned}
+\]
+
+We fit all these models, up to a polynomial of degree six and calculate the \(R^2\). I'll hide this code because it's pretty repetitive.
+
+Now we plot the models:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculating R\^{}2}
+
+\NormalTok{values\_r\_square }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{model =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"m7\_"}\NormalTok{,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rowwise}\NormalTok{()}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{r\_squared =} \FunctionTok{hominin\_r\_squared}\NormalTok{(}\FunctionTok{get}\NormalTok{(model)), }\CommentTok{\# get() allows us to refer to our models dynamically}
+         \AttributeTok{labels =} \FunctionTok{paste}\NormalTok{(}\StringTok{"R\^{}2 ="}\NormalTok{,}\FunctionTok{round}\NormalTok{(r\_squared,}\DecValTok{2}\NormalTok{))) }\CommentTok{\# labels for our plot later}
+
+\CommentTok{\# Create our data frame of draws from the posterior}
+
+\NormalTok{grid\_hominin }\OtherTok{\textless{}{-}} \FunctionTok{data\_grid}\NormalTok{(data\_hominin,}\AttributeTok{mass\_std=}\FunctionTok{seq\_range}\NormalTok{(mass\_std, }\AttributeTok{n =} \DecValTok{51}\NormalTok{))}
+
+\NormalTok{draws\_hominin }\OtherTok{\textless{}{-}} \FunctionTok{add\_predicted\_draws}\NormalTok{(grid\_hominin,m7\_1)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"m7\_1"}\NormalTok{) }\CommentTok{\# this loop be made more efficient I\textquotesingle{}m sure}
+  
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\DecValTok{6}\NormalTok{)\{}
+    \CommentTok{\# I\textquotesingle{}ve also used get() here }
+\NormalTok{  draws\_int }\OtherTok{\textless{}{-}} \FunctionTok{add\_predicted\_draws}\NormalTok{(grid\_hominin,}\FunctionTok{get}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"m7\_"}\NormalTok{,i)))}\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"m7\_"}\NormalTok{,i))}
+  
+\NormalTok{  draws\_hominin }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(draws\_hominin,draws\_int)}
+\NormalTok{\}}
+  
+
+\NormalTok{draws\_hominin}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{brain\_vol =}\NormalTok{ .prediction }\SpecialCharTok{*} \FunctionTok{max}\NormalTok{(data\_hominin}\SpecialCharTok{$}\NormalTok{brain\_vol), }\CommentTok{\# undoing the previous transformations}
+         \AttributeTok{body\_size =}\NormalTok{ mass\_std}\SpecialCharTok{*}\FunctionTok{sd}\NormalTok{(data\_hominin}\SpecialCharTok{$}\NormalTok{body\_size)}\SpecialCharTok{+}\FunctionTok{mean}\NormalTok{(data\_hominin}\SpecialCharTok{$}\NormalTok{body\_size))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ body\_size, }\AttributeTok{y=}\NormalTok{brain\_vol)) }\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ brain\_vol)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_hominin, }\AttributeTok{colour =}\NormalTok{ tol\_light[[}\DecValTok{4}\NormalTok{]],}\AttributeTok{size=}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\AttributeTok{data=}\NormalTok{values\_r\_square, }\CommentTok{\# adding our R\^{}2 lables from earlier}
+            \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\DecValTok{40}\NormalTok{,}\AttributeTok{y=}\DecValTok{1900}\NormalTok{,}\AttributeTok{label=}\NormalTok{labels),}\AttributeTok{size=}\DecValTok{3}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{model)}\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"body mass (kg)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"brain volumne (cc)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+With higher order polynomials we get an increasingly good fit to the data, eventually reaching \(R^2 =1\). But some of these models make no sense. Model m7\_6 predicts negative brain volume at body mass 58kg. If a new hominin was discovered at around this weight, this model would make horrific predictions of brain volume, even though the model perfectly retrodicts all of the training data.
+
+Having set up the concern, the chapter goes on to outline some model selection tools: regularisation and information criteria. The first step is to define information entropy as a measure of uncertainty:
+
+\[
+H(p) = -E\log(p_i) = -\sum_{i=1}^n p_i \log(p_i)
+\]
+The chapter summarises:
+
+\begin{quote}
+The uncertainty contained in a probability distribution is the average log-probability of an event.
+\end{quote}
+
+And then Kullback-Leibler divergence as a measure of the additional uncertainty induced by using probabilities from one distribution to describe another distribution:
+
+\[
+D_{KL}(p,q) = \sum_{i} p_i ( \log(p_i) - \log(q_i))= \sum_{i} p_i  \log(\frac{p_i}{q_i}) 
+\]
+
+This is the average difference in log-probability between our target \(p\) and model \(q\), and we can use it to compare the accuracy of different models.
 
 \hypertarget{log-pointwise-predictive-density}{%
 \subsection*{Log Pointwise Predictive Density}\label{log-pointwise-predictive-density}}
 \addcontentsline{toc}{subsection}{Log Pointwise Predictive Density}
+
+Revisit this section.
 
 Computing the log pointwise predictive density. With data \(y = \{y_i\}\) and posterior distribution \(\Theta\):
 
@@ -4339,13 +4732,10 @@ Here is the calculation done in R, from the ``Overthinking: Computing the lppd''
 \begin{Highlighting}[]
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{) }
 
-\CommentTok{\# Using the lppd function built into the Rethinking package}
-\NormalTok{lppd1 }\OtherTok{\textless{}{-}} \FunctionTok{lppd}\NormalTok{( m7}\FloatTok{.1}\NormalTok{ , }\AttributeTok{n=}\FloatTok{1e4}\NormalTok{ )}
-
-
+\NormalTok{lppd1 }\OtherTok{\textless{}{-}} \FunctionTok{lppd}\NormalTok{( m7\_1 , }\AttributeTok{n=}\FloatTok{1e4}\NormalTok{ )}
 \CommentTok{\# Extracting posterior samples and calculating manually}
 
-\NormalTok{logprob }\OtherTok{\textless{}{-}} \FunctionTok{sim}\NormalTok{( m7}\FloatTok{.1}\NormalTok{ , }\AttributeTok{ll=}\ConstantTok{TRUE}\NormalTok{ , }\AttributeTok{n=}\FloatTok{1e4}\NormalTok{ )   }\CommentTok{\# logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each}
+\NormalTok{logprob }\OtherTok{\textless{}{-}} \FunctionTok{sim}\NormalTok{( m7\_1 , }\AttributeTok{ll=}\ConstantTok{TRUE}\NormalTok{ , }\AttributeTok{n=}\FloatTok{1e4}\NormalTok{ )   }\CommentTok{\# logprob contains 10,000 samples from the posterior distribution, each estimating the (log) probability of seeing each}
                                            \CommentTok{\# of the seven observations. }
 
 \NormalTok{n }\OtherTok{\textless{}{-}} \FunctionTok{ncol}\NormalTok{(logprob) }
@@ -4362,7 +4752,7 @@ Here is the calculation done in R, from the ``Overthinking: Computing the lppd''
 \end{Shaded}
 
 \begin{verbatim}
-## [1]  0.6099135  0.6484063  0.5496868  0.6235310  0.4648179  0.4347736 -0.8444470
+## [1]  0.6098673  0.6483443  0.5496098  0.6234939  0.4648151  0.4347613 -0.8444654
 \end{verbatim}
 
 \begin{Shaded}
@@ -4372,7 +4762,7 @@ Here is the calculation done in R, from the ``Overthinking: Computing the lppd''
 \end{Shaded}
 
 \begin{verbatim}
-## [1]  0.6117253  0.6488831  0.5448708  0.6278331  0.4638980  0.4263233 -0.8522201
+## [1]  0.6116789  0.6488210  0.5447935  0.6277960  0.4638950  0.4263109 -0.8522379
 \end{verbatim}
 
 Summing over these seven observations will give the total lppd.
@@ -4383,28 +4773,36 @@ Summing over these seven observations will give the total lppd.
 
 The idea here is to simulate from the following model with two parameters:
 
-\[\begin{aligned}
+\[
+\begin{aligned}
 y_i & \sim \text{Normal}(\mu_i,1) \\
 \mu_i &= (0.15)x_{1,i} - (0.4)x_{2,i}
-\end{aligned}\]
+\end{aligned}
+\]
 
-To the data produced, we try to fit linear regressions with between 1 and 5 parameters, and compare the in and out of sample deviance for these five models.
+We fit linear regressions with between 1 and 5 parameters to the simulated data, and compare the in and out of sample deviance for these five models.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{N }\OtherTok{\textless{}{-}} \DecValTok{20} 
 \NormalTok{kseq }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\DecValTok{5} 
 
-\CommentTok{\# sim\_train\_test simulates Gaussian data with N cases and fits a model with k parameters, returning the in sample and out of sample lppd (can also do WAIC criteria)}
+\CommentTok{\# sim\_train\_test is a function from the rethinking package.}
+\CommentTok{\# it simulates Gaussian data with N cases and fits a model with k parameters, }
+\CommentTok{\# returning the in sample and out of sample lppd (can also do WAIC criteria)}
 
-\CommentTok{\# dev contains the mean in sample deviance, mean out of sample deviance, sd of in sample deviance, and sd of out of sample deviance for each model with 1{-}5 parameters.  }
+\CommentTok{\# data\_dev contains the mean in sample deviance, mean out of sample deviance, }
+\CommentTok{\# sd of in sample deviance, and sd of out of sample deviance for each model with 1{-}5 parameters.  }
 
-\NormalTok{dev }\OtherTok{\textless{}{-}} \FunctionTok{map\_dfr}\NormalTok{( kseq , }\ControlFlowTok{function}\NormalTok{(k) \{}
-\NormalTok{  r }\OtherTok{\textless{}{-}} \FunctionTok{replicate}\NormalTok{( }\DecValTok{100}\NormalTok{ , }\FunctionTok{sim\_train\_test}\NormalTok{( }\AttributeTok{N=}\NormalTok{N, }\AttributeTok{k=}\NormalTok{k , }\AttributeTok{cv.cores =} \DecValTok{4}\NormalTok{)); }
+\NormalTok{data\_dev }\OtherTok{\textless{}{-}} \FunctionTok{map\_dfr}\NormalTok{( kseq , }\ControlFlowTok{function}\NormalTok{(k) \{}
+\NormalTok{  r }\OtherTok{\textless{}{-}} \FunctionTok{replicate}\NormalTok{( }\DecValTok{100}\NormalTok{ , }\FunctionTok{sim\_train\_test}\NormalTok{( }\AttributeTok{N=}\NormalTok{N, }\AttributeTok{k=}\NormalTok{k , }\AttributeTok{cv.cores =} \DecValTok{8}\NormalTok{)); }
   \FunctionTok{tibble}\NormalTok{(}\AttributeTok{mean\_in =} \FunctionTok{mean}\NormalTok{(r[}\DecValTok{1}\NormalTok{,]) ,}\AttributeTok{mean\_out=} \FunctionTok{mean}\NormalTok{(r[}\DecValTok{2}\NormalTok{,]) ,}\AttributeTok{sd\_in=} \FunctionTok{sd}\NormalTok{(r[}\DecValTok{1}\NormalTok{,]) ,}\AttributeTok{sd\_out=} \FunctionTok{sd}\NormalTok{(r[}\DecValTok{2}\NormalTok{,]) )}
 \NormalTok{\} )}
 
-\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{dev)}\SpecialCharTok{+}
+\CommentTok{\# Revisit this mess of a function, set eval to TRUE once it works again}
+\CommentTok{\# Add commentary below the graph}
+
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{data\_dev)}\SpecialCharTok{+}
   \FunctionTok{geom\_pointrange}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,}\AttributeTok{y=}\NormalTok{mean\_in,}\AttributeTok{ymin=}\NormalTok{mean\_in}\SpecialCharTok{{-}}\NormalTok{sd\_in,}\AttributeTok{ymax=}\NormalTok{mean\_in}\SpecialCharTok{+}\NormalTok{sd\_in), }\AttributeTok{colour =} \StringTok{"blue"}\NormalTok{)}\SpecialCharTok{+}
   \FunctionTok{geom\_pointrange}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\FloatTok{1.1}\SpecialCharTok{:}\FloatTok{5.1}\NormalTok{,}\AttributeTok{y=}\NormalTok{mean\_out,}\AttributeTok{ymin=}\NormalTok{mean\_out}\SpecialCharTok{{-}}\NormalTok{sd\_out,}\AttributeTok{ymax=}\NormalTok{mean\_out}\SpecialCharTok{+}\NormalTok{sd\_out))}\SpecialCharTok{+}
   \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\FloatTok{2.9}\NormalTok{, }\AttributeTok{y =}\NormalTok{ mean\_in[}\DecValTok{3}\NormalTok{], }\AttributeTok{label=}\StringTok{"in"}\NormalTok{),}\AttributeTok{colour=}\StringTok{"blue"}\NormalTok{)}\SpecialCharTok{+}
@@ -4415,9 +4813,30 @@ To the data produced, we try to fit linear regressions with between 1 and 5 para
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-5-1.pdf}
+There is a section on the role that regularising priors can play in preventing over-fitting.
 
-Overthinking: WAIC calculations.
+\hypertarget{predicting-predicitve-accuracy}{%
+\subsection*{Predicting Predicitve Accuracy}\label{predicting-predicitve-accuracy}}
+\addcontentsline{toc}{subsection}{Predicting Predicitve Accuracy}
+
+This section introduces cross-validation and information criteria as a way to estimating model predictive performance on out-of-sample data. We'll end up at PSIS and WAIC respectively.
+
+Leave-one-out cross-validation is a way to get an estimate of out-of-sample accuracy. However it is computationally expensive. A key insight when trying to approximate LOOCV is that unlikely observations have a larger effect on the posterior distribution. This insight leads to the importance sampling approach, the approach highlighted by the chapter is Pareto-smoothed importance sampling or PSIS. It has a couple of nice features, including the ability to provide diagnostic information and to estimate the standard error of out-of-sample deviance.
+
+Revisit: Overthinking PSIS box
+
+Aside from cross-validation appraoches, we can also use information criteria to predict predictive accuracy. The Akaike information criterion estimates out-of-sample deviance:
+
+\[
+\text{AIC}=D_\text{train} + 2p = -2\text{lppd}+2p
+\]
+where \(p\) is the number of free parameters in the posterior distribution. From the chapter:
+
+\begin{quote}
+{[}W{]}hat AIC tells us is that the dimensionality of the posterior distribution is a natural measure of the model's overfitting tendency. More complex models tend to overfit more, directly in proportion to the number of parameters\ldots{} Mechanically, deriving AIC means writing down the goal, which is the expected KL divergence, and then making approximations. The expected bias turns out to be proportional to the number of parameters, provided a number of assumptions are approximately correct.
+\end{quote}
+
+AIC requires quite strong assumptions - flat priors, approximately Gaussian posterior, large sample size. The chapter introduces Watanabe's widely applicable information criterion (WAIC), which does not make assumptions about the shape of the posterior and in a large sample converges to the cross-validation approximation.
 
 The formula for WAIC is:
 
@@ -4425,9 +4844,15 @@ The formula for WAIC is:
 \text{WAIC}(y,\Theta) = -2 \left( \text{lppd} - \sum_i \text{var}_\theta ( \log p(y_i | \theta)) \right)
 \]
 
-where \(\text{var}_\theta\) means taking the variance over the set of posterior samples.
+where the \(y_i\)'s are the observations and \(\Theta\) is the posterior distribution.
 
-The book calculates it for a simple model:
+\begin{quote}
+The penalty term means, ``compute the variance in log-probabilities for each observation i, and then sum up these variances to get the total penalty.''
+\end{quote}
+
+\(\text{var}_\theta\) means taking the variance over the set of posterior samples. Like PSIS, WAIC is also calculated pointwise - they both split up the data into independent observations. This has benefits - but it's unclear how to interpret this is the case where some observations depend on previous observations (like in a time series).
+
+The book calculates WAIC for a simple model. This code is straight out of the book:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4476,6 +4901,47 @@ The book calculates it for a simple model:
 \begin{verbatim}
 ## [1] 423.3188
 \end{verbatim}
+
+Model Comparison \{-\}
+
+The chapter revisits the plan growth/ fungus example from chapter 6. In that chapter, including fungus in the model bias inferences against the treatment - the fungus was a post-treatment variable. The models fit were;
+
+\begin{itemize}
+\tightlist
+\item
+  m6\_6 - model that didn't include either fungus or treatment as predictors
+\item
+  m6\_7 - model including both fungus and treatment as predictors
+\item
+  m6\_8 - model omitting fungus as a predictor
+\end{itemize}
+
+We compare the models using WAIC:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{77}\NormalTok{)}
+
+\FunctionTok{compare}\NormalTok{( m6\_6 , m6\_7 , m6\_8 , }\AttributeTok{func=}\NormalTok{WAIC )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m6_7 361.8100 14.26082  0.00000       NA 3.737444 1.000000e+00
+## m6_8 403.0534 11.31622 41.24348 10.47324 2.766014 1.106859e-09
+## m6_6 405.9652 11.70605 44.15528 12.23512 1.600129 2.581088e-10
+\end{verbatim}
+
+What are these figures? The chapter:
+
+\begin{quote}
+Columns from left to right are: WAIC, standard error (SE) of WAIC, difference of each WAIC from the best model, standard error (dSE) of this difference, prediction penalty (pWAIC), and finally the Akaike weight.
+\end{quote}
+
+Smaller values of WAIC are better, and the compare function orders them from lowest to highest. The penalty figure in WAIC is sometimes called ``effective number of parameters''. To tell if the models can be distinguished from each other in their expected prediction performance, we need to compare the WAIC differences in the dWAIC column to the standard error of this difference in the dSE column. Model 6\_7 (the confounded model) is a lot better.
+
+As an aside, I originally used 1,000 plants in my simulation instead of the 100 the chapter uses, and I was very surprised to see my WAIC figures on the order of 10 x higher than those printed in the book. A nice, accidental lesson on when WAIC figures are (not) comparable.
 
 \hypertarget{questions-6}{%
 \section{Questions}\label{questions-6}}
@@ -4714,7 +5180,7 @@ I'll pick up the cars data set from earlier and fit a couple of models with incr
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-7-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-13-1.pdf}
 These priors are very flat. Let's make them more concentrated.
 
 Logically, the intercept a should be near zero since if you're going zero mph it should take you zero feet to stop.
@@ -4733,7 +5199,7 @@ Also we'd expect b to be positive - the faster you go the further it takes you t
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-8-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-14-1.pdf}
 
 I think this is reasonable for our purposes.
 
@@ -4751,7 +5217,7 @@ Now let's make the prior very concentrated.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-9-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-15-1.pdf}
 
 Now we fit two new models with our new priors and calculate the effective number of parameters.
 
@@ -4962,7 +5428,7 @@ I want you to actually fit a curve to these data, found in data(Laffer). Conside
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-11-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-17-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5036,7 +5502,7 @@ We get warnings about high Pareto k values when using PSIS to compare the models
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-13-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-19-1.pdf}
 
 We alter the models fit above to use a Student's t distribution with shape parameter 2.
 
@@ -5077,7 +5543,7 @@ We alter the models fit above to use a Student's t distribution with shape param
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-14-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-20-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5337,7 +5803,7 @@ Can you explain the relative differences in WAIC scores, using the fox DAG from 
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-21-1.pdf}
+\includegraphics{07-ulysses_files/figure-latex/unnamed-chunk-27-1.pdf}
 
 Surprising! Comparing the WAIC difference and the standard errors of the difference, it looks like 3 is expected to be a more accurate model than 1. Both contain group size and area, but 1 also contains food. Adding a predictor can lower the expected out-of-sample performance if the predictor has little association with the outcome, but this is unusual in light of the DAG in chapter 6, which suggests that the only influence of area is via food. It's not clear why adding area would be useful if adding food is not useful. Perhaps the DAG is incorrect, and there is also a direct line from area to group size.
 
@@ -5863,11 +6329,11 @@ The model in chapter 8, fit using quadratic approximation looks like this:
 
 \begin{verbatim}
 ##             mean          sd        5.5%       94.5%
-## a[1]   0.8865634 0.015675092  0.86151154  0.91161518
-## a[2]   1.0505683 0.009936219  1.03468827  1.06644827
-## b[1]   0.1325055 0.074201695  0.01391687  0.25109415
-## b[2]  -0.1425765 0.054747314 -0.23007332 -0.05507976
-## sigma  0.1094898 0.005934713  0.10000498  0.11897461
+## a[1]   0.8865621 0.015675424  0.86150971  0.91161442
+## a[2]   1.0505699 0.009936434  1.03468955  1.06645023
+## b[1]   0.1325033 0.074203225  0.01391226  0.25109443
+## b[2]  -0.1425762 0.054748476 -0.23007479 -0.05507751
+## sigma  0.1094922 0.005935039  0.10000686  0.11897754
 \end{verbatim}
 
 Here is the same model using ulam:

@@ -249,7 +249,8 @@ Here's a summary of the posterior for our parameters using the point and interva
 set.seed(74)
 m4_1 %>%
   gather_draws(mu, sigma) %>%
-  median_qi(.width=0.89)
+  median_qi(.width=0.89)%>%
+  print(digits = 3)
 ```
 
 Here we return the parameter median in the .value column, and an 89% equi-tailed interval for our two parameters, in the .lower and .higher columns. 
@@ -260,7 +261,8 @@ We can instead return the mean or mode in the .value column:
 set.seed(74)
 m4_1 %>%
   gather_draws(mu, sigma) %>%
-  mode_qi(.width=0.89)
+  mode_qi(.width=0.89)%>%
+  print(digits = 3)
 ```
 
 The .value column has changed, but the .lower and .higher columns still specify the same 89% equi-tailed interval.
@@ -283,7 +285,8 @@ Here we compare the results from quap:
 ```{r}
 m4_1 %>%
   gather_draws(mu, sigma) %>%
-  median_qi(.width=0.89)
+  median_qi(.width=0.89)%>%
+  print(digits = 3)
 ```
 
 To the results from grid approximation:
@@ -432,7 +435,8 @@ m4_3 <- quap( alist(
 
 m4_3 %>%
   gather_draws(a, b, sigma) %>%
-  median_qi(.width=0.89)
+  median_qi(.width=0.89)%>%
+  print(digits = 3)
 ```
 
 
@@ -528,7 +532,8 @@ m4_5 <- quap(
 
 m4_5 %>%
   gather_draws(a, b1, b2, sigma) %>%
-  median_qi(.width=0.89)
+  median_qi(.width=0.89)%>%
+  print(digits = 3)
 ```
 
 Here's a plot of draws from the posterior:
