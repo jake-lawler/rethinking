@@ -179,7 +179,7 @@ post_grid <- post_grid %>%
 
 The only part I don't get yet is why simply using the maximum of the product works to get us to posterior probabilities. Here's what the chapter end note says on this:
 
-> Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( post$prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post$prob are not all zero, but they also aren’t exactly probabilities. Instead they are relative posterior probabilities. But that’s good enough for what we wish to do with these values.
+> Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post$prob are not all zero, but they also aren’t exactly probabilities. Instead they are relative posterior probabilities. But that’s good enough for what we wish to do with these values.
 
 Makes sense. We have a list of numbers between 0 and 1 that are correct in proportion to each other, but we don't have posterior probabilities. 
 
@@ -190,7 +190,7 @@ I wonder how we would get the actual posterior probabilities. Why wouldn't we be
 head(exp(post_grid$product))
 
 ```
-So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
+So we need to scale them before exponentiating but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
 
 I'm sure there's a solution to this but for now I'll continue on using the relative posterior "probabilities" we've already calculated. Here's a glimpse of our posterior probabilities for the parameters mu and sigma:
 

@@ -6,7 +6,7 @@
 ]{book}
 \title{Statistical Rethinking Notes}
 \author{Jake Lawler}
-\date{2022-02-14}
+\date{2022-02-15}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -1949,7 +1949,7 @@ The chapter then uses grid approximation to get an estimate of the posterior. I 
 The only part I don't get yet is why simply using the maximum of the product works to get us to posterior probabilities. Here's what the chapter end note says on this:
 
 \begin{quote}
-Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( post\(prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post\)prob are not all zero, but they also aren't exactly probabilities. Instead they are relative posterior probabilities. But that's good enough for what we wish to do with these values.
+Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( prod ), you'll get a vector full of zeros, which isn't very helpful. This is a result of R's rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post\$prob are not all zero, but they also aren't exactly probabilities. Instead they are relative posterior probabilities. But that's good enough for what we wish to do with these values.
 \end{quote}
 
 Makes sense. We have a list of numbers between 0 and 1 that are correct in proportion to each other, but we don't have posterior probabilities.
@@ -1966,7 +1966,7 @@ I wonder how we would get the actual posterior probabilities. Why wouldn't we be
 ## [1] 0 0 0 0 0 0
 \end{verbatim}
 
-So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
+So we need to scale them before exponentiating but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.
 
 I'm sure there's a solution to this but for now I'll continue on using the relative posterior ``probabilities'' we've already calculated. Here's a glimpse of our posterior probabilities for the parameters mu and sigma:
 
@@ -2046,16 +2046,16 @@ The {[}tidybayes::{]}spread\_draws() function yields a common format for all mod
 ## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     <int>      <int> <int> <dbl> <dbl>
-##  1     NA         NA     1  154.  8.07
-##  2     NA         NA     2  154.  8.26
-##  3     NA         NA     3  155.  7.81
-##  4     NA         NA     4  155.  8.41
-##  5     NA         NA     5  155.  7.49
-##  6     NA         NA     6  155.  7.91
-##  7     NA         NA     7  156.  7.88
-##  8     NA         NA     8  154.  8.13
-##  9     NA         NA     9  155.  7.28
-## 10     NA         NA    10  155.  7.54
+##  1     NA         NA     1  154.  8.30
+##  2     NA         NA     2  155.  7.92
+##  3     NA         NA     3  154.  7.87
+##  4     NA         NA     4  155.  7.84
+##  5     NA         NA     5  155.  8.18
+##  6     NA         NA     6  155.  8.14
+##  7     NA         NA     7  155.  7.71
+##  8     NA         NA     8  155.  7.40
+##  9     NA         NA     9  155.  8.04
+## 10     NA         NA    10  154.  7.77
 \end{verbatim}
 
 Here's a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:
@@ -2467,8 +2467,8 @@ h_i &= \text{Normal}(\mu_i, \sigma)\\
 ##   <chr>      <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
 ## 1 a         146.   145.   147.     0.89 median qi       
 ## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.80  -8.25  -7.38   0.89 median qi       
-## 4 sigma       5.77   5.50   6.06   0.89 median qi
+## 3 b2         -7.80  -8.23  -7.38   0.89 median qi       
+## 4 sigma       5.77   5.49   6.05   0.89 median qi
 \end{verbatim}
 
 Here's a plot of draws from the posterior:
@@ -3102,12 +3102,12 @@ D_i &\sim \text{Normal}(\mu_i, \sigma) \\
 
 \begin{verbatim}
 ## # A tibble: 4 x 8
-##   .variable     .value .lower .upper .width .point .interval model
-##   <chr>          <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
-## 1 a          0.0000920 -0.153  0.150   0.89 median qi        m5_3 
-## 2 bA        -0.611     -0.853 -0.371   0.89 median qi        m5_3 
-## 3 bM        -0.0671    -0.301  0.185   0.89 median qi        m5_3 
-## 4 sigma      0.783      0.660  0.911   0.89 median qi        m5_3
+##   .variable    .value .lower .upper .width .point .interval model
+##   <chr>         <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>     <chr>
+## 1 a          0.000168 -0.154  0.156   0.89 median qi        m5_3 
+## 2 bA        -0.612    -0.850 -0.379   0.89 median qi        m5_3 
+## 3 bM        -0.0646   -0.307  0.170   0.89 median qi        m5_3 
+## 4 sigma      0.786     0.660  0.912   0.89 median qi        m5_3
 \end{verbatim}
 
 Here's a plot for the three models:
@@ -3153,18 +3153,18 @@ For now I'll only recreate the posterior prediction plot.
 
 \begin{verbatim}
 ## # A tibble: 50 x 8
-##    Loc   divorce_s      x    .lower   .upper .width .point .interval
-##    <fct>     <dbl>  <dbl>     <dbl>    <dbl>  <dbl> <chr>  <chr>    
-##  1 AK        1.54   0.318 -0.000763  0.653     0.89 mean   qi       
-##  2 AL        1.65   0.369  0.164     0.584     0.89 mean   qi       
-##  3 AR        2.09   0.755  0.422     1.09      0.89 mean   qi       
-##  4 AZ        0.611  0.121 -0.0351    0.280     0.89 mean   qi       
-##  5 CA       -0.927 -0.350 -0.535    -0.161     0.89 mean   qi       
-##  6 CO        1.05   0.115 -0.113     0.355     0.89 mean   qi       
-##  7 CT       -1.64  -0.710 -0.972    -0.444     0.89 mean   qi       
-##  8 DC       -1.86  -1.75  -2.39     -1.12      0.89 mean   qi       
-##  9 DE       -0.433 -0.321 -0.631    -0.00503   0.89 mean   qi       
-## 10 FL       -0.652 -0.117 -0.339     0.102     0.89 mean   qi       
+##    Loc   divorce_s      x   .lower  .upper .width .point .interval
+##    <fct>     <dbl>  <dbl>    <dbl>   <dbl>  <dbl> <chr>  <chr>    
+##  1 AK        1.54   0.319  0.00291  0.636    0.89 mean   qi       
+##  2 AL        1.65   0.368  0.155    0.579    0.89 mean   qi       
+##  3 AR        2.09   0.756  0.421    1.09     0.89 mean   qi       
+##  4 AZ        0.611  0.120 -0.0432   0.279    0.89 mean   qi       
+##  5 CA       -0.927 -0.354 -0.544   -0.164    0.89 mean   qi       
+##  6 CO        1.05   0.114 -0.116    0.341    0.89 mean   qi       
+##  7 CT       -1.64  -0.714 -0.983   -0.452    0.89 mean   qi       
+##  8 DC       -1.86  -1.76  -2.38    -1.13     0.89 mean   qi       
+##  9 DE       -0.433 -0.323 -0.632   -0.0183   0.89 mean   qi       
+## 10 FL       -0.652 -0.120 -0.345    0.0998   0.89 mean   qi       
 ## # ... with 40 more rows
 \end{verbatim}
 
@@ -3176,14 +3176,14 @@ For now I'll only recreate the posterior prediction plot.
 
 \begin{verbatim}
 ## # A tibble: 6 x 8
-##   Loc   divorce_s      x    .lower .upper .width .point .interval
-##   <fct>     <dbl>  <dbl>     <dbl>  <dbl>  <dbl> <chr>  <chr>    
-## 1 AK        1.54   0.318 -0.000763  0.653   0.89 mean   qi       
-## 2 AL        1.65   0.369  0.164     0.584   0.89 mean   qi       
-## 3 AR        2.09   0.755  0.422     1.09    0.89 mean   qi       
-## 4 AZ        0.611  0.121 -0.0351    0.280   0.89 mean   qi       
-## 5 CA       -0.927 -0.350 -0.535    -0.161   0.89 mean   qi       
-## 6 CO        1.05   0.115 -0.113     0.355   0.89 mean   qi
+##   Loc   divorce_s      x   .lower .upper .width .point .interval
+##   <fct>     <dbl>  <dbl>    <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 AK        1.54   0.319  0.00291  0.636   0.89 mean   qi       
+## 2 AL        1.65   0.368  0.155    0.579   0.89 mean   qi       
+## 3 AR        2.09   0.756  0.421    1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.120 -0.0432   0.279   0.89 mean   qi       
+## 5 CA       -0.927 -0.354 -0.544   -0.164   0.89 mean   qi       
+## 6 CO        1.05   0.114 -0.116    0.341   0.89 mean   qi
 \end{verbatim}
 
 \begin{Shaded}
@@ -4629,7 +4629,7 @@ We calculate the \(R^2\) of this model:
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.484328
+## [1] 0.4975515
 \end{verbatim}
 
 We then do the same for polynomials of increasing order, starting with a model like this one:
@@ -5816,8 +5816,62 @@ I'll revisit this later and see if I can make sense of it.
 \hypertarget{conditional}{%
 \chapter{Conditional Manatees}\label{conditional}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Colours by Paul Tol.}
+\CommentTok{\# Defined in R by Joachim Goedhart }
+\CommentTok{\# Source: doi 10.5281/zenodo.3381072}
+
+\NormalTok{tol\_light }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}\#BBCC33\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#AAAA00\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#77AADD\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#EE8866\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#EEDD88\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#FFAABB\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#99DDFF\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#44BB99\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\#DDDDDD\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{chapter-notes-7}{%
 \section{Chapter Notes}\label{chapter-notes-7}}
+
+This model introduces interaction effects. The bulk of the chapter is made up of an example about the relationship between terrain ruggedness and GDP, and how this relationship changes with continent. For countries outside of Africa, terrain ruggedness is associated with a lower GDP. This relationship is reversed for countries within Africa. Here's a DAG:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dag\_rugged }\OtherTok{\textless{}{-}} \FunctionTok{dagitty}\NormalTok{( }\StringTok{"dag \{U [unobserved];R {-}\textgreater{} G; C {-}\textgreater{} G; U{-}\textgreater{}R; U {-}\textgreater{} G\}"}\NormalTok{)}
+\FunctionTok{coordinates}\NormalTok{(dag\_rugged) }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{( }\AttributeTok{x=}\FunctionTok{c}\NormalTok{(}\AttributeTok{R=}\DecValTok{0}\NormalTok{,}\AttributeTok{G=}\DecValTok{1}\NormalTok{,}\AttributeTok{U=}\DecValTok{1}\NormalTok{,}\AttributeTok{C=}\DecValTok{2}\NormalTok{) , }\AttributeTok{y=}\FunctionTok{c}\NormalTok{(}\AttributeTok{R=}\DecValTok{0}\NormalTok{,}\AttributeTok{G=}\DecValTok{0}\NormalTok{,}\AttributeTok{C=}\DecValTok{0}\NormalTok{,}\AttributeTok{U=}\DecValTok{1}\NormalTok{) )}
+
+\FunctionTok{drawdag}\NormalTok{(dag\_rugged)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{itemize}
+\tightlist
+\item
+  R - terrain ruggedness
+\item
+  G - GDP
+\item
+  C - continent
+\item
+  U - unobserved confounds that we'll ignore for now
+\end{itemize}
+
+Note that the DAG is neutral on whether there's an interaction effect here. Continent and ruggedness could independently effect GDP, or there could be some interaction (i.e.~that the way ruggedness effects GDP is dependent on continent).
+
+How do we model interaction effects? The chapter warns against splitting the data by continent, for these reasons:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Some parameters (like \(\sigma\)) don't depend on continent. Splitting the data makes the model less confident about these parameters unnecessarily.
+\item
+  Without including continent in the model, you can't quantify the value of distinguishing between African and non-African nations.
+\item
+  If we want to compare models with e.g.~information criteria, the models need to all be trained on the same data set.
+\item
+  There are other advantages to pooling data that will become clear once we reach multi-level models in chapter 13.
+\end{enumerate}
+
+Alright let's get started with some modelling. We start by loading and processing the data.
 
 \hypertarget{ruggedness-gdp-model}{%
 \subsection*{Ruggedness \& GDP Model}\label{ruggedness-gdp-model}}
@@ -5827,48 +5881,107 @@ I'll revisit this later and see if I can make sense of it.
 \begin{Highlighting}[]
 \FunctionTok{data}\NormalTok{(rugged) }
 
-\CommentTok{\# loading data, standardizing variables, creating index variable for continent ID (cid).}
-
 \NormalTok{data\_rugged }\OtherTok{\textless{}{-}}\NormalTok{ rugged }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{log\_gdp =} \FunctionTok{log}\NormalTok{(rgdppc\_2000))}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(log\_gdp)) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{log\_gdp\_std =}\NormalTok{ log\_gdp}\SpecialCharTok{/} \FunctionTok{mean}\NormalTok{(log\_gdp),}
-         \AttributeTok{rugged\_std =}\NormalTok{ rugged}\SpecialCharTok{/} \FunctionTok{max}\NormalTok{(rugged),}
-         \AttributeTok{cid=} \FunctionTok{if\_else}\NormalTok{(cont\_africa}\SpecialCharTok{==}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{),}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{log\_gdp\_std =}\NormalTok{ log\_gdp}\SpecialCharTok{/} \FunctionTok{mean}\NormalTok{(log\_gdp), }\CommentTok{\# standardising}
+         \AttributeTok{rugged\_std =}\NormalTok{ rugged}\SpecialCharTok{/} \FunctionTok{max}\NormalTok{(rugged), }\CommentTok{\# keeping zero ruggedness as a reference point}
+         \AttributeTok{cid=} \FunctionTok{if\_else}\NormalTok{(cont\_africa}\SpecialCharTok{==}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{), }\CommentTok{\# continent ID}
          \AttributeTok{cid =} \FunctionTok{factor}\NormalTok{(cid))}
-  
-\CommentTok{\# plotting priors}
-
-\NormalTok{rugged\_prior }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{a=}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{1}\NormalTok{,}\FloatTok{0.1}\NormalTok{),}\AttributeTok{b=}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{0}\NormalTok{,}\FloatTok{0.3}\NormalTok{),}\AttributeTok{mu=}\NormalTok{a}\SpecialCharTok{+}\NormalTok{b)}
-
-\FunctionTok{ggplot}\NormalTok{()}\SpecialCharTok{+}
-  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{data=}\NormalTok{rugged\_prior, }\AttributeTok{mapping=}\FunctionTok{aes}\NormalTok{(}\AttributeTok{slope=}\NormalTok{b,}\AttributeTok{intercept=}\NormalTok{a }\SpecialCharTok{{-}}\NormalTok{ b }\SpecialCharTok{*}\FunctionTok{mean}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{rugged\_std)))}\SpecialCharTok{+}
-  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{max}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{log\_gdp\_std) ,}\AttributeTok{colour=}\StringTok{"red"}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{min}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{log\_gdp\_std),}\AttributeTok{colour=}\StringTok{"red"}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{xlim}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Ruggedness"}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Log GDP"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-2-1.pdf}
+Here's our first pass model, no interaction effects:
+
+\[
+\begin{aligned}
+\log(y_i) &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta(r_i - \bar{r}) \\
+\alpha &\sim \text{Normal}(1,0.1)\\
+\beta &\sim \text{Normal}(0,0.3)\\
+\sigma &\sim \text{Exponential}(1)
+\end{aligned}
+\]
+The chapter does a bit of prior predictive simulation to compare the following priors:
+
+\begin{itemize}
+\tightlist
+\item
+  Prior Set 1 - \(\alpha \sim \text{Normal}(1.1), \beta \sim \text{Normal}(0,1)\)
+\item
+  Prior Set 2 - \(\alpha \sim \text{Normal}(1.0.1), \beta \sim \text{Normal}(0,0.3)\)
+\end{itemize}
+
+and settles on the latter. Here's a plot of 100 prior samples from each:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# regression of log gdp on ruggedness}
+\CommentTok{\# we generate 100 samples from each of our prior distributions}
+\NormalTok{priors\_rugged }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{a=}\FunctionTok{c}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{1}\NormalTok{, }\AttributeTok{sd=}\DecValTok{1}\NormalTok{),}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{1}\NormalTok{, }\AttributeTok{sd=}\FloatTok{0.1}\NormalTok{)),}
+                        \AttributeTok{b=}\FunctionTok{c}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd=}\DecValTok{1}\NormalTok{),}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd=}\FloatTok{0.3}\NormalTok{)),}
+                        \AttributeTok{prior\_set =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{"prior\_set\_1"}\NormalTok{,}\DecValTok{100}\NormalTok{),}\FunctionTok{rep}\NormalTok{(}\StringTok{"prior\_set\_2"}\NormalTok{,}\DecValTok{100}\NormalTok{)))}
+
+\CommentTok{\# we plot the lines they imply}
+\FunctionTok{ggplot}\NormalTok{(priors\_rugged)}\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{slope =}\NormalTok{ b,}
+                  \AttributeTok{intercept =}\NormalTok{ a }\SpecialCharTok{{-}}\NormalTok{ b}\SpecialCharTok{*}\FunctionTok{mean}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{rugged\_std) ),}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\# setting intercept so that x{-}axis ranges over (0,1)}
+  \FunctionTok{xlim}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylim}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\FloatTok{1.5}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{max}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{log\_gdp\_std), }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+} 
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{min}\NormalTok{(data\_rugged}\SpecialCharTok{$}\NormalTok{log\_gdp\_std), }\AttributeTok{colour =} \StringTok{"red"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"ruggedness"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"log GDP (standardised)"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{prior\_set) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+The red lines are the maximum and minimum GDP observed. Here's the model with quap, and its posterior:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# regression of log gdp on ruggedness with no interactions}
 
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{100}\NormalTok{)}
-\NormalTok{m8}\FloatTok{.1} \OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{m8\_1 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
 \NormalTok{log\_gdp\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
 \NormalTok{mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ b}\SpecialCharTok{*}\NormalTok{( rugged\_std }\SpecialCharTok{{-}} \FloatTok{0.215}\NormalTok{ ) , }
 \NormalTok{a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{1}\NormalTok{ , }\FloatTok{0.1}\NormalTok{ ) , }
 \NormalTok{b }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.3}\NormalTok{ ) , sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{(}\DecValTok{1}\NormalTok{)}
 \NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_rugged )}
 
-\CommentTok{\# model including continent ID}
+\CommentTok{\# posterior draws with tidybayes}
 
+\NormalTok{m8\_1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a, b, sigma) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 7
+##   .variable  .value  .lower .upper .width .point .interval
+##   <chr>       <dbl>   <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1 a         1.00     0.983  1.02     0.89 mean   qi       
+## 2 b         0.00150 -0.0867 0.0870   0.89 mean   qi       
+## 3 sigma     0.137    0.125  0.149    0.89 mean   qi
+\end{verbatim}
+
+Looking at \(b\), we can see that there's not much of an association between ruggedness and GDP.
+
+Now to interaction effects. We start by letting the intercept vary with continent (in Africa or not in Africa). That looks like this:
+
+\[
+\mu_i = \alpha_{\text{CID}[i]} + \beta(r_i - \bar{r})
+\]
+where CID is an index variable - 1 for for African nations, 2 otherwise. Here's the model, and the posterior:
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{100}\NormalTok{)}
-\NormalTok{m8}\FloatTok{.2} \OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{m8\_2 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
 \NormalTok{log\_gdp\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
 \NormalTok{mu }\OtherTok{\textless{}{-}}\NormalTok{ a[cid] }\SpecialCharTok{+}\NormalTok{ b}\SpecialCharTok{*}\NormalTok{( rugged\_std }\SpecialCharTok{{-}} \FloatTok{0.215}\NormalTok{ ) , }
 \NormalTok{a[cid] }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{1}\NormalTok{ , }\FloatTok{0.1}\NormalTok{ ) , }
@@ -5876,39 +5989,53 @@ I'll revisit this later and see if I can make sense of it.
 \NormalTok{sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
 \NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_rugged )}
 
-\FunctionTok{compare}\NormalTok{( m8}\FloatTok{.1}\NormalTok{ , m8}\FloatTok{.2}\NormalTok{ )}
+\NormalTok{m8\_2 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a[CID], b, sigma) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# is this the best way to display index variables with tidybayes? revisit}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##           WAIC       SE    dWAIC     dSE    pWAIC       weight
-## m8.2 -251.8651 15.45758  0.00000      NA 4.469525 1.000000e+00
-## m8.1 -188.8462 13.31864 63.01889 15.2182 2.648242 2.068341e-14
+## # A tibble: 4 x 8
+##     CID .variable  .value .lower .upper .width .point .interval
+##   <int> <chr>       <dbl>  <dbl>  <dbl>  <dbl> <chr>  <chr>    
+## 1     1 a          0.880   0.854 0.905    0.89 mean   qi       
+## 2     2 a          1.05    1.03  1.07     0.89 mean   qi       
+## 3    NA b         -0.0461 -0.118 0.0275   0.89 mean   qi       
+## 4    NA sigma      0.112   0.103 0.122    0.89 mean   qi
 \end{verbatim}
+
+The intercept for African nations seems to be notably lower.
+
+Now we compare the two models using WAIC:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{rugged\_precis }\OtherTok{\textless{}{-}} \FunctionTok{precis}\NormalTok{(m8}\FloatTok{.2}\NormalTok{,}\AttributeTok{depth =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{compare}\NormalTok{( m8\_1 , m8\_2 )}
+\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+##           WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m8_2 -251.8309 15.30478  0.00000       NA 4.442314 1.000000e+00
+## m8_1 -188.7003 13.33426 63.13055 15.18786 2.720143 1.956026e-14
+\end{verbatim}
 
+The varying intercept model gets all of the model weight.
 
+Here's the posterior plot for this model.
+
+Revisit this - wrote this last year and it could be much cleaner. Would prefer to recreate it using tidybayes, ggdist.
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{rugged\_seq }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{( }\AttributeTok{from=}\SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{ , }\AttributeTok{to=}\FloatTok{1.1}\NormalTok{ , }\AttributeTok{length.out=}\DecValTok{30}\NormalTok{ ) }\CommentTok{\# compute mu over samples, fixing cid=2 and then cid=1 }
 
-\NormalTok{mu\_not\_africa }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8}\FloatTok{.2}\NormalTok{ ,}
+\NormalTok{mu\_not\_africa }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8\_2 ,}
 \AttributeTok{data=}\FunctionTok{tibble}\NormalTok{( }\AttributeTok{cid=}\DecValTok{2}\NormalTok{ , }\AttributeTok{rugged\_std=}\NormalTok{rugged\_seq ) ))}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
-## Using compatibility `.name_repair`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{mu\_africa }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8}\FloatTok{.2}\NormalTok{ ,}
+\NormalTok{mu\_africa }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8\_2 ,}
 \AttributeTok{data=}\FunctionTok{tibble}\NormalTok{( }\AttributeTok{cid=}\DecValTok{1}\NormalTok{ , }\AttributeTok{rugged\_std=}\NormalTok{rugged\_seq ) ))}
 
 \NormalTok{not\_africa\_lower }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_not\_africa,quantile,}\AttributeTok{probs=}\FloatTok{0.025}\NormalTok{,}\AttributeTok{names=}\ConstantTok{FALSE}\NormalTok{)}
@@ -5930,6 +6057,7 @@ I'll revisit this later and see if I can make sense of it.
                                                \AttributeTok{a\_lower =}\NormalTok{ africa\_lower, }\AttributeTok{a\_mean =}\NormalTok{ africa\_mean, }\AttributeTok{a\_upper =}\NormalTok{ africa\_upper)}
 
 
+\NormalTok{rugged\_precis }\OtherTok{\textless{}{-}} \FunctionTok{precis}\NormalTok{(m8\_2,}\AttributeTok{depth=}\DecValTok{2}\NormalTok{)}
 
 \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ shaded\_interval)}\SpecialCharTok{+}
   \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ data\_rugged, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{rugged\_std, }\AttributeTok{y =}\NormalTok{ log\_gdp\_std, }\AttributeTok{colour =}\NormalTok{ cid))}\SpecialCharTok{+}
@@ -5946,65 +6074,214 @@ I'll revisit this later and see if I can make sense of it.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-2-2.pdf}
+\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+Our model does not allow the slope to vary by continent. Here's what we need for that:
+
+\[
+\mu_i = \alpha_{\text{CID}[i]} + \beta_{\text{CID}[i]}(r_i - \bar{r})
+\]
+
+And here's the model with the posterior:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# model allowing slopes to vary}
 
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{100}\NormalTok{)}
-\NormalTok{m8}\FloatTok{.3} \OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{m8\_3 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
 \NormalTok{log\_gdp\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
 \NormalTok{mu }\OtherTok{\textless{}{-}}\NormalTok{ a[cid] }\SpecialCharTok{+}\NormalTok{ b[cid]}\SpecialCharTok{*}\NormalTok{( rugged\_std }\SpecialCharTok{{-}} \FloatTok{0.215}\NormalTok{ ) , }
 \NormalTok{a[cid] }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{1}\NormalTok{ , }\FloatTok{0.1}\NormalTok{ ) , }
 \NormalTok{b[cid] }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.3}\NormalTok{ ) , }
 \NormalTok{sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
 \NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_rugged )  }
- 
-\FunctionTok{compare}\NormalTok{( m8}\FloatTok{.1}\NormalTok{ , m8}\FloatTok{.2}\NormalTok{ , m8}\FloatTok{.3}\NormalTok{ , }\AttributeTok{func=}\NormalTok{PSIS )}
+
+\NormalTok{m8\_3 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{gather\_draws}\NormalTok{(a[CID], b[CID], sigma) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# is this the best way to display index variables with tidybayes? revisit}
+  \FunctionTok{mean\_qi}\NormalTok{(}\AttributeTok{.width=}\FloatTok{0.89}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##           PSIS       SE     dPSIS       dSE    pPSIS       weight
-## m8.3 -258.6786 15.32203  0.000000        NA 5.353173 9.696032e-01
-## m8.2 -251.7535 15.53286  6.925096  6.789394 4.525019 3.039684e-02
-## m8.1 -188.8192 13.36087 69.859371 15.531288 2.661879 6.558798e-16
+## # A tibble: 5 x 8
+##     CID .variable .value  .lower  .upper .width .point .interval
+##   <int> <chr>      <dbl>   <dbl>   <dbl>  <dbl> <chr>  <chr>    
+## 1     1 a          0.887  0.861   0.912    0.89 mean   qi       
+## 2     1 b          0.133  0.0171  0.252    0.89 mean   qi       
+## 3     2 a          1.05   1.03    1.07     0.89 mean   qi       
+## 4     2 b         -0.141 -0.225  -0.0541   0.89 mean   qi       
+## 5    NA sigma      0.109  0.0999  0.119    0.89 mean   qi
 \end{verbatim}
+
+Compare the slope \(\beta\) for countries inside Africa (CID 1) to the slope for non-African countires (CID 2). It is reversed.
+
+We compare the models using PSIS:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{rugged\_precis\_2 }\OtherTok{\textless{}{-}} \FunctionTok{precis}\NormalTok{(m8}\FloatTok{.3}\NormalTok{,}\AttributeTok{depth =} \DecValTok{2}\NormalTok{)}
-
-\NormalTok{mu\_not\_africa\_2 }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8}\FloatTok{.3}\NormalTok{ ,}
-\AttributeTok{data=}\FunctionTok{tibble}\NormalTok{( }\AttributeTok{cid=}\DecValTok{2}\NormalTok{ , }\AttributeTok{rugged\_std=}\NormalTok{rugged\_seq ) ))}
-
-\NormalTok{mu\_africa\_2 }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{link}\NormalTok{( m8}\FloatTok{.3}\NormalTok{ ,}
-\AttributeTok{data=}\FunctionTok{tibble}\NormalTok{( }\AttributeTok{cid=}\DecValTok{1}\NormalTok{ , }\AttributeTok{rugged\_std=}\NormalTok{rugged\_seq ) ))}
-
-\NormalTok{not\_africa\_lower\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_not\_africa\_2,quantile,}\AttributeTok{probs=}\FloatTok{0.025}\NormalTok{,}\AttributeTok{names=}\ConstantTok{FALSE}\NormalTok{)}
-
-\NormalTok{not\_africa\_mean\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_not\_africa\_2,mean)}
-
-\NormalTok{not\_africa\_upper\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_not\_africa\_2,quantile,}\AttributeTok{probs=}\FloatTok{0.975}\NormalTok{,}\AttributeTok{names=}\ConstantTok{FALSE}\NormalTok{)}
-
-
-
-\NormalTok{africa\_lower\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_africa\_2,quantile,}\AttributeTok{probs=}\FloatTok{0.025}\NormalTok{,}\AttributeTok{names=}\ConstantTok{FALSE}\NormalTok{)}
-
-\NormalTok{africa\_mean\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_africa\_2,mean)}
-
-\NormalTok{africa\_upper\_2 }\OtherTok{\textless{}{-}}\NormalTok{ purrr}\SpecialCharTok{::}\FunctionTok{map\_dbl}\NormalTok{(mu\_africa\_2,quantile,}\AttributeTok{probs=}\FloatTok{0.975}\NormalTok{,}\AttributeTok{names=}\ConstantTok{FALSE}\NormalTok{)}
-
-
-\NormalTok{shaded\_interval\_2 }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}\AttributeTok{rugged =}\NormalTok{ rugged\_seq, }\AttributeTok{na\_lower =}\NormalTok{ not\_africa\_lower\_2, }\AttributeTok{na\_mean =}\NormalTok{ not\_africa\_mean\_2, }\AttributeTok{na\_upper =}\NormalTok{ not\_africa\_upper\_2,}
-                                               \AttributeTok{a\_lower =}\NormalTok{ africa\_lower\_2, }\AttributeTok{a\_mean =}\NormalTok{ africa\_mean\_2, }\AttributeTok{a\_upper =}\NormalTok{ africa\_upper\_2)}
+\FunctionTok{compare}\NormalTok{( m8\_1 , m8\_2 , m8\_3 , }\AttributeTok{func=}\NormalTok{PSIS )}
 \end{Highlighting}
 \end{Shaded}
 
-To do: check why geom\_line excludes 6 rows in the second plot.
-Fix the graph labels to label africa / not africa correctly.
-Consider wrapping work in a function. I can use this function later to plot model results, and shaded intervals easily.
+\begin{verbatim}
+## Some Pareto k values are high (>0.5). Set pointwise=TRUE to inspect individual points.
+\end{verbatim}
+
+\begin{verbatim}
+##           PSIS       SE     dPSIS       dSE    pPSIS       weight
+## m8_3 -258.9662 15.25083  0.000000        NA 5.221461 9.716247e-01
+## m8_2 -251.8993 15.42071  7.066903  6.574883 4.430118 2.837527e-02
+## m8_1 -188.6182 13.27438 70.347931 15.482071 2.752669 5.148010e-16
+\end{verbatim}
+
+As well as the table attributing almost all of the weight to the interacting slopes model, we also get a warning about some high-influence countries.
+
+Here's a plot:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grid\_rugged }\OtherTok{\textless{}{-}} \FunctionTok{data\_grid}\NormalTok{(data\_rugged,}
+                         \AttributeTok{rugged\_std=}\FunctionTok{seq\_range}\NormalTok{(rugged\_std, }\AttributeTok{n =} \DecValTok{11}\NormalTok{),}
+\NormalTok{                         cid)}
+
+\FunctionTok{add\_predicted\_draws}\NormalTok{(grid\_rugged,m8\_3,}
+                    \AttributeTok{value =} \StringTok{"log\_gdp\_std"}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# naming the draw outputs to be consistent with data\_rugged for convenience}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{nation =} \FunctionTok{if\_else}\NormalTok{(cid}\SpecialCharTok{==}\DecValTok{1}\NormalTok{,}\StringTok{"African Nations"}\NormalTok{,}\StringTok{"Non{-}African Nations"}\NormalTok{))}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# for plot titles}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{rugged\_std, }\AttributeTok{y =}\NormalTok{ log\_gdp\_std))}\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data=}\NormalTok{data\_rugged}\SpecialCharTok{\%\textgreater{}\%}
+               \FunctionTok{mutate}\NormalTok{(}\AttributeTok{nation =} \FunctionTok{if\_else}\NormalTok{(cid}\SpecialCharTok{==}\DecValTok{1}\NormalTok{,}\StringTok{"African Nations"}\NormalTok{,}\StringTok{"Non{-}African Nations"}\NormalTok{)) }\CommentTok{\# need to also add nation here for facetting}
+\NormalTok{             , }\FunctionTok{aes}\NormalTok{(}\AttributeTok{colour =}\NormalTok{ nation))}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{nation)}\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{guides}\NormalTok{(}\AttributeTok{colour=}\StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-12-1.pdf}
+Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn't seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I'm pretty sure stat\_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250.
+
+The chapter notes that from the perspective of the model, the interactions are symmetrical. The questions:
+
+\begin{itemize}
+\tightlist
+\item
+  How much the association between ruggedness and GDP depend on whether the nation is in Africa?, and
+\item
+  How much does the association between whether the nation is in Africa and GDP depend on ruggedness?
+\end{itemize}
+
+cannot be distinguished by the model.
+
+The next example in the chapter concerns interaction effects between two or more continuous variables. The categorical case we've just seen means we create a new slope and intercept for each category. The continuous case is harder - we must allow the slope to vary continuously with a continuous variable.
+
+The example in the chapter concerns the size of tulip blooms under different soil and lighting conditions. We load in the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(tulips) }
+
+\NormalTok{data\_tulips }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(tulips) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{blooms\_std =}\NormalTok{ blooms }\SpecialCharTok{/} \FunctionTok{max}\NormalTok{(blooms), }\CommentTok{\# setting between 0 and 1}
+         \AttributeTok{water\_cent =}\NormalTok{ water }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(water), }\CommentTok{\# centering on 0}
+         \AttributeTok{shade\_cent =}\NormalTok{ shade }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(shade))}
+\end{Highlighting}
+\end{Shaded}
+
+Here's the model where both water and shade predict bloom size, but there are no interactions:
+
+\[
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \beta_WW_i + \beta_SS_i
+\end{aligned}
+\]
+
+After some thinking about priors, here's the model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m8\_4 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{blooms\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bw}\SpecialCharTok{*}\NormalTok{water\_cent }\SpecialCharTok{+}\NormalTok{ bs}\SpecialCharTok{*}\NormalTok{shade\_cent , }
+\NormalTok{a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\FloatTok{0.5}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{bw }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{bs }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_tulips )}
+\end{Highlighting}
+\end{Shaded}
+
+But we want interactions. We want the impact of changing either water or shade to be conditional on the level of the other variable. As the chapter puts it:
+
+\begin{quote}
+if water is low, then decreasing the shade can't help as much as when water is high.
+\end{quote}
+
+We'll end up with something like this:
+
+\[
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \gamma_{W,i}W_i + \beta_SS_i \\
+\gamma_{W,i} & = \beta_W + \beta_{WS}S_i
+\end{aligned}
+\]
+
+Our parameter \(\gamma_{W,i}\) is now the slope that defines how the size of the blooms change with the level of water, and this depends partly on shade. The point about symmetry from earlier still holds, we can expand out the above to get:
+
+\[
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \beta_W W  + \beta_SS_i + \beta_{WS}S_iW_i\\
+\end{aligned}
+\]
+
+Here's the model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m8\_5 }\OtherTok{\textless{}{-}} \FunctionTok{quap}\NormalTok{( }\FunctionTok{alist}\NormalTok{(}
+\NormalTok{blooms\_std }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( mu , sigma ) , }
+\NormalTok{mu }\OtherTok{\textless{}{-}}\NormalTok{ a }\SpecialCharTok{+}\NormalTok{ bw}\SpecialCharTok{*}\NormalTok{water\_cent }\SpecialCharTok{+}\NormalTok{ bs}\SpecialCharTok{*}\NormalTok{shade\_cent }\SpecialCharTok{+}\NormalTok{ bws}\SpecialCharTok{*}\NormalTok{water\_cent}\SpecialCharTok{*}\NormalTok{shade\_cent , }
+\NormalTok{a }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\FloatTok{0.5}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{bw }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{bs }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{bws }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dnorm}\NormalTok{( }\DecValTok{0}\NormalTok{ , }\FloatTok{0.25}\NormalTok{ ) , }
+\NormalTok{sigma }\SpecialCharTok{\textasciitilde{}} \FunctionTok{dexp}\NormalTok{( }\DecValTok{1}\NormalTok{ )}
+\NormalTok{) , }\AttributeTok{data=}\NormalTok{data\_tulips )}
+\end{Highlighting}
+\end{Shaded}
+
+Let's try to plot from the posterior. The way the chapter recommends doing this is by creating multiple charts to show the slopes for different levels of one of the variables. Facetting by this variable, in ggplot terms.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grid\_tulips }\OtherTok{\textless{}{-}} \FunctionTok{data\_grid}\NormalTok{(data\_tulips,}
+                         \CommentTok{\# using 11 grid points for water}
+                         \CommentTok{\# there are really only 3 levels in the data but I want to be able to extend this to other continuous variables}
+                         \AttributeTok{water\_cent=}\FunctionTok{seq\_range}\NormalTok{(water\_cent, }\AttributeTok{n =} \DecValTok{11}\NormalTok{),}
+                         \CommentTok{\# however I only need as many grid points for shade as facets I want in the plot. I\textquotesingle{}ve chosen 3}
+                         \AttributeTok{shade\_cent=}\FunctionTok{seq\_range}\NormalTok{(shade\_cent, }\AttributeTok{n =} \DecValTok{3}\NormalTok{))}
+
+\FunctionTok{add\_predicted\_draws}\NormalTok{(grid\_tulips,m8\_5,}
+                    \AttributeTok{value =} \StringTok{"blooms\_std"}\NormalTok{)}\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\# naming the draw outputs to be consistent with data\_tulips for convenience}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{shade\_level =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Shade ="}\NormalTok{,shade\_cent))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{water\_cent, }\AttributeTok{y =}\NormalTok{ blooms\_std))}\SpecialCharTok{+}
+  \FunctionTok{stat\_lineribbon}\NormalTok{()}\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data=}\NormalTok{data\_tulips}\SpecialCharTok{\%\textgreater{}\%}
+               \FunctionTok{mutate}\NormalTok{(}\AttributeTok{shade\_level =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Shade ="}\NormalTok{,shade\_cent)) }\CommentTok{\# need to create shade\_level here also for facetting to work. bit clumsy.}
+\NormalTok{             , }\AttributeTok{colour =}\NormalTok{ tol\_light[[}\DecValTok{4}\NormalTok{]],}\AttributeTok{size=}\DecValTok{2}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{shade\_level)}\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Greys"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{08-conditional_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+Nice. When shade is lowest, water has its highest effect on bloom size.
 
 \hypertarget{questions-7}{%
 \section{Questions}\label{questions-7}}
@@ -6329,11 +6606,11 @@ The model in chapter 8, fit using quadratic approximation looks like this:
 
 \begin{verbatim}
 ##             mean          sd        5.5%       94.5%
-## a[1]   0.8865621 0.015675424  0.86150971  0.91161442
-## a[2]   1.0505699 0.009936434  1.03468955  1.06645023
-## b[1]   0.1325033 0.074203225  0.01391226  0.25109443
-## b[2]  -0.1425762 0.054748476 -0.23007479 -0.05507751
-## sigma  0.1094922 0.005935039  0.10000686  0.11897754
+## a[1]   0.8865813 0.015675464  0.86152885  0.91163369
+## a[2]   1.0505550 0.009936447  1.03467461  1.06643533
+## b[1]   0.1325195 0.074203230  0.01392837  0.25111055
+## b[2]  -0.1424741 0.054748597 -0.22997289 -0.05497522
+## sigma  0.1094922 0.005935050  0.10000687  0.11897758
 \end{verbatim}
 
 Here is the same model using ulam:

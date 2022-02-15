@@ -7,52 +7,143 @@ library(tidyverse)
 library(rethinking)
 library(GGally)
 library(dagitty)
+library(tidybayes)
+library(tidybayes.rethinking)
+library(ggdist)
+library(modelr)
 library(knitr)
+```
+
+```{r}
+# Colours by Paul Tol.
+# Defined in R by Joachim Goedhart 
+# Source: doi 10.5281/zenodo.3381072
+
+tol_light <- c('#BBCC33', '#AAAA00', '#77AADD', '#EE8866', '#EEDD88', '#FFAABB', '#99DDFF', '#44BB99', '#DDDDDD')
 ```
 
 ## Chapter Notes
 
+This model introduces interaction effects. The bulk of the chapter is made up of an example about the relationship between terrain ruggedness and GDP, and how this relationship changes with continent. For countries outside of Africa, terrain ruggedness is associated with a lower GDP. This relationship is reversed for countries within Africa. Here's a DAG:
+
+```{r}
+
+dag_rugged <- dagitty( "dag {U [unobserved];R -> G; C -> G; U->R; U -> G}")
+coordinates(dag_rugged) <- list( x=c(R=0,G=1,U=1,C=2) , y=c(R=0,G=0,C=0,U=1) )
+
+drawdag(dag_rugged)
+
+```
+
+* R - terrain ruggedness
+* G - GDP
+* C - continent
+* U - unobserved confounds that we'll ignore for now
+
+Note that the DAG is neutral on whether there's an interaction effect here. Continent and ruggedness could independently effect GDP, or there could be some interaction (i.e. that the way ruggedness effects GDP is dependent on continent). 
+
+How do we model interaction effects? The chapter warns against splitting the data by continent, for these reasons:
+
+1. Some parameters (like $\sigma$) don't depend on continent. Splitting the data makes the model less confident about these parameters unnecessarily.
+2. Without including continent in the model, you can't quantify the value of distinguishing between African and non-African nations.
+3. If we want to compare models with e.g. information criteria, the models need to all be trained on the same data set.
+4. There are other advantages to pooling data that will become clear once we reach multi-level models in chapter 13.
+
+
+Alright let's get started with some modelling. We start by loading and processing the data.
+
+
+
 ### Ruggedness & GDP Model {-}
 
-```{r cache = TRUE}
+```{r}
 data(rugged) 
-
-# loading data, standardizing variables, creating index variable for continent ID (cid).
 
 data_rugged <- rugged %>%
   mutate(log_gdp = log(rgdppc_2000))%>%
   filter(!is.na(log_gdp)) %>%
-  mutate(log_gdp_std = log_gdp/ mean(log_gdp),
-         rugged_std = rugged/ max(rugged),
-         cid= if_else(cont_africa==1,1,2),
+  mutate(log_gdp_std = log_gdp/ mean(log_gdp), # standardising
+         rugged_std = rugged/ max(rugged), # keeping zero ruggedness as a reference point
+         cid= if_else(cont_africa==1,1,2), # continent ID
          cid = factor(cid))
-  
-# plotting priors
+```
 
-rugged_prior <- tibble(a=rnorm(100,1,0.1),b=rnorm(100,0,0.3),mu=a+b)
+Here's our first pass model, no interaction effects:
 
-ggplot()+
-  geom_abline(data=rugged_prior, mapping=aes(slope=b,intercept=a - b *mean(data_rugged$rugged_std)))+
-  geom_hline(yintercept = max(data_rugged$log_gdp_std) ,colour="red")+
-  geom_hline(yintercept = min(data_rugged$log_gdp_std),colour="red")+
+$$
+\begin{aligned}
+\log(y_i) &\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &= \alpha + \beta(r_i - \bar{r}) \\
+\alpha &\sim \text{Normal}(1,0.1)\\
+\beta &\sim \text{Normal}(0,0.3)\\
+\sigma &\sim \text{Exponential}(1)
+\end{aligned}
+$$
+The chapter does a bit of prior predictive simulation to compare the following priors:
+
+* Prior Set 1 - $\alpha \sim \text{Normal}(1.1), \beta \sim \text{Normal}(0,1)$ 
+* Prior Set 2 - $\alpha \sim \text{Normal}(1.0.1), \beta \sim \text{Normal}(0,0.3)$ 
+
+and settles on the latter. Here's a plot of 100 prior samples from each:
+
+```{r}
+
+# we generate 100 samples from each of our prior distributions
+priors_rugged <- tibble(a=c(rnorm(100, mean = 1, sd=1),rnorm(100, mean = 1, sd=0.1)),
+                        b=c(rnorm(100, mean = 0, sd=1),rnorm(100, mean = 0, sd=0.3)),
+                        prior_set = c(rep("prior_set_1",100),rep("prior_set_2",100)))
+
+# we plot the lines they imply
+ggplot(priors_rugged)+
+  geom_abline(aes(slope = b,
+                  intercept = a - b*mean(data_rugged$rugged_std) ),alpha=0.5)+ # setting intercept so that x-axis ranges over (0,1)
   xlim(0,1)+
-  xlab("Ruggedness")+
-  ylab("Log GDP")
+  ylim(0.5, 1.5)+
+  geom_hline(yintercept = max(data_rugged$log_gdp_std), colour = "red")+ 
+  geom_hline(yintercept = min(data_rugged$log_gdp_std), colour = "red")+
+  xlab("ruggedness")+
+  ylab("log GDP (standardised)")+
+  facet_wrap(~prior_set) 
 
-# regression of log gdp on ruggedness
+```
+
+The red lines are the maximum and minimum GDP observed. Here's the model with quap, and its posterior:
+
+```{r}
+
+# regression of log gdp on ruggedness with no interactions
 
 set.seed(100)
-m8.1 <- quap( alist(
+m8_1 <- quap( alist(
 log_gdp_std ~ dnorm( mu , sigma ) , 
 mu <- a + b*( rugged_std - 0.215 ) , 
 a ~ dnorm( 1 , 0.1 ) , 
 b ~ dnorm( 0 , 0.3 ) , sigma ~ dexp(1)
 ) , data=data_rugged )
 
-# model including continent ID
+# posterior draws with tidybayes
+
+m8_1 %>%
+  gather_draws(a, b, sigma) %>%
+  mean_qi(.width=0.89)%>%
+  print(digits = 3)
+
+```
+
+Looking at $b$, we can see that there's not much of an association between ruggedness and GDP.
+
+Now to interaction effects. We start by letting the intercept vary with continent (in Africa or not in Africa). That looks like this:
+
+$$
+\mu_i = \alpha_{\text{CID}[i]} + \beta(r_i - \bar{r})
+$$
+where CID is an index variable - 1 for for African nations, 2 otherwise. Here's the model, and the posterior:
+
+
+```{r}
 
 set.seed(100)
-m8.2 <- quap( alist(
+m8_2 <- quap( alist(
 log_gdp_std ~ dnorm( mu , sigma ) , 
 mu <- a[cid] + b*( rugged_std - 0.215 ) , 
 a[cid] ~ dnorm( 1 , 0.1 ) , 
@@ -60,18 +151,33 @@ b ~ dnorm( 0 , 0.3 ) ,
 sigma ~ dexp( 1 )
 ) , data=data_rugged )
 
-compare( m8.1 , m8.2 )
+m8_2 %>%
+  gather_draws(a[CID], b, sigma) %>% # is this the best way to display index variables with tidybayes? revisit
+  mean_qi(.width=0.89)%>%
+  print(digits = 3)
 
-rugged_precis <- precis(m8.2,depth = 2)
+```
+The intercept for African nations seems to be notably lower.
 
+Now we compare the two models using WAIC:
 
+```{r}
+compare( m8_1 , m8_2 )
+```
 
+The varying intercept model gets all of the model weight.
+
+Here's the posterior plot for this model. 
+
+Revisit this - wrote this last year and it could be much cleaner. Would prefer to recreate it using tidybayes, ggdist.
+
+```{r warning=FALSE}
 rugged_seq <- seq( from=-0.1 , to=1.1 , length.out=30 ) # compute mu over samples, fixing cid=2 and then cid=1 
 
-mu_not_africa <- as_tibble(link( m8.2 ,
+mu_not_africa <- as_tibble(link( m8_2 ,
 data=tibble( cid=2 , rugged_std=rugged_seq ) ))
 
-mu_africa <- as_tibble(link( m8.2 ,
+mu_africa <- as_tibble(link( m8_2 ,
 data=tibble( cid=1 , rugged_std=rugged_seq ) ))
 
 not_africa_lower <- purrr::map_dbl(mu_not_africa,quantile,probs=0.025,names=FALSE)
@@ -93,6 +199,7 @@ shaded_interval <- tibble(rugged = rugged_seq, na_lower = not_africa_lower, na_m
                                                a_lower = africa_lower, a_mean = africa_mean, a_upper = africa_upper)
 
 
+rugged_precis <- precis(m8_2,depth=2)
 
 ggplot(data = shaded_interval)+
   geom_point(data = data_rugged, mapping = aes(x=rugged_std, y = log_gdp_std, colour = cid))+
@@ -106,59 +213,179 @@ ggplot(data = shaded_interval)+
   xlab("Ruggedness")+
   ylab("Log GDP")+
   theme(legend.position =  "none")
+```
 
 
+Our model does not allow the slope to vary by continent. Here's what we need for that:
+
+$$
+\mu_i = \alpha_{\text{CID}[i]} + \beta_{\text{CID}[i]}(r_i - \bar{r})
+$$
+
+And here's the model with the posterior:
+
+```{r}
 # model allowing slopes to vary
 
 set.seed(100)
-m8.3 <- quap( alist(
+m8_3 <- quap( alist(
 log_gdp_std ~ dnorm( mu , sigma ) , 
 mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) , 
 a[cid] ~ dnorm( 1 , 0.1 ) , 
 b[cid] ~ dnorm( 0 , 0.3 ) , 
 sigma ~ dexp( 1 )
 ) , data=data_rugged )  
- 
-compare( m8.1 , m8.2 , m8.3 , func=PSIS )
 
-rugged_precis_2 <- precis(m8.3,depth = 2)
-
-mu_not_africa_2 <- as_tibble(link( m8.3 ,
-data=tibble( cid=2 , rugged_std=rugged_seq ) ))
-
-mu_africa_2 <- as_tibble(link( m8.3 ,
-data=tibble( cid=1 , rugged_std=rugged_seq ) ))
-
-not_africa_lower_2 <- purrr::map_dbl(mu_not_africa_2,quantile,probs=0.025,names=FALSE)
-
-not_africa_mean_2 <- purrr::map_dbl(mu_not_africa_2,mean)
-
-not_africa_upper_2 <- purrr::map_dbl(mu_not_africa_2,quantile,probs=0.975,names=FALSE)
-
-
-
-africa_lower_2 <- purrr::map_dbl(mu_africa_2,quantile,probs=0.025,names=FALSE)
-
-africa_mean_2 <- purrr::map_dbl(mu_africa_2,mean)
-
-africa_upper_2 <- purrr::map_dbl(mu_africa_2,quantile,probs=0.975,names=FALSE)
-
-
-shaded_interval_2 <- tibble(rugged = rugged_seq, na_lower = not_africa_lower_2, na_mean = not_africa_mean_2, na_upper = not_africa_upper_2,
-                                               a_lower = africa_lower_2, a_mean = africa_mean_2, a_upper = africa_upper_2)
-
-
+m8_3 %>%
+  gather_draws(a[CID], b[CID], sigma) %>% # is this the best way to display index variables with tidybayes? revisit
+  mean_qi(.width=0.89)%>%
+  print(digits = 3)
 
 ```
 
+Compare the slope $\beta$ for countries inside Africa (CID 1) to the slope for non-African countires (CID 2). It is reversed.
+
+We compare the models using PSIS:
 
 
-To do: check why geom_line excludes 6 rows in the second plot.
-Fix the graph labels to label africa / not africa correctly.
-Consider wrapping work in a function. I can use this function later to plot model results, and shaded intervals easily.
+```{r}
+
+compare( m8_1 , m8_2 , m8_3 , func=PSIS )
+
+```
+
+As well as the table attributing almost all of the weight to the interacting slopes model, we also get a warning about some high-influence countries.
+
+Here's a plot:
+
+```{r}
+grid_rugged <- data_grid(data_rugged,
+                         rugged_std=seq_range(rugged_std, n = 11),
+                         cid)
+
+add_predicted_draws(grid_rugged,m8_3,
+                    value = "log_gdp_std")%>% # naming the draw outputs to be consistent with data_rugged for convenience
+  mutate(nation = if_else(cid==1,"African Nations","Non-African Nations"))%>% # for plot titles
+  ggplot(aes(x=rugged_std, y = log_gdp_std))+
+  stat_lineribbon()+
+  geom_point(data=data_rugged%>%
+               mutate(nation = if_else(cid==1,"African Nations","Non-African Nations")) # need to also add nation here for facetting
+             , aes(colour = nation))+
+  facet_wrap(~nation)+
+  scale_fill_brewer(palette = "Greys")+
+  guides(colour="none")
+```
+Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn't seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I'm pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250.
 
 
+The chapter notes that from the perspective of the model, the interactions are symmetrical. The questions:
 
+* How much the association between ruggedness and GDP depend on whether the nation is in Africa?, and
+* How much does the association between whether the nation is in Africa and GDP depend on ruggedness?
+
+cannot be distinguished by the model.
+
+The next example in the chapter concerns interaction effects between two or more continuous variables. The categorical case we've just seen means we create a new slope and intercept for each category. The continuous case is harder - we must allow the slope to vary continuously with a continuous variable.
+
+The example in the chapter concerns the size of tulip blooms under different soil and lighting conditions. We load in the data:
+
+```{r}
+data(tulips) 
+
+data_tulips <- as_tibble(tulips) %>%
+  mutate(blooms_std = blooms / max(blooms), # setting between 0 and 1
+         water_cent = water - mean(water), # centering on 0
+         shade_cent = shade - mean(shade))
+```
+
+Here's the model where both water and shade predict bloom size, but there are no interactions:
+
+$$
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \beta_WW_i + \beta_SS_i
+\end{aligned}
+$$
+
+After some thinking about priors, here's the model:
+
+```{r}
+
+m8_4 <- quap( alist(
+blooms_std ~ dnorm( mu , sigma ) , 
+mu <- a + bw*water_cent + bs*shade_cent , 
+a ~ dnorm( 0.5 , 0.25 ) , 
+bw ~ dnorm( 0 , 0.25 ) , 
+bs ~ dnorm( 0 , 0.25 ) , 
+sigma ~ dexp( 1 )
+) , data=data_tulips )
+
+```
+
+But we want interactions. We want the impact of changing either water or shade to be conditional on the level of the other variable. As the chapter puts it:
+
+>  if water is low, then decreasing the shade can’t help as much as when water is high.
+
+We'll end  up with something like this:
+
+$$
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \gamma_{W,i}W_i + \beta_SS_i \\
+\gamma_{W,i} & = \beta_W + \beta_{WS}S_i
+\end{aligned}
+$$
+
+Our parameter $\gamma_{W,i}$ is now the slope that defines how the size of the blooms change with the level of water, and this depends partly on shade. The point about symmetry from earlier still holds, we can expand out the above to get:
+
+$$
+\begin{aligned}
+B_i &\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &= \alpha + \beta_W W  + \beta_SS_i + \beta_{WS}S_iW_i\\
+\end{aligned}
+$$
+
+Here's the model:
+
+```{r}
+
+m8_5 <- quap( alist(
+blooms_std ~ dnorm( mu , sigma ) , 
+mu <- a + bw*water_cent + bs*shade_cent + bws*water_cent*shade_cent , 
+a ~ dnorm( 0.5 , 0.25 ) , 
+bw ~ dnorm( 0 , 0.25 ) , 
+bs ~ dnorm( 0 , 0.25 ) , 
+bws ~ dnorm( 0 , 0.25 ) , 
+sigma ~ dexp( 1 )
+) , data=data_tulips )
+
+```
+
+Let's try to plot from the posterior. The way the chapter recommends doing this is by creating multiple charts to show the slopes for different levels of one of the variables. Facetting by this variable, in ggplot terms.
+
+```{r}
+
+grid_tulips <- data_grid(data_tulips,
+                         # using 11 grid points for water
+                         # there are really only 3 levels in the data but I want to be able to extend this to other continuous variables
+                         water_cent=seq_range(water_cent, n = 11),
+                         # however I only need as many grid points for shade as facets I want in the plot. I've chosen 3
+                         shade_cent=seq_range(shade_cent, n = 3))
+
+add_predicted_draws(grid_tulips,m8_5,
+                    value = "blooms_std")%>% # naming the draw outputs to be consistent with data_tulips for convenience
+  mutate(shade_level = paste("Shade =",shade_cent))%>%
+  ggplot(aes(x=water_cent, y = blooms_std))+
+  stat_lineribbon()+
+  geom_point(data=data_tulips%>%
+               mutate(shade_level = paste("Shade =",shade_cent)) # need to create shade_level here also for facetting to work. bit clumsy.
+             , colour = tol_light[[4]],size=2)+
+  facet_wrap(~shade_level)+
+  scale_fill_brewer(palette = "Greys")
+
+```
+
+Nice. When shade is lowest, water has its highest effect on bloom size.
 
 ## Questions
 

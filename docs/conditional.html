@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-14" />
+<meta name="date" content="2022-02-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -435,151 +435,312 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="conditional" class="section level1" number="8">
 <h1><span class="header-section-number">Chapter 8</span> Conditional Manatees</h1>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="conditional.html#cb225-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Colours by Paul Tol.</span></span>
+<span id="cb225-2"><a href="conditional.html#cb225-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Defined in R by Joachim Goedhart </span></span>
+<span id="cb225-3"><a href="conditional.html#cb225-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: doi 10.5281/zenodo.3381072</span></span>
+<span id="cb225-4"><a href="conditional.html#cb225-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb225-5"><a href="conditional.html#cb225-5" aria-hidden="true" tabindex="-1"></a>tol_light <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;#BBCC33&#39;</span>, <span class="st">&#39;#AAAA00&#39;</span>, <span class="st">&#39;#77AADD&#39;</span>, <span class="st">&#39;#EE8866&#39;</span>, <span class="st">&#39;#EEDD88&#39;</span>, <span class="st">&#39;#FFAABB&#39;</span>, <span class="st">&#39;#99DDFF&#39;</span>, <span class="st">&#39;#44BB99&#39;</span>, <span class="st">&#39;#DDDDDD&#39;</span>)</span></code></pre></div>
 <div id="chapter-notes-7" class="section level2" number="8.1">
 <h2><span class="header-section-number">8.1</span> Chapter Notes</h2>
+<p>This model introduces interaction effects. The bulk of the chapter is made up of an example about the relationship between terrain ruggedness and GDP, and how this relationship changes with continent. For countries outside of Africa, terrain ruggedness is associated with a lower GDP. This relationship is reversed for countries within Africa. Here’s a DAG:</p>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="conditional.html#cb226-1" aria-hidden="true" tabindex="-1"></a>dag_rugged <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {U [unobserved];R -&gt; G; C -&gt; G; U-&gt;R; U -&gt; G}&quot;</span>)</span>
+<span id="cb226-2"><a href="conditional.html#cb226-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag_rugged) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">R=</span><span class="dv">0</span>,<span class="at">G=</span><span class="dv">1</span>,<span class="at">U=</span><span class="dv">1</span>,<span class="at">C=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">R=</span><span class="dv">0</span>,<span class="at">G=</span><span class="dv">0</span>,<span class="at">C=</span><span class="dv">0</span>,<span class="at">U=</span><span class="dv">1</span>) )</span>
+<span id="cb226-3"><a href="conditional.html#cb226-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb226-4"><a href="conditional.html#cb226-4" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(dag_rugged)</span></code></pre></div>
+<p><img src="08-conditional_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<ul>
+<li>R - terrain ruggedness</li>
+<li>G - GDP</li>
+<li>C - continent</li>
+<li>U - unobserved confounds that we’ll ignore for now</li>
+</ul>
+<p>Note that the DAG is neutral on whether there’s an interaction effect here. Continent and ruggedness could independently effect GDP, or there could be some interaction (i.e. that the way ruggedness effects GDP is dependent on continent).</p>
+<p>How do we model interaction effects? The chapter warns against splitting the data by continent, for these reasons:</p>
+<ol style="list-style-type: decimal">
+<li>Some parameters (like <span class="math inline">\(\sigma\)</span>) don’t depend on continent. Splitting the data makes the model less confident about these parameters unnecessarily.</li>
+<li>Without including continent in the model, you can’t quantify the value of distinguishing between African and non-African nations.</li>
+<li>If we want to compare models with e.g. information criteria, the models need to all be trained on the same data set.</li>
+<li>There are other advantages to pooling data that will become clear once we reach multi-level models in chapter 13.</li>
+</ol>
+<p>Alright let’s get started with some modelling. We start by loading and processing the data.</p>
 <div id="ruggedness-gdp-model" class="section level3 unnumbered">
 <h3>Ruggedness &amp; GDP Model</h3>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="conditional.html#cb225-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged) </span>
-<span id="cb225-2"><a href="conditional.html#cb225-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-3"><a href="conditional.html#cb225-3" aria-hidden="true" tabindex="-1"></a><span class="co"># loading data, standardizing variables, creating index variable for continent ID (cid).</span></span>
-<span id="cb225-4"><a href="conditional.html#cb225-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-5"><a href="conditional.html#cb225-5" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> rugged <span class="sc">%&gt;%</span></span>
-<span id="cb225-6"><a href="conditional.html#cb225-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))<span class="sc">%&gt;%</span></span>
-<span id="cb225-7"><a href="conditional.html#cb225-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(log_gdp)) <span class="sc">%&gt;%</span></span>
-<span id="cb225-8"><a href="conditional.html#cb225-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp<span class="sc">/</span> <span class="fu">mean</span>(log_gdp),</span>
-<span id="cb225-9"><a href="conditional.html#cb225-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std =</span> rugged<span class="sc">/</span> <span class="fu">max</span>(rugged),</span>
-<span id="cb225-10"><a href="conditional.html#cb225-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid=</span> <span class="fu">if_else</span>(cont_africa<span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>),</span>
-<span id="cb225-11"><a href="conditional.html#cb225-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid =</span> <span class="fu">factor</span>(cid))</span>
-<span id="cb225-12"><a href="conditional.html#cb225-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb225-13"><a href="conditional.html#cb225-13" aria-hidden="true" tabindex="-1"></a><span class="co"># plotting priors</span></span>
-<span id="cb225-14"><a href="conditional.html#cb225-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-15"><a href="conditional.html#cb225-15" aria-hidden="true" tabindex="-1"></a>rugged_prior <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">1</span>,<span class="fl">0.1</span>),<span class="at">b=</span><span class="fu">rnorm</span>(<span class="dv">100</span>,<span class="dv">0</span>,<span class="fl">0.3</span>),<span class="at">mu=</span>a<span class="sc">+</span>b)</span>
-<span id="cb225-16"><a href="conditional.html#cb225-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb225-17"><a href="conditional.html#cb225-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb225-18"><a href="conditional.html#cb225-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>rugged_prior, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">slope=</span>b,<span class="at">intercept=</span>a <span class="sc">-</span> b <span class="sc">*</span><span class="fu">mean</span>(data_rugged<span class="sc">$</span>rugged_std)))<span class="sc">+</span></span>
-<span id="cb225-19"><a href="conditional.html#cb225-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">max</span>(data_rugged<span class="sc">$</span>log_gdp_std) ,<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb225-20"><a href="conditional.html#cb225-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">min</span>(data_rugged<span class="sc">$</span>log_gdp_std),<span class="at">colour=</span><span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
-<span id="cb225-21"><a href="conditional.html#cb225-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">1</span>)<span class="sc">+</span></span>
-<span id="cb225-22"><a href="conditional.html#cb225-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ruggedness&quot;</span>)<span class="sc">+</span></span>
-<span id="cb225-23"><a href="conditional.html#cb225-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Log GDP&quot;</span>)</span></code></pre></div>
-<p><img src="08-conditional_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="conditional.html#cb226-1" aria-hidden="true" tabindex="-1"></a><span class="co"># regression of log gdp on ruggedness</span></span>
-<span id="cb226-2"><a href="conditional.html#cb226-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-3"><a href="conditional.html#cb226-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb226-4"><a href="conditional.html#cb226-4" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb226-5"><a href="conditional.html#cb226-5" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb226-6"><a href="conditional.html#cb226-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
-<span id="cb226-7"><a href="conditional.html#cb226-7" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
-<span id="cb226-8"><a href="conditional.html#cb226-8" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb226-9"><a href="conditional.html#cb226-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
-<span id="cb226-10"><a href="conditional.html#cb226-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-11"><a href="conditional.html#cb226-11" aria-hidden="true" tabindex="-1"></a><span class="co"># model including continent ID</span></span>
-<span id="cb226-12"><a href="conditional.html#cb226-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-13"><a href="conditional.html#cb226-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb226-14"><a href="conditional.html#cb226-14" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb226-15"><a href="conditional.html#cb226-15" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb226-16"><a href="conditional.html#cb226-16" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
-<span id="cb226-17"><a href="conditional.html#cb226-17" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
-<span id="cb226-18"><a href="conditional.html#cb226-18" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
-<span id="cb226-19"><a href="conditional.html#cb226-19" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb226-20"><a href="conditional.html#cb226-20" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
-<span id="cb226-21"><a href="conditional.html#cb226-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-22"><a href="conditional.html#cb226-22" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>( m8<span class="fl">.1</span> , m8<span class="fl">.2</span> )</span></code></pre></div>
-<pre><code>##           WAIC       SE    dWAIC     dSE    pWAIC       weight
-## m8.2 -251.8651 15.45758  0.00000      NA 4.469525 1.000000e+00
-## m8.1 -188.8462 13.31864 63.01889 15.2182 2.648242 2.068341e-14</code></pre>
-<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="conditional.html#cb228-1" aria-hidden="true" tabindex="-1"></a>rugged_precis <span class="ot">&lt;-</span> <span class="fu">precis</span>(m8<span class="fl">.2</span>,<span class="at">depth =</span> <span class="dv">2</span>)</span>
-<span id="cb228-2"><a href="conditional.html#cb228-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb228-3"><a href="conditional.html#cb228-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb228-4"><a href="conditional.html#cb228-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb228-5"><a href="conditional.html#cb228-5" aria-hidden="true" tabindex="-1"></a>rugged_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="fl">0.1</span> , <span class="at">to=</span><span class="fl">1.1</span> , <span class="at">length.out=</span><span class="dv">30</span> ) <span class="co"># compute mu over samples, fixing cid=2 and then cid=1 </span></span>
-<span id="cb228-6"><a href="conditional.html#cb228-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb228-7"><a href="conditional.html#cb228-7" aria-hidden="true" tabindex="-1"></a>mu_not_africa <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8<span class="fl">.2</span> ,</span>
-<span id="cb228-8"><a href="conditional.html#cb228-8" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">2</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span></code></pre></div>
-<pre><code>## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
-## Using compatibility `.name_repair`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="conditional.html#cb230-1" aria-hidden="true" tabindex="-1"></a>mu_africa <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8<span class="fl">.2</span> ,</span>
-<span id="cb230-2"><a href="conditional.html#cb230-2" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">1</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span>
-<span id="cb230-3"><a href="conditional.html#cb230-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-4"><a href="conditional.html#cb230-4" aria-hidden="true" tabindex="-1"></a>not_africa_lower <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb230-5"><a href="conditional.html#cb230-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-6"><a href="conditional.html#cb230-6" aria-hidden="true" tabindex="-1"></a>not_africa_mean <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,mean)</span>
-<span id="cb230-7"><a href="conditional.html#cb230-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-8"><a href="conditional.html#cb230-8" aria-hidden="true" tabindex="-1"></a>not_africa_upper <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb230-9"><a href="conditional.html#cb230-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-10"><a href="conditional.html#cb230-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-11"><a href="conditional.html#cb230-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-12"><a href="conditional.html#cb230-12" aria-hidden="true" tabindex="-1"></a>africa_lower <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb230-13"><a href="conditional.html#cb230-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-14"><a href="conditional.html#cb230-14" aria-hidden="true" tabindex="-1"></a>africa_mean <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,mean)</span>
-<span id="cb230-15"><a href="conditional.html#cb230-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-16"><a href="conditional.html#cb230-16" aria-hidden="true" tabindex="-1"></a>africa_upper <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb230-17"><a href="conditional.html#cb230-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-18"><a href="conditional.html#cb230-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-19"><a href="conditional.html#cb230-19" aria-hidden="true" tabindex="-1"></a>shaded_interval <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">rugged =</span> rugged_seq, <span class="at">na_lower =</span> not_africa_lower, <span class="at">na_mean =</span> not_africa_mean, <span class="at">na_upper =</span> not_africa_upper,</span>
-<span id="cb230-20"><a href="conditional.html#cb230-20" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">a_lower =</span> africa_lower, <span class="at">a_mean =</span> africa_mean, <span class="at">a_upper =</span> africa_upper)</span>
-<span id="cb230-21"><a href="conditional.html#cb230-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-22"><a href="conditional.html#cb230-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-23"><a href="conditional.html#cb230-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb230-24"><a href="conditional.html#cb230-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> shaded_interval)<span class="sc">+</span></span>
-<span id="cb230-25"><a href="conditional.html#cb230-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_rugged, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> log_gdp_std, <span class="at">colour =</span> cid))<span class="sc">+</span></span>
-<span id="cb230-26"><a href="conditional.html#cb230-26" aria-hidden="true" tabindex="-1"></a><span class="co"># geom_line(aes(x=rugged,y=na_mean),colour=&quot;#00BFC4&quot;)+</span></span>
-<span id="cb230-27"><a href="conditional.html#cb230-27" aria-hidden="true" tabindex="-1"></a><span class="co"># geom_line(aes(x=rugged,y=a_mean),colour=&quot;#F8766D&quot;)+</span></span>
-<span id="cb230-28"><a href="conditional.html#cb230-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>rugged_precis, <span class="fu">aes</span>(<span class="at">intercept =</span> mean[<span class="dv">2</span>],<span class="at">slope =</span> mean[<span class="dv">3</span>]), <span class="at">colour=</span> <span class="st">&quot;#00BFC4&quot;</span>)<span class="sc">+</span> </span>
-<span id="cb230-29"><a href="conditional.html#cb230-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>rugged_precis, <span class="fu">aes</span>(<span class="at">intercept =</span> mean[<span class="dv">1</span>],<span class="at">slope =</span> mean[<span class="dv">3</span>]), <span class="at">colour=</span> <span class="st">&quot;#F8766D&quot;</span>)<span class="sc">+</span></span>
-<span id="cb230-30"><a href="conditional.html#cb230-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>rugged,<span class="at">ymin=</span>na_lower,<span class="at">ymax=</span>na_upper),<span class="at">alpha=</span><span class="fl">0.1</span>,<span class="at">fill=</span><span class="st">&quot;#00BFC4&quot;</span>)<span class="sc">+</span></span>
-<span id="cb230-31"><a href="conditional.html#cb230-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>rugged,<span class="at">ymin=</span>a_lower,<span class="at">ymax=</span>a_upper),<span class="at">alpha=</span><span class="fl">0.1</span>,<span class="at">fill=</span><span class="st">&quot;#F8766D&quot;</span>)<span class="sc">+</span></span>
-<span id="cb230-32"><a href="conditional.html#cb230-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>)<span class="sc">+</span></span>
-<span id="cb230-33"><a href="conditional.html#cb230-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ruggedness&quot;</span>)<span class="sc">+</span></span>
-<span id="cb230-34"><a href="conditional.html#cb230-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Log GDP&quot;</span>)<span class="sc">+</span></span>
-<span id="cb230-35"><a href="conditional.html#cb230-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span>  <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
-<p><img src="08-conditional_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="conditional.html#cb231-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model allowing slopes to vary</span></span>
-<span id="cb231-2"><a href="conditional.html#cb231-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb231-3"><a href="conditional.html#cb231-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
-<span id="cb231-4"><a href="conditional.html#cb231-4" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
-<span id="cb231-5"><a href="conditional.html#cb231-5" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
-<span id="cb231-6"><a href="conditional.html#cb231-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
-<span id="cb231-7"><a href="conditional.html#cb231-7" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
-<span id="cb231-8"><a href="conditional.html#cb231-8" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
-<span id="cb231-9"><a href="conditional.html#cb231-9" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb231-10"><a href="conditional.html#cb231-10" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )  </span>
-<span id="cb231-11"><a href="conditional.html#cb231-11" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb231-12"><a href="conditional.html#cb231-12" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>( m8<span class="fl">.1</span> , m8<span class="fl">.2</span> , m8<span class="fl">.3</span> , <span class="at">func=</span>PSIS )</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="conditional.html#cb227-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged) </span>
+<span id="cb227-2"><a href="conditional.html#cb227-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb227-3"><a href="conditional.html#cb227-3" aria-hidden="true" tabindex="-1"></a>data_rugged <span class="ot">&lt;-</span> rugged <span class="sc">%&gt;%</span></span>
+<span id="cb227-4"><a href="conditional.html#cb227-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))<span class="sc">%&gt;%</span></span>
+<span id="cb227-5"><a href="conditional.html#cb227-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(log_gdp)) <span class="sc">%&gt;%</span></span>
+<span id="cb227-6"><a href="conditional.html#cb227-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp<span class="sc">/</span> <span class="fu">mean</span>(log_gdp), <span class="co"># standardising</span></span>
+<span id="cb227-7"><a href="conditional.html#cb227-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std =</span> rugged<span class="sc">/</span> <span class="fu">max</span>(rugged), <span class="co"># keeping zero ruggedness as a reference point</span></span>
+<span id="cb227-8"><a href="conditional.html#cb227-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid=</span> <span class="fu">if_else</span>(cont_africa<span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>), <span class="co"># continent ID</span></span>
+<span id="cb227-9"><a href="conditional.html#cb227-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid =</span> <span class="fu">factor</span>(cid))</span></code></pre></div>
+<p>Here’s our first pass model, no interaction effects:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\log(y_i) &amp;\sim \text{Normal}(\mu_i,\sigma)\\
+\mu_i &amp;= \alpha + \beta(r_i - \bar{r}) \\
+\alpha &amp;\sim \text{Normal}(1,0.1)\\
+\beta &amp;\sim \text{Normal}(0,0.3)\\
+\sigma &amp;\sim \text{Exponential}(1)
+\end{aligned}
+\]</span>
+The chapter does a bit of prior predictive simulation to compare the following priors:</p>
+<ul>
+<li>Prior Set 1 - <span class="math inline">\(\alpha \sim \text{Normal}(1.1), \beta \sim \text{Normal}(0,1)\)</span></li>
+<li>Prior Set 2 - <span class="math inline">\(\alpha \sim \text{Normal}(1.0.1), \beta \sim \text{Normal}(0,0.3)\)</span></li>
+</ul>
+<p>and settles on the latter. Here’s a plot of 100 prior samples from each:</p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="conditional.html#cb228-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we generate 100 samples from each of our prior distributions</span></span>
+<span id="cb228-2"><a href="conditional.html#cb228-2" aria-hidden="true" tabindex="-1"></a>priors_rugged <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a=</span><span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd=</span><span class="dv">1</span>),<span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd=</span><span class="fl">0.1</span>)),</span>
+<span id="cb228-3"><a href="conditional.html#cb228-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">b=</span><span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd=</span><span class="dv">1</span>),<span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.3</span>)),</span>
+<span id="cb228-4"><a href="conditional.html#cb228-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prior_set =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;prior_set_1&quot;</span>,<span class="dv">100</span>),<span class="fu">rep</span>(<span class="st">&quot;prior_set_2&quot;</span>,<span class="dv">100</span>)))</span>
+<span id="cb228-5"><a href="conditional.html#cb228-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-6"><a href="conditional.html#cb228-6" aria-hidden="true" tabindex="-1"></a><span class="co"># we plot the lines they imply</span></span>
+<span id="cb228-7"><a href="conditional.html#cb228-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(priors_rugged)<span class="sc">+</span></span>
+<span id="cb228-8"><a href="conditional.html#cb228-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">slope =</span> b,</span>
+<span id="cb228-9"><a href="conditional.html#cb228-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">intercept =</span> a <span class="sc">-</span> b<span class="sc">*</span><span class="fu">mean</span>(data_rugged<span class="sc">$</span>rugged_std) ),<span class="at">alpha=</span><span class="fl">0.5</span>)<span class="sc">+</span> <span class="co"># setting intercept so that x-axis ranges over (0,1)</span></span>
+<span id="cb228-10"><a href="conditional.html#cb228-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>,<span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb228-11"><a href="conditional.html#cb228-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>)<span class="sc">+</span></span>
+<span id="cb228-12"><a href="conditional.html#cb228-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">max</span>(data_rugged<span class="sc">$</span>log_gdp_std), <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span> </span>
+<span id="cb228-13"><a href="conditional.html#cb228-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">min</span>(data_rugged<span class="sc">$</span>log_gdp_std), <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>)<span class="sc">+</span></span>
+<span id="cb228-14"><a href="conditional.html#cb228-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;ruggedness&quot;</span>)<span class="sc">+</span></span>
+<span id="cb228-15"><a href="conditional.html#cb228-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;log GDP (standardised)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb228-16"><a href="conditional.html#cb228-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>prior_set) </span></code></pre></div>
+<p><img src="08-conditional_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>The red lines are the maximum and minimum GDP observed. Here’s the model with quap, and its posterior:</p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="conditional.html#cb229-1" aria-hidden="true" tabindex="-1"></a><span class="co"># regression of log gdp on ruggedness with no interactions</span></span>
+<span id="cb229-2"><a href="conditional.html#cb229-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-3"><a href="conditional.html#cb229-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb229-4"><a href="conditional.html#cb229-4" aria-hidden="true" tabindex="-1"></a>m8_1 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb229-5"><a href="conditional.html#cb229-5" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb229-6"><a href="conditional.html#cb229-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
+<span id="cb229-7"><a href="conditional.html#cb229-7" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
+<span id="cb229-8"><a href="conditional.html#cb229-8" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb229-9"><a href="conditional.html#cb229-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
+<span id="cb229-10"><a href="conditional.html#cb229-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-11"><a href="conditional.html#cb229-11" aria-hidden="true" tabindex="-1"></a><span class="co"># posterior draws with tidybayes</span></span>
+<span id="cb229-12"><a href="conditional.html#cb229-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-13"><a href="conditional.html#cb229-13" aria-hidden="true" tabindex="-1"></a>m8_1 <span class="sc">%&gt;%</span></span>
+<span id="cb229-14"><a href="conditional.html#cb229-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a, b, sigma) <span class="sc">%&gt;%</span></span>
+<span id="cb229-15"><a href="conditional.html#cb229-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb229-16"><a href="conditional.html#cb229-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 7
+##   .variable  .value  .lower .upper .width .point .interval
+##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 a         1.00     0.983  1.02     0.89 mean   qi       
+## 2 b         0.00150 -0.0867 0.0870   0.89 mean   qi       
+## 3 sigma     0.137    0.125  0.149    0.89 mean   qi</code></pre>
+<p>Looking at <span class="math inline">\(b\)</span>, we can see that there’s not much of an association between ruggedness and GDP.</p>
+<p>Now to interaction effects. We start by letting the intercept vary with continent (in Africa or not in Africa). That looks like this:</p>
+<p><span class="math display">\[
+\mu_i = \alpha_{\text{CID}[i]} + \beta(r_i - \bar{r})
+\]</span>
+where CID is an index variable - 1 for for African nations, 2 otherwise. Here’s the model, and the posterior:</p>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="conditional.html#cb231-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb231-2"><a href="conditional.html#cb231-2" aria-hidden="true" tabindex="-1"></a>m8_2 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb231-3"><a href="conditional.html#cb231-3" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb231-4"><a href="conditional.html#cb231-4" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
+<span id="cb231-5"><a href="conditional.html#cb231-5" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
+<span id="cb231-6"><a href="conditional.html#cb231-6" aria-hidden="true" tabindex="-1"></a>b <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
+<span id="cb231-7"><a href="conditional.html#cb231-7" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb231-8"><a href="conditional.html#cb231-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )</span>
+<span id="cb231-9"><a href="conditional.html#cb231-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb231-10"><a href="conditional.html#cb231-10" aria-hidden="true" tabindex="-1"></a>m8_2 <span class="sc">%&gt;%</span></span>
+<span id="cb231-11"><a href="conditional.html#cb231-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a[CID], b, sigma) <span class="sc">%&gt;%</span> <span class="co"># is this the best way to display index variables with tidybayes? revisit</span></span>
+<span id="cb231-12"><a href="conditional.html#cb231-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb231-13"><a href="conditional.html#cb231-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 4 x 8
+##     CID .variable  .value .lower .upper .width .point .interval
+##   &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1     1 a          0.880   0.854 0.905    0.89 mean   qi       
+## 2     2 a          1.05    1.03  1.07     0.89 mean   qi       
+## 3    NA b         -0.0461 -0.118 0.0275   0.89 mean   qi       
+## 4    NA sigma      0.112   0.103 0.122    0.89 mean   qi</code></pre>
+<p>The intercept for African nations seems to be notably lower.</p>
+<p>Now we compare the two models using WAIC:</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="conditional.html#cb233-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>( m8_1 , m8_2 )</span></code></pre></div>
+<pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
+## m8_2 -251.8309 15.30478  0.00000       NA 4.442314 1.000000e+00
+## m8_1 -188.7003 13.33426 63.13055 15.18786 2.720143 1.956026e-14</code></pre>
+<p>The varying intercept model gets all of the model weight.</p>
+<p>Here’s the posterior plot for this model.</p>
+<p>Revisit this - wrote this last year and it could be much cleaner. Would prefer to recreate it using tidybayes, ggdist.</p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="conditional.html#cb235-1" aria-hidden="true" tabindex="-1"></a>rugged_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="fl">0.1</span> , <span class="at">to=</span><span class="fl">1.1</span> , <span class="at">length.out=</span><span class="dv">30</span> ) <span class="co"># compute mu over samples, fixing cid=2 and then cid=1 </span></span>
+<span id="cb235-2"><a href="conditional.html#cb235-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-3"><a href="conditional.html#cb235-3" aria-hidden="true" tabindex="-1"></a>mu_not_africa <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8_2 ,</span>
+<span id="cb235-4"><a href="conditional.html#cb235-4" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">2</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span>
+<span id="cb235-5"><a href="conditional.html#cb235-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-6"><a href="conditional.html#cb235-6" aria-hidden="true" tabindex="-1"></a>mu_africa <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8_2 ,</span>
+<span id="cb235-7"><a href="conditional.html#cb235-7" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">1</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span>
+<span id="cb235-8"><a href="conditional.html#cb235-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-9"><a href="conditional.html#cb235-9" aria-hidden="true" tabindex="-1"></a>not_africa_lower <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb235-10"><a href="conditional.html#cb235-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-11"><a href="conditional.html#cb235-11" aria-hidden="true" tabindex="-1"></a>not_africa_mean <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,mean)</span>
+<span id="cb235-12"><a href="conditional.html#cb235-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-13"><a href="conditional.html#cb235-13" aria-hidden="true" tabindex="-1"></a>not_africa_upper <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb235-14"><a href="conditional.html#cb235-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-15"><a href="conditional.html#cb235-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-16"><a href="conditional.html#cb235-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-17"><a href="conditional.html#cb235-17" aria-hidden="true" tabindex="-1"></a>africa_lower <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb235-18"><a href="conditional.html#cb235-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-19"><a href="conditional.html#cb235-19" aria-hidden="true" tabindex="-1"></a>africa_mean <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,mean)</span>
+<span id="cb235-20"><a href="conditional.html#cb235-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-21"><a href="conditional.html#cb235-21" aria-hidden="true" tabindex="-1"></a>africa_upper <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb235-22"><a href="conditional.html#cb235-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-23"><a href="conditional.html#cb235-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-24"><a href="conditional.html#cb235-24" aria-hidden="true" tabindex="-1"></a>shaded_interval <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">rugged =</span> rugged_seq, <span class="at">na_lower =</span> not_africa_lower, <span class="at">na_mean =</span> not_africa_mean, <span class="at">na_upper =</span> not_africa_upper,</span>
+<span id="cb235-25"><a href="conditional.html#cb235-25" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">a_lower =</span> africa_lower, <span class="at">a_mean =</span> africa_mean, <span class="at">a_upper =</span> africa_upper)</span>
+<span id="cb235-26"><a href="conditional.html#cb235-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-27"><a href="conditional.html#cb235-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-28"><a href="conditional.html#cb235-28" aria-hidden="true" tabindex="-1"></a>rugged_precis <span class="ot">&lt;-</span> <span class="fu">precis</span>(m8_2,<span class="at">depth=</span><span class="dv">2</span>)</span>
+<span id="cb235-29"><a href="conditional.html#cb235-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-30"><a href="conditional.html#cb235-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> shaded_interval)<span class="sc">+</span></span>
+<span id="cb235-31"><a href="conditional.html#cb235-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_rugged, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> log_gdp_std, <span class="at">colour =</span> cid))<span class="sc">+</span></span>
+<span id="cb235-32"><a href="conditional.html#cb235-32" aria-hidden="true" tabindex="-1"></a><span class="co"># geom_line(aes(x=rugged,y=na_mean),colour=&quot;#00BFC4&quot;)+</span></span>
+<span id="cb235-33"><a href="conditional.html#cb235-33" aria-hidden="true" tabindex="-1"></a><span class="co"># geom_line(aes(x=rugged,y=a_mean),colour=&quot;#F8766D&quot;)+</span></span>
+<span id="cb235-34"><a href="conditional.html#cb235-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>rugged_precis, <span class="fu">aes</span>(<span class="at">intercept =</span> mean[<span class="dv">2</span>],<span class="at">slope =</span> mean[<span class="dv">3</span>]), <span class="at">colour=</span> <span class="st">&quot;#00BFC4&quot;</span>)<span class="sc">+</span> </span>
+<span id="cb235-35"><a href="conditional.html#cb235-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">data=</span>rugged_precis, <span class="fu">aes</span>(<span class="at">intercept =</span> mean[<span class="dv">1</span>],<span class="at">slope =</span> mean[<span class="dv">3</span>]), <span class="at">colour=</span> <span class="st">&quot;#F8766D&quot;</span>)<span class="sc">+</span></span>
+<span id="cb235-36"><a href="conditional.html#cb235-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>rugged,<span class="at">ymin=</span>na_lower,<span class="at">ymax=</span>na_upper),<span class="at">alpha=</span><span class="fl">0.1</span>,<span class="at">fill=</span><span class="st">&quot;#00BFC4&quot;</span>)<span class="sc">+</span></span>
+<span id="cb235-37"><a href="conditional.html#cb235-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>rugged,<span class="at">ymin=</span>a_lower,<span class="at">ymax=</span>a_upper),<span class="at">alpha=</span><span class="fl">0.1</span>,<span class="at">fill=</span><span class="st">&quot;#F8766D&quot;</span>)<span class="sc">+</span></span>
+<span id="cb235-38"><a href="conditional.html#cb235-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb235-39"><a href="conditional.html#cb235-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Ruggedness&quot;</span>)<span class="sc">+</span></span>
+<span id="cb235-40"><a href="conditional.html#cb235-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Log GDP&quot;</span>)<span class="sc">+</span></span>
+<span id="cb235-41"><a href="conditional.html#cb235-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span>  <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="08-conditional_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Our model does not allow the slope to vary by continent. Here’s what we need for that:</p>
+<p><span class="math display">\[
+\mu_i = \alpha_{\text{CID}[i]} + \beta_{\text{CID}[i]}(r_i - \bar{r})
+\]</span></p>
+<p>And here’s the model with the posterior:</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="conditional.html#cb236-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model allowing slopes to vary</span></span>
+<span id="cb236-2"><a href="conditional.html#cb236-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb236-3"><a href="conditional.html#cb236-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb236-4"><a href="conditional.html#cb236-4" aria-hidden="true" tabindex="-1"></a>m8_3 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb236-5"><a href="conditional.html#cb236-5" aria-hidden="true" tabindex="-1"></a>log_gdp_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb236-6"><a href="conditional.html#cb236-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a[cid] <span class="sc">+</span> b[cid]<span class="sc">*</span>( rugged_std <span class="sc">-</span> <span class="fl">0.215</span> ) , </span>
+<span id="cb236-7"><a href="conditional.html#cb236-7" aria-hidden="true" tabindex="-1"></a>a[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">1</span> , <span class="fl">0.1</span> ) , </span>
+<span id="cb236-8"><a href="conditional.html#cb236-8" aria-hidden="true" tabindex="-1"></a>b[cid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.3</span> ) , </span>
+<span id="cb236-9"><a href="conditional.html#cb236-9" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb236-10"><a href="conditional.html#cb236-10" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_rugged )  </span>
+<span id="cb236-11"><a href="conditional.html#cb236-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb236-12"><a href="conditional.html#cb236-12" aria-hidden="true" tabindex="-1"></a>m8_3 <span class="sc">%&gt;%</span></span>
+<span id="cb236-13"><a href="conditional.html#cb236-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather_draws</span>(a[CID], b[CID], sigma) <span class="sc">%&gt;%</span> <span class="co"># is this the best way to display index variables with tidybayes? revisit</span></span>
+<span id="cb236-14"><a href="conditional.html#cb236-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">.width=</span><span class="fl">0.89</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb236-15"><a href="conditional.html#cb236-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 5 x 8
+##     CID .variable .value  .lower  .upper .width .point .interval
+##   &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1     1 a          0.887  0.861   0.912    0.89 mean   qi       
+## 2     1 b          0.133  0.0171  0.252    0.89 mean   qi       
+## 3     2 a          1.05   1.03    1.07     0.89 mean   qi       
+## 4     2 b         -0.141 -0.225  -0.0541   0.89 mean   qi       
+## 5    NA sigma      0.109  0.0999  0.119    0.89 mean   qi</code></pre>
+<p>Compare the slope <span class="math inline">\(\beta\)</span> for countries inside Africa (CID 1) to the slope for non-African countires (CID 2). It is reversed.</p>
+<p>We compare the models using PSIS:</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="conditional.html#cb238-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>( m8_1 , m8_2 , m8_3 , <span class="at">func=</span>PSIS )</span></code></pre></div>
+<pre><code>## Some Pareto k values are high (&gt;0.5). Set pointwise=TRUE to inspect individual points.</code></pre>
 <pre><code>##           PSIS       SE     dPSIS       dSE    pPSIS       weight
-## m8.3 -258.6786 15.32203  0.000000        NA 5.353173 9.696032e-01
-## m8.2 -251.7535 15.53286  6.925096  6.789394 4.525019 3.039684e-02
-## m8.1 -188.8192 13.36087 69.859371 15.531288 2.661879 6.558798e-16</code></pre>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="conditional.html#cb233-1" aria-hidden="true" tabindex="-1"></a>rugged_precis_2 <span class="ot">&lt;-</span> <span class="fu">precis</span>(m8<span class="fl">.3</span>,<span class="at">depth =</span> <span class="dv">2</span>)</span>
-<span id="cb233-2"><a href="conditional.html#cb233-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-3"><a href="conditional.html#cb233-3" aria-hidden="true" tabindex="-1"></a>mu_not_africa_2 <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8<span class="fl">.3</span> ,</span>
-<span id="cb233-4"><a href="conditional.html#cb233-4" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">2</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span>
-<span id="cb233-5"><a href="conditional.html#cb233-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-6"><a href="conditional.html#cb233-6" aria-hidden="true" tabindex="-1"></a>mu_africa_2 <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">link</span>( m8<span class="fl">.3</span> ,</span>
-<span id="cb233-7"><a href="conditional.html#cb233-7" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span><span class="fu">tibble</span>( <span class="at">cid=</span><span class="dv">1</span> , <span class="at">rugged_std=</span>rugged_seq ) ))</span>
-<span id="cb233-8"><a href="conditional.html#cb233-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-9"><a href="conditional.html#cb233-9" aria-hidden="true" tabindex="-1"></a>not_africa_lower_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa_2,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb233-10"><a href="conditional.html#cb233-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-11"><a href="conditional.html#cb233-11" aria-hidden="true" tabindex="-1"></a>not_africa_mean_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa_2,mean)</span>
-<span id="cb233-12"><a href="conditional.html#cb233-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-13"><a href="conditional.html#cb233-13" aria-hidden="true" tabindex="-1"></a>not_africa_upper_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_not_africa_2,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb233-14"><a href="conditional.html#cb233-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-15"><a href="conditional.html#cb233-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-16"><a href="conditional.html#cb233-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-17"><a href="conditional.html#cb233-17" aria-hidden="true" tabindex="-1"></a>africa_lower_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa_2,quantile,<span class="at">probs=</span><span class="fl">0.025</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb233-18"><a href="conditional.html#cb233-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-19"><a href="conditional.html#cb233-19" aria-hidden="true" tabindex="-1"></a>africa_mean_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa_2,mean)</span>
-<span id="cb233-20"><a href="conditional.html#cb233-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-21"><a href="conditional.html#cb233-21" aria-hidden="true" tabindex="-1"></a>africa_upper_2 <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map_dbl</span>(mu_africa_2,quantile,<span class="at">probs=</span><span class="fl">0.975</span>,<span class="at">names=</span><span class="cn">FALSE</span>)</span>
-<span id="cb233-22"><a href="conditional.html#cb233-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-23"><a href="conditional.html#cb233-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb233-24"><a href="conditional.html#cb233-24" aria-hidden="true" tabindex="-1"></a>shaded_interval_2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">rugged =</span> rugged_seq, <span class="at">na_lower =</span> not_africa_lower_2, <span class="at">na_mean =</span> not_africa_mean_2, <span class="at">na_upper =</span> not_africa_upper_2,</span>
-<span id="cb233-25"><a href="conditional.html#cb233-25" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">a_lower =</span> africa_lower_2, <span class="at">a_mean =</span> africa_mean_2, <span class="at">a_upper =</span> africa_upper_2)</span></code></pre></div>
-<p>To do: check why geom_line excludes 6 rows in the second plot.
-Fix the graph labels to label africa / not africa correctly.
-Consider wrapping work in a function. I can use this function later to plot model results, and shaded intervals easily.</p>
+## m8_3 -258.9662 15.25083  0.000000        NA 5.221461 9.716247e-01
+## m8_2 -251.8993 15.42071  7.066903  6.574883 4.430118 2.837527e-02
+## m8_1 -188.6182 13.27438 70.347931 15.482071 2.752669 5.148010e-16</code></pre>
+<p>As well as the table attributing almost all of the weight to the interacting slopes model, we also get a warning about some high-influence countries.</p>
+<p>Here’s a plot:</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="conditional.html#cb241-1" aria-hidden="true" tabindex="-1"></a>grid_rugged <span class="ot">&lt;-</span> <span class="fu">data_grid</span>(data_rugged,</span>
+<span id="cb241-2"><a href="conditional.html#cb241-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">rugged_std=</span><span class="fu">seq_range</span>(rugged_std, <span class="at">n =</span> <span class="dv">11</span>),</span>
+<span id="cb241-3"><a href="conditional.html#cb241-3" aria-hidden="true" tabindex="-1"></a>                         cid)</span>
+<span id="cb241-4"><a href="conditional.html#cb241-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb241-5"><a href="conditional.html#cb241-5" aria-hidden="true" tabindex="-1"></a><span class="fu">add_predicted_draws</span>(grid_rugged,m8_3,</span>
+<span id="cb241-6"><a href="conditional.html#cb241-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">value =</span> <span class="st">&quot;log_gdp_std&quot;</span>)<span class="sc">%&gt;%</span> <span class="co"># naming the draw outputs to be consistent with data_rugged for convenience</span></span>
+<span id="cb241-7"><a href="conditional.html#cb241-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nation =</span> <span class="fu">if_else</span>(cid<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>))<span class="sc">%&gt;%</span> <span class="co"># for plot titles</span></span>
+<span id="cb241-8"><a href="conditional.html#cb241-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> log_gdp_std))<span class="sc">+</span></span>
+<span id="cb241-9"><a href="conditional.html#cb241-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>()<span class="sc">+</span></span>
+<span id="cb241-10"><a href="conditional.html#cb241-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>data_rugged<span class="sc">%&gt;%</span></span>
+<span id="cb241-11"><a href="conditional.html#cb241-11" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">nation =</span> <span class="fu">if_else</span>(cid<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>)) <span class="co"># need to also add nation here for facetting</span></span>
+<span id="cb241-12"><a href="conditional.html#cb241-12" aria-hidden="true" tabindex="-1"></a>             , <span class="fu">aes</span>(<span class="at">colour =</span> nation))<span class="sc">+</span></span>
+<span id="cb241-13"><a href="conditional.html#cb241-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>nation)<span class="sc">+</span></span>
+<span id="cb241-14"><a href="conditional.html#cb241-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)<span class="sc">+</span></span>
+<span id="cb241-15"><a href="conditional.html#cb241-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="08-conditional_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn’t seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I’m pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250.</p>
+<p>The chapter notes that from the perspective of the model, the interactions are symmetrical. The questions:</p>
+<ul>
+<li>How much the association between ruggedness and GDP depend on whether the nation is in Africa?, and</li>
+<li>How much does the association between whether the nation is in Africa and GDP depend on ruggedness?</li>
+</ul>
+<p>cannot be distinguished by the model.</p>
+<p>The next example in the chapter concerns interaction effects between two or more continuous variables. The categorical case we’ve just seen means we create a new slope and intercept for each category. The continuous case is harder - we must allow the slope to vary continuously with a continuous variable.</p>
+<p>The example in the chapter concerns the size of tulip blooms under different soil and lighting conditions. We load in the data:</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="conditional.html#cb242-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tulips) </span>
+<span id="cb242-2"><a href="conditional.html#cb242-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb242-3"><a href="conditional.html#cb242-3" aria-hidden="true" tabindex="-1"></a>data_tulips <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(tulips) <span class="sc">%&gt;%</span></span>
+<span id="cb242-4"><a href="conditional.html#cb242-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">blooms_std =</span> blooms <span class="sc">/</span> <span class="fu">max</span>(blooms), <span class="co"># setting between 0 and 1</span></span>
+<span id="cb242-5"><a href="conditional.html#cb242-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">water_cent =</span> water <span class="sc">-</span> <span class="fu">mean</span>(water), <span class="co"># centering on 0</span></span>
+<span id="cb242-6"><a href="conditional.html#cb242-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">shade_cent =</span> shade <span class="sc">-</span> <span class="fu">mean</span>(shade))</span></code></pre></div>
+<p>Here’s the model where both water and shade predict bloom size, but there are no interactions:</p>
+<p><span class="math display">\[
+\begin{aligned}
+B_i &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \beta_WW_i + \beta_SS_i
+\end{aligned}
+\]</span></p>
+<p>After some thinking about priors, here’s the model:</p>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="conditional.html#cb243-1" aria-hidden="true" tabindex="-1"></a>m8_4 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb243-2"><a href="conditional.html#cb243-2" aria-hidden="true" tabindex="-1"></a>blooms_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb243-3"><a href="conditional.html#cb243-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bw<span class="sc">*</span>water_cent <span class="sc">+</span> bs<span class="sc">*</span>shade_cent , </span>
+<span id="cb243-4"><a href="conditional.html#cb243-4" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb243-5"><a href="conditional.html#cb243-5" aria-hidden="true" tabindex="-1"></a>bw <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb243-6"><a href="conditional.html#cb243-6" aria-hidden="true" tabindex="-1"></a>bs <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb243-7"><a href="conditional.html#cb243-7" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb243-8"><a href="conditional.html#cb243-8" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_tulips )</span></code></pre></div>
+<p>But we want interactions. We want the impact of changing either water or shade to be conditional on the level of the other variable. As the chapter puts it:</p>
+<blockquote>
+<p>if water is low, then decreasing the shade can’t help as much as when water is high.</p>
+</blockquote>
+<p>We’ll end up with something like this:</p>
+<p><span class="math display">\[
+\begin{aligned}
+B_i &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \gamma_{W,i}W_i + \beta_SS_i \\
+\gamma_{W,i} &amp; = \beta_W + \beta_{WS}S_i
+\end{aligned}
+\]</span></p>
+<p>Our parameter <span class="math inline">\(\gamma_{W,i}\)</span> is now the slope that defines how the size of the blooms change with the level of water, and this depends partly on shade. The point about symmetry from earlier still holds, we can expand out the above to get:</p>
+<p><span class="math display">\[
+\begin{aligned}
+B_i &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \beta_W W  + \beta_SS_i + \beta_{WS}S_iW_i\\
+\end{aligned}
+\]</span></p>
+<p>Here’s the model:</p>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="conditional.html#cb244-1" aria-hidden="true" tabindex="-1"></a>m8_5 <span class="ot">&lt;-</span> <span class="fu">quap</span>( <span class="fu">alist</span>(</span>
+<span id="cb244-2"><a href="conditional.html#cb244-2" aria-hidden="true" tabindex="-1"></a>blooms_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) , </span>
+<span id="cb244-3"><a href="conditional.html#cb244-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bw<span class="sc">*</span>water_cent <span class="sc">+</span> bs<span class="sc">*</span>shade_cent <span class="sc">+</span> bws<span class="sc">*</span>water_cent<span class="sc">*</span>shade_cent , </span>
+<span id="cb244-4"><a href="conditional.html#cb244-4" aria-hidden="true" tabindex="-1"></a>a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb244-5"><a href="conditional.html#cb244-5" aria-hidden="true" tabindex="-1"></a>bw <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb244-6"><a href="conditional.html#cb244-6" aria-hidden="true" tabindex="-1"></a>bs <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb244-7"><a href="conditional.html#cb244-7" aria-hidden="true" tabindex="-1"></a>bws <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) , </span>
+<span id="cb244-8"><a href="conditional.html#cb244-8" aria-hidden="true" tabindex="-1"></a>sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb244-9"><a href="conditional.html#cb244-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>data_tulips )</span></code></pre></div>
+<p>Let’s try to plot from the posterior. The way the chapter recommends doing this is by creating multiple charts to show the slopes for different levels of one of the variables. Facetting by this variable, in ggplot terms.</p>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="conditional.html#cb245-1" aria-hidden="true" tabindex="-1"></a>grid_tulips <span class="ot">&lt;-</span> <span class="fu">data_grid</span>(data_tulips,</span>
+<span id="cb245-2"><a href="conditional.html#cb245-2" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># using 11 grid points for water</span></span>
+<span id="cb245-3"><a href="conditional.html#cb245-3" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># there are really only 3 levels in the data but I want to be able to extend this to other continuous variables</span></span>
+<span id="cb245-4"><a href="conditional.html#cb245-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">water_cent=</span><span class="fu">seq_range</span>(water_cent, <span class="at">n =</span> <span class="dv">11</span>),</span>
+<span id="cb245-5"><a href="conditional.html#cb245-5" aria-hidden="true" tabindex="-1"></a>                         <span class="co"># however I only need as many grid points for shade as facets I want in the plot. I&#39;ve chosen 3</span></span>
+<span id="cb245-6"><a href="conditional.html#cb245-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">shade_cent=</span><span class="fu">seq_range</span>(shade_cent, <span class="at">n =</span> <span class="dv">3</span>))</span>
+<span id="cb245-7"><a href="conditional.html#cb245-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb245-8"><a href="conditional.html#cb245-8" aria-hidden="true" tabindex="-1"></a><span class="fu">add_predicted_draws</span>(grid_tulips,m8_5,</span>
+<span id="cb245-9"><a href="conditional.html#cb245-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">value =</span> <span class="st">&quot;blooms_std&quot;</span>)<span class="sc">%&gt;%</span> <span class="co"># naming the draw outputs to be consistent with data_tulips for convenience</span></span>
+<span id="cb245-10"><a href="conditional.html#cb245-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">shade_level =</span> <span class="fu">paste</span>(<span class="st">&quot;Shade =&quot;</span>,shade_cent))<span class="sc">%&gt;%</span></span>
+<span id="cb245-11"><a href="conditional.html#cb245-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>water_cent, <span class="at">y =</span> blooms_std))<span class="sc">+</span></span>
+<span id="cb245-12"><a href="conditional.html#cb245-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>()<span class="sc">+</span></span>
+<span id="cb245-13"><a href="conditional.html#cb245-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>data_tulips<span class="sc">%&gt;%</span></span>
+<span id="cb245-14"><a href="conditional.html#cb245-14" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">shade_level =</span> <span class="fu">paste</span>(<span class="st">&quot;Shade =&quot;</span>,shade_cent)) <span class="co"># need to create shade_level here also for facetting to work. bit clumsy.</span></span>
+<span id="cb245-15"><a href="conditional.html#cb245-15" aria-hidden="true" tabindex="-1"></a>             , <span class="at">colour =</span> tol_light[[<span class="dv">4</span>]],<span class="at">size=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb245-16"><a href="conditional.html#cb245-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>shade_level)<span class="sc">+</span></span>
+<span id="cb245-17"><a href="conditional.html#cb245-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
+<p><img src="08-conditional_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Nice. When shade is lowest, water has its highest effect on bloom size.</p>
 </div>
 </div>
 <div id="questions-7" class="section level2" number="8.2">

@@ -9,6 +9,7 @@ library(tidybayes)
 library(tidybayes.rethinking)
 library(modelr)
 library(ggdist)
+library(knitr)
 ```
 
 ```{r}

@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-14" />
+<meta name="date" content="2022-02-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -568,13 +568,13 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <span id="cb61-39"><a href="geocentric.html#cb61-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post_prob =</span> <span class="fu">exp</span>( product <span class="sc">-</span> <span class="fu">max</span>(product) ))</span></code></pre></div>
 <p>The only part I don’t get yet is why simply using the maximum of the product works to get us to posterior probabilities. Here’s what the chapter end note says on this:</p>
 <blockquote>
-<p>Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( post<span class="math inline">\(prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post\)</span>prob are not all zero, but they also aren’t exactly probabilities. Instead they are relative posterior probabilities. But that’s good enough for what we wish to do with these values.</p>
+<p>Finally, the obstacle for getting back on the probability scale is that rounding error is always a threat when moving from log-probability to probability. If you use the obvious approach, like exp( prod ), you’ll get a vector full of zeros, which isn’t very helpful. This is a result of R’s rounding very small probabilities to zero. Remember, in large samples, all unique samples are unlikely. This is why you have to work with log-probability. The code in the box dodges this problem by scaling all of the log-products by the maximum log-product. As a result, the values in post$prob are not all zero, but they also aren’t exactly probabilities. Instead they are relative posterior probabilities. But that’s good enough for what we wish to do with these values.</p>
 </blockquote>
 <p>Makes sense. We have a list of numbers between 0 and 1 that are correct in proportion to each other, but we don’t have posterior probabilities.</p>
 <p>I wonder how we would get the actual posterior probabilities. Why wouldn’t we be able to sum up all of the likelihood-prior products at each grid point and subtract that? Well we don’t have the likelihood-prior products. We have the log versions. And if we try to exponentiate them before scaling they all get set to zero.</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="geocentric.html#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">exp</span>(post_grid<span class="sc">$</span>product))</span></code></pre></div>
 <pre><code>## [1] 0 0 0 0 0 0</code></pre>
-<p>So we need to scale them before exponentaiting but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.</p>
+<p>So we need to scale them before exponentiating but in order to get the correct scaling factor that will return posterior probabilities we need to exponentiate them.</p>
 <p>I’m sure there’s a solution to this but for now I’ll continue on using the relative posterior “probabilities” we’ve already calculated. Here’s a glimpse of our posterior probabilities for the parameters mu and sigma:</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="geocentric.html#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post_grid[,<span class="sc">-</span><span class="dv">3</span><span class="sc">:-</span><span class="dv">4</span>])</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 3
@@ -621,16 +621,16 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <pre><code>## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1     NA         NA     1  155.  7.80
-##  2     NA         NA     2  154.  7.90
-##  3     NA         NA     3  155.  7.90
-##  4     NA         NA     4  154.  7.69
-##  5     NA         NA     5  154.  7.82
-##  6     NA         NA     6  154.  7.77
-##  7     NA         NA     7  154.  7.41
-##  8     NA         NA     8  154.  7.72
-##  9     NA         NA     9  155.  7.81
-## 10     NA         NA    10  155.  8.13</code></pre>
+##  1     NA         NA     1  154.  7.64
+##  2     NA         NA     2  154.  7.86
+##  3     NA         NA     3  155.  7.38
+##  4     NA         NA     4  155.  8.30
+##  5     NA         NA     5  155.  7.98
+##  6     NA         NA     6  155.  7.75
+##  7     NA         NA     7  155.  7.70
+##  8     NA         NA     8  154.  7.40
+##  9     NA         NA     9  154.  6.99
+## 10     NA         NA    10  155.  7.62</code></pre>
 <p>Here’s a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="geocentric.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>)</span>
 <span id="cb70-2"><a href="geocentric.html#cb70-2" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
@@ -883,7 +883,7 @@ h_i &amp;= \text{Normal}(\mu_i, \sigma)\\
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 a         146.   145.   147.     0.89 median qi       
 ## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.81  -8.25  -7.36   0.89 median qi       
+## 3 b2         -7.80  -8.24  -7.35   0.89 median qi       
 ## 4 sigma       5.77   5.49   6.05   0.89 median qi</code></pre>
 <p>Here’s a plot of draws from the posterior:</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="geocentric.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_howell,<span class="at">weight_s=</span><span class="fu">seq_range</span>(weight_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> <span class="co"># grid of standardised weights to range over</span></span>

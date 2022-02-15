@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-14" />
+<meta name="date" content="2022-02-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -495,15 +495,15 @@ M_{\text{TRUE},i} &amp;\sim \text{Normal}(0,1) \\
 <p>The second case (b) is also not so bad. There is a backdoor path from <span class="math inline">\(D\)</span> to <span class="math inline">\(H\)</span> through <span class="math inline">\(S\)</span>, but since we want to condition on <span class="math inline">\(S\)</span> anyway it’s not terrible.</p>
 <p>In both of these cases, the exercises include comparison of inferences made with complete data and when some data is missing (eaten).</p>
 <p>The main body of this chapter gives a fuller treatment to scenarios (c) and (d), where things get trickier. We simulate some data:</p>
-<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="missing_data.html#cb276-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">501</span>) </span>
-<span id="cb276-2"><a href="missing_data.html#cb276-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
-<span id="cb276-3"><a href="missing_data.html#cb276-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N) </span>
-<span id="cb276-4"><a href="missing_data.html#cb276-4" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N)</span>
-<span id="cb276-5"><a href="missing_data.html#cb276-5" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">rbinom</span>( N , <span class="at">size=</span><span class="dv">10</span> , <span class="fu">inv_logit</span>( <span class="dv">2</span> <span class="sc">+</span> S <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>X ) )</span>
-<span id="cb276-6"><a href="missing_data.html#cb276-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb276-7"><a href="missing_data.html#cb276-7" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">if_else</span>( X <span class="sc">&gt;</span> <span class="dv">1</span> , <span class="dv">1</span> , <span class="dv">0</span> ) </span>
-<span id="cb276-8"><a href="missing_data.html#cb276-8" aria-hidden="true" tabindex="-1"></a>H_obs <span class="ot">&lt;-</span> H</span>
-<span id="cb276-9"><a href="missing_data.html#cb276-9" aria-hidden="true" tabindex="-1"></a>H_obs[D<span class="sc">==</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="missing_data.html#cb288-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">501</span>) </span>
+<span id="cb288-2"><a href="missing_data.html#cb288-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span> </span>
+<span id="cb288-3"><a href="missing_data.html#cb288-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N) </span>
+<span id="cb288-4"><a href="missing_data.html#cb288-4" aria-hidden="true" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N)</span>
+<span id="cb288-5"><a href="missing_data.html#cb288-5" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">rbinom</span>( N , <span class="at">size=</span><span class="dv">10</span> , <span class="fu">inv_logit</span>( <span class="dv">2</span> <span class="sc">+</span> S <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>X ) )</span>
+<span id="cb288-6"><a href="missing_data.html#cb288-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb288-7"><a href="missing_data.html#cb288-7" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">if_else</span>( X <span class="sc">&gt;</span> <span class="dv">1</span> , <span class="dv">1</span> , <span class="dv">0</span> ) </span>
+<span id="cb288-8"><a href="missing_data.html#cb288-8" aria-hidden="true" tabindex="-1"></a>H_obs <span class="ot">&lt;-</span> H</span>
+<span id="cb288-9"><a href="missing_data.html#cb288-9" aria-hidden="true" tabindex="-1"></a>H_obs[D<span class="sc">==</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code></pre></div>
 <p>What’s happening here:</p>
 <ul>
 <li>Homework is a binomial variable with 10 trials, where the probability of success is increased by <span class="math inline">\(S\)</span> and decreased by <span class="math inline">\(X\)</span>. The chapter says that “the true coefficient on S should be 1.00.” but I don’t understand why.</li>
