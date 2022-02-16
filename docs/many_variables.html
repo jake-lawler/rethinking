@@ -572,12 +572,12 @@ D_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <span id="cb110-16"><a href="many_variables.html#cb110-16" aria-hidden="true" tabindex="-1"></a>summary_5_3<span class="sc">%&gt;%</span></span>
 <span id="cb110-17"><a href="many_variables.html#cb110-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 4 x 8
-##   .variable    .value .lower .upper .width .point .interval model
-##   &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
-## 1 a          0.000543 -0.156  0.156   0.89 median qi        m5_3 
-## 2 bA        -0.612    -0.855 -0.369   0.89 median qi        m5_3 
-## 3 bM        -0.0638   -0.304  0.178   0.89 median qi        m5_3 
-## 4 sigma      0.785     0.662  0.907   0.89 median qi        m5_3</code></pre>
+##   .variable   .value .lower .upper .width .point .interval model
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;
+## 1 a         -0.00225 -0.160  0.154   0.89 median qi        m5_3 
+## 2 bA        -0.608   -0.850 -0.372   0.89 median qi        m5_3 
+## 3 bM        -0.0624  -0.310  0.179   0.89 median qi        m5_3 
+## 4 sigma      0.784    0.659  0.911   0.89 median qi        m5_3</code></pre>
 <p>Here’s a plot for the three models:</p>
 <div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="many_variables.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(summary_5_1, summary_5_2,summary_5_3) <span class="sc">%&gt;%</span></span>
 <span id="cb112-2"><a href="many_variables.html#cb112-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_rev</span>(.variable), <span class="at">x =</span> .value, <span class="at">xmin =</span> .lower, <span class="at">xmax =</span> .upper, <span class="at">color =</span> model)) <span class="sc">+</span></span>
@@ -599,29 +599,29 @@ D_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <span id="cb113-5"><a href="many_variables.html#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(<span class="at">x=</span>.linpred, <span class="at">.width =</span> <span class="fl">0.89</span>)<span class="sc">%&gt;%</span> <span class="co"># summarise each group in the df </span></span>
 <span id="cb113-6"><a href="many_variables.html#cb113-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 50 x 8
-##    Loc   divorce_s      x   .lower   .upper .width .point .interval
-##    &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
-##  1 AK        1.54   0.321 -0.00143  0.656     0.89 mean   qi       
-##  2 AL        1.65   0.370  0.160    0.581     0.89 mean   qi       
-##  3 AR        2.09   0.757  0.424    1.09      0.89 mean   qi       
-##  4 AZ        0.611  0.122 -0.0406   0.284     0.89 mean   qi       
-##  5 CA       -0.927 -0.350 -0.535   -0.157     0.89 mean   qi       
-##  6 CO        1.05   0.117 -0.116    0.357     0.89 mean   qi       
-##  7 CT       -1.64  -0.710 -0.966   -0.439     0.89 mean   qi       
-##  8 DC       -1.86  -1.75  -2.37    -1.13      0.89 mean   qi       
-##  9 DE       -0.433 -0.319 -0.632   -0.00462   0.89 mean   qi       
-## 10 FL       -0.652 -0.117 -0.338    0.104     0.89 mean   qi       
+##    Loc   divorce_s      x    .lower    .upper .width .point .interval
+##    &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+##  1 AK        1.54   0.319 -0.000603  0.655      0.89 mean   qi       
+##  2 AL        1.65   0.375  0.167     0.583      0.89 mean   qi       
+##  3 AR        2.09   0.759  0.427     1.09       0.89 mean   qi       
+##  4 AZ        0.611  0.125 -0.0366    0.286      0.89 mean   qi       
+##  5 CA       -0.927 -0.351 -0.541    -0.160      0.89 mean   qi       
+##  6 CO        1.05   0.116 -0.117     0.357      0.89 mean   qi       
+##  7 CT       -1.64  -0.712 -0.976    -0.444      0.89 mean   qi       
+##  8 DC       -1.86  -1.77  -2.40     -1.13       0.89 mean   qi       
+##  9 DE       -0.433 -0.325 -0.638     0.000920   0.89 mean   qi       
+## 10 FL       -0.652 -0.113 -0.337     0.109      0.89 mean   qi       
 ## # ... with 40 more rows</code></pre>
 <div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="many_variables.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(plot_data_m5_3) <span class="co"># x is mean predicted divorce rate, .lower and .upper are 0.89 confidence interval limits</span></span></code></pre></div>
 <pre><code>## # A tibble: 6 x 8
-##   Loc   divorce_s      x   .lower .upper .width .point .interval
-##   &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
-## 1 AK        1.54   0.321 -0.00143  0.656   0.89 mean   qi       
-## 2 AL        1.65   0.370  0.160    0.581   0.89 mean   qi       
-## 3 AR        2.09   0.757  0.424    1.09    0.89 mean   qi       
-## 4 AZ        0.611  0.122 -0.0406   0.284   0.89 mean   qi       
-## 5 CA       -0.927 -0.350 -0.535   -0.157   0.89 mean   qi       
-## 6 CO        1.05   0.117 -0.116    0.357   0.89 mean   qi</code></pre>
+##   Loc   divorce_s      x    .lower .upper .width .point .interval
+##   &lt;fct&gt;     &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 AK        1.54   0.319 -0.000603  0.655   0.89 mean   qi       
+## 2 AL        1.65   0.375  0.167     0.583   0.89 mean   qi       
+## 3 AR        2.09   0.759  0.427     1.09    0.89 mean   qi       
+## 4 AZ        0.611  0.125 -0.0366    0.286   0.89 mean   qi       
+## 5 CA       -0.927 -0.351 -0.541    -0.160   0.89 mean   qi       
+## 6 CO        1.05   0.116 -0.117     0.357   0.89 mean   qi</code></pre>
 <div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="many_variables.html#cb117-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(plot_data_m5_3)<span class="sc">+</span></span>
 <span id="cb117-2"><a href="many_variables.html#cb117-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointinterval</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>divorce_s, <span class="at">y=</span>x,<span class="at">ymin=</span>.lower,<span class="at">ymax=</span>.upper), </span>
 <span id="cb117-3"><a href="many_variables.html#cb117-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">orientation =</span> <span class="st">&quot;vertical&quot;</span>,</span>
