@@ -274,7 +274,7 @@ The way of dealing with this described in the chapter is to use a log cumulative
 
 Here I've reproduced some charts in the chapter that show the counts of each response, the cumulative proportion, and then the log cumulative odds.
 
-```{r message = FALSE, warning = FALSE, echo = FALSE}
+```{r eval = FALSE}
 data(Trolley)
 
 data_trol <- as_tibble(Trolley)%>%
@@ -352,7 +352,7 @@ Here:
 * $C_i$ is the value of contact on row $i$, 0 or 1.
 * $B_I,i$ introduces an interaction effect between intention and action, and intention and contact.
 
-```{r include = FALSE, cache = TRUE}
+```{r eval = FALSE}
 
 list_trol <- with(data_trol, list(R = response, A = action, C = contact, I = intention))
 
@@ -366,7 +366,7 @@ m12.5 <- ulam( alist(
 
 ```
 
-```{r echo = FALSE, message = FALSE, warning = FALSE}
+```{r eval = FALSE}
 ggplot(data=precis(m12.5))+
   geom_pointrange(aes(x=rownames(precis(m12.5)),y=mean,ymin=`5.5%`,ymax=`94.5%`))+
   xlab("parameter")+
