@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -461,7 +464,7 @@ S_i &amp;\sim \text{Binomial}(N_i,p_i) \\
 \]</span></p>
 <p>In the first model survival is modelled as binomial, each tank is assigned its own intercept, with each of these intercepts sharing the same fixed prior.</p>
 <p>In the multi-level model, the intercept prior is a function of two <em>hyperpriors</em>, <span class="math inline">\(\bar{\alpha}\)</span> and <span class="math inline">\(\sigma\)</span>. The model updates both “levels” of the model as it sees the data. We fit both models and compare.</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="models_memory.html#cb291-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m13<span class="fl">.1</span>,m13<span class="fl">.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="models_memory.html#cb300-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(m13<span class="fl">.1</span>,m13<span class="fl">.2</span>)</span></code></pre></div>
 <pre><code>##           WAIC       SE    dWAIC      dSE    pWAIC       weight
 ## m13.2 199.8403 7.029993  0.00000       NA 20.81333 0.9995300343
 ## m13.1 215.1651 4.569440 15.32476 3.704447 25.86906 0.0004699657</code></pre>
@@ -504,9 +507,9 @@ L_i &amp;\sim \text{Binomial}(1,p_i) \\
 <li>Reparameterisation of the model, to use non-centered priors</li>
 </ol>
 <p>We start by increasing the target acceptance rate, to 99% compared to the ulam default 95%:</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="models_memory.html#cb293-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>) </span>
-<span id="cb293-2"><a href="models_memory.html#cb293-2" aria-hidden="true" tabindex="-1"></a>m13<span class="fl">.4</span>b <span class="ot">&lt;-</span> <span class="fu">ulam</span>( m13<span class="fl">.4</span> , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span> , <span class="at">control=</span><span class="fu">list</span>(<span class="at">adapt_delta=</span><span class="fl">0.99</span>), <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb293-3"><a href="models_memory.html#cb293-3" aria-hidden="true" tabindex="-1"></a><span class="fu">divergent</span>(m13<span class="fl">.4</span>b)</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="models_memory.html#cb302-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>) </span>
+<span id="cb302-2"><a href="models_memory.html#cb302-2" aria-hidden="true" tabindex="-1"></a>m13<span class="fl">.4</span>b <span class="ot">&lt;-</span> <span class="fu">ulam</span>( m13<span class="fl">.4</span> , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span> , <span class="at">control=</span><span class="fu">list</span>(<span class="at">adapt_delta=</span><span class="fl">0.99</span>), <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb302-3"><a href="models_memory.html#cb302-3" aria-hidden="true" tabindex="-1"></a><span class="fu">divergent</span>(m13<span class="fl">.4</span>b)</span></code></pre></div>
 <p>Creating a non-centered version of the chimp models requires taking <span class="math inline">\(\bar{\alpha}\)</span>, <span class="math inline">\(\sigma_\alpha\)</span> and <span class="math inline">\(\sigma_\gamma\)</span> out of the intercepts:</p>
 <p><span class="math display">\[
 \begin{aligned}

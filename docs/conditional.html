@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -667,7 +670,7 @@ where CID is an index variable - 1 for for African nations, 2 otherwise. Here’
 <span id="cb242-14"><a href="conditional.html#cb242-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)<span class="sc">+</span></span>
 <span id="cb242-15"><a href="conditional.html#cb242-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="st">&quot;none&quot;</span>)</span></code></pre></div>
 <p><img src="08-conditional_files/figure-html/unnamed-chunk-12-1.png" width="672" />
-Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn’t seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I’m pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250.</p>
+Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn’t seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I’m pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250. Pretty confident this shouldn’t be happening, and it doesn’t happen when I recreate this same plot with Stan and draw samples (see the version of the same plot in the next chapter).</p>
 <p>The chapter notes that from the perspective of the model, the interactions are symmetrical. The questions:</p>
 <ul>
 <li>How much the association between ruggedness and GDP depend on whether the nation is in Africa?, and</li>

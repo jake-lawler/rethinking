@@ -275,7 +275,7 @@ add_predicted_draws(grid_rugged,m8_3,
   scale_fill_brewer(palette = "Greys")+
   guides(colour="none")
 ```
-Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn't seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I'm pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250.
+Now our intercepts and slopes are allowed to vary. I am a bit concerned that the uncertainty around the mean doesn't seem to change very much over the range of ruggedness. There are a lot more flat countries than rugged ones. I'm pretty sure stat_lineribbon does not force the homogeneity here. Need to revisit. Cf. the plots in the chapter, page 250. Pretty confident this shouldn't be happening, and it doesn't happen when I recreate this same plot with Stan and draw samples (see the version of the same plot in the next chapter).
 
 
 The chapter notes that from the perspective of the model, the interactions are symmetrical. The questions:

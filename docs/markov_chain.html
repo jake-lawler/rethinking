@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -446,6 +449,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">9.1</span> Chapter Notes</h2>
 <div id="a-metropolis-algorithm" class="section level3 unnumbered">
 <h3>A Metropolis Algorithm</h3>
+<p>This chapter introduces Markov chain Monte Carlo conceptually, but I’m also using this chapter of my notes to try to introduce myself to working directly with Stan. The book uses a wrapper for Stan called ulam and introduces more and more direct Stan code as the book goes on. In these notes though I’ll try to figure out my workflow for prior predictive checks, sampling from the posterior, prediction from the posterior, plotting, diagnostics and so on when working with stanfit models.</p>
 <p>The chapter opens with an implementation of the Metropolis algorithm, through a parable about the king of a ring of ten islands. Each week, the king decides whether to remain on his current island, or move to a neighbouring island. A proposal island is chosen by flipping a coin - either the next island clockwise or anti-clockwise from the current one. Whether the king moves to the proposal island or stays put depends on a random draw, with the probability weighted by the relative population of the island. In this example island 2 has twice as many people as island 1, island 3 has three times as many as island 1 etc.</p>
 <p>Here’s the code from the book:</p>
 <div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="markov_chain.html#cb248-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">71</span>)</span>
@@ -570,7 +574,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="markov_chain.html#cb254-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stan_model compiles the model</span></span>
 <span id="cb254-2"><a href="markov_chain.html#cb254-2" aria-hidden="true" tabindex="-1"></a><span class="co"># the data is not used and no samples are drawn</span></span>
 <span id="cb254-3"><a href="markov_chain.html#cb254-3" aria-hidden="true" tabindex="-1"></a>m9_1 <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">model_name =</span> <span class="st">&quot;m9_1&quot;</span>,<span class="at">model_code=</span>code_m9_1)<span class="sc">%&gt;%</span> <span class="co"># compose_data is a tidybayes function</span></span>
-<span id="cb254-4"><a href="markov_chain.html#cb254-4" aria-hidden="true" tabindex="-1"></a>          <span class="fu">sampling</span>(<span class="at">data =</span> <span class="fu">compose_data</span>(data_rugged), <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span><span class="fu">detectCores</span>())<span class="sc">%&gt;%</span> <span class="co"># sampling draws samples from the posterior</span></span>
+<span id="cb254-4"><a href="markov_chain.html#cb254-4" aria-hidden="true" tabindex="-1"></a>          <span class="fu">sampling</span>(<span class="at">data =</span> <span class="fu">compose_data</span>(data_rugged), <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span>parallel<span class="sc">::</span><span class="fu">detectCores</span>())<span class="sc">%&gt;%</span> <span class="co"># sampling draws samples from the posterior</span></span>
 <span id="cb254-5"><a href="markov_chain.html#cb254-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">recover_types</span>() <span class="co"># tidybayes function useful when we have more complex indexing than this model</span></span>
 <span id="cb254-6"><a href="markov_chain.html#cb254-6" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb254-7"><a href="markov_chain.html#cb254-7" aria-hidden="true" tabindex="-1"></a></span>
@@ -646,49 +650,176 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4     2 b         -0.141 -0.225  -0.0541   0.89 mean   qi       
 ## 5    NA sigma      0.109  0.0999  0.119    0.89 mean   qi</code></pre>
 <p>They are very similar for this model.</p>
-<p>There is also the loo package for WAIC and PSIS. <a href="http://mc-stan.org/loo/articles/loo2-example.html">Here’s</a> the vignette.</p>
-<p>Revisit this.</p>
-<p>One last thing I’ll need is a way to to prior predictive checks with Stan models. Here are some resources.</p>
-<p><a href="https://mc-stan.org/docs/2_27/stan-users-guide/prior-predictive-checks.html#coding-prior-predictive-checks-in-stan">Stan User Guide</a></p>
+</div>
+<div id="posterior-predictive-checks-with-stan" class="section level3 unnumbered">
+<h3>Posterior Predictive Checks with Stan</h3>
+<p>We’ve just seen the information we can extract using spread_draws() and gather_draws() from tidybayes. It’s a little bit harder to sample from the linear predictor or the posterior predictive distribution with stanfit models. I’m sure I’ll refine (or totally overhaul) this as I get more experience (e.g. I believe the generated quantities block can do some of the below) but here’s what I’m doing just now:</p>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="markov_chain.html#cb264-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a grid of data points to predict over</span></span>
+<span id="cb264-2"><a href="markov_chain.html#cb264-2" aria-hidden="true" tabindex="-1"></a>grid_rugged <span class="ot">&lt;-</span> <span class="fu">data_grid</span>(data_rugged,</span>
+<span id="cb264-3"><a href="markov_chain.html#cb264-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">rugged_std=</span><span class="fu">seq_range</span>(rugged_std, <span class="at">n =</span> <span class="dv">21</span>))</span>
+<span id="cb264-4"><a href="markov_chain.html#cb264-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb264-5"><a href="markov_chain.html#cb264-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create draws of the parameters in the model</span></span>
+<span id="cb264-6"><a href="markov_chain.html#cb264-6" aria-hidden="true" tabindex="-1"></a><span class="co"># You can use the tidybayes function get_variables() to list all the variables you can include</span></span>
+<span id="cb264-7"><a href="markov_chain.html#cb264-7" aria-hidden="true" tabindex="-1"></a>draws_rugged <span class="ot">&lt;-</span> m9_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb264-8"><a href="markov_chain.html#cb264-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread_draws</span>(a[CID], b[CID], sigma)<span class="sc">%&gt;%</span></span>
+<span id="cb264-9"><a href="markov_chain.html#cb264-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">CID=</span><span class="fu">as.factor</span>(CID),<span class="at">ndraws=</span><span class="dv">50</span>)</span>
+<span id="cb264-10"><a href="markov_chain.html#cb264-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb264-11"><a href="markov_chain.html#cb264-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Stitch these two data frames together.</span></span>
+<span id="cb264-12"><a href="markov_chain.html#cb264-12" aria-hidden="true" tabindex="-1"></a>pred_rugged <span class="ot">&lt;-</span> </span>
+<span id="cb264-13"><a href="markov_chain.html#cb264-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(grid_rugged, draws_rugged, <span class="at">by=</span><span class="fu">character</span>())<span class="sc">%&gt;%</span> <span class="co"># cross product of the two data frames</span></span>
+<span id="cb264-14"><a href="markov_chain.html#cb264-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>()<span class="sc">%&gt;%</span> <span class="co"># Rowwise for rnorm to work</span></span>
+<span id="cb264-15"><a href="markov_chain.html#cb264-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">linpred =</span> a <span class="sc">+</span> b<span class="sc">*</span>(rugged_std<span class="fl">-0.215</span>), <span class="co"># create the linear predictor</span></span>
+<span id="cb264-16"><a href="markov_chain.html#cb264-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">prediction =</span> withr<span class="sc">::</span><span class="fu">with_seed</span>(<span class="dv">71</span>,<span class="fu">rnorm</span>(<span class="dv">1</span>,linpred,sigma)), <span class="co"># sample from the posterior predictive. seed = 71</span></span>
+<span id="cb264-17"><a href="markov_chain.html#cb264-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">nation =</span> <span class="fu">if_else</span>(CID<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb264-18"><a href="markov_chain.html#cb264-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
+<p>We can then use this data frame of posterior predictions in plots as before. This code is more or less copied from the code I wrote in chapter 8 for the quap model.</p>
+<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="markov_chain.html#cb265-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pred_rugged,<span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> prediction))<span class="sc">+</span></span>
+<span id="cb265-2"><a href="markov_chain.html#cb265-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>()<span class="sc">+</span></span>
+<span id="cb265-3"><a href="markov_chain.html#cb265-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>data_rugged<span class="sc">%&gt;%</span></span>
+<span id="cb265-4"><a href="markov_chain.html#cb265-4" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">nation =</span> <span class="fu">if_else</span>(cid<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>),</span>
+<span id="cb265-5"><a href="markov_chain.html#cb265-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prediction =</span> log_gdp_std) <span class="co"># need to also add nation here for faceting</span></span>
+<span id="cb265-6"><a href="markov_chain.html#cb265-6" aria-hidden="true" tabindex="-1"></a>             , <span class="fu">aes</span>(<span class="at">colour =</span> nation))<span class="sc">+</span></span>
+<span id="cb265-7"><a href="markov_chain.html#cb265-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>nation)<span class="sc">+</span></span>
+<span id="cb265-8"><a href="markov_chain.html#cb265-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)<span class="sc">+</span></span>
+<span id="cb265-9"><a href="markov_chain.html#cb265-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+<div id="prior-predictive-checks-with-stan" class="section level3 unnumbered">
+<h3>Prior Predictive Checks with Stan</h3>
+<p>I put this section after the posterior checks because one of the approaches I’ll take requires extracting samples. Again I’m sure I’ll adapt or totally overhaul this approach as I get more experience. There aren’t a lot of very detailed guides on how to actually code prior predictive checks for raw Stan models.</p>
+<p>As far as I can tell there are two ways of doing prior predictive checks:</p>
+<ul>
+<li>Build the possibility into your model and then use MCMC to sample from the prior</li>
+<li>Write a model with similar structure using the generated quantities block only and use Stan’s fixed parameter sampler</li>
+</ul>
+<p>Here’s an example of the first approach:</p>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="markov_chain.html#cb266-1" aria-hidden="true" tabindex="-1"></a>code_m9_1_adapted <span class="ot">&lt;-</span> </span>
+<span id="cb266-2"><a href="markov_chain.html#cb266-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;data{</span></span>
+<span id="cb266-3"><a href="markov_chain.html#cb266-3" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[170] log_gdp_std;</span></span>
+<span id="cb266-4"><a href="markov_chain.html#cb266-4" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[170] rugged_std;</span></span>
+<span id="cb266-5"><a href="markov_chain.html#cb266-5" aria-hidden="true" tabindex="-1"></a><span class="st">    int cid[170];</span></span>
+<span id="cb266-6"><a href="markov_chain.html#cb266-6" aria-hidden="true" tabindex="-1"></a><span class="st">    int&lt;lower = 0, upper = 1&gt; run_estimation; // a switch to evaluate the likelihood</span></span>
+<span id="cb266-7"><a href="markov_chain.html#cb266-7" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb266-8"><a href="markov_chain.html#cb266-8" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
+<span id="cb266-9"><a href="markov_chain.html#cb266-9" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[2] a;</span></span>
+<span id="cb266-10"><a href="markov_chain.html#cb266-10" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[2] b;</span></span>
+<span id="cb266-11"><a href="markov_chain.html#cb266-11" aria-hidden="true" tabindex="-1"></a><span class="st">    real&lt;lower=0&gt; sigma;</span></span>
+<span id="cb266-12"><a href="markov_chain.html#cb266-12" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb266-13"><a href="markov_chain.html#cb266-13" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
+<span id="cb266-14"><a href="markov_chain.html#cb266-14" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[170] mu;</span></span>
+<span id="cb266-15"><a href="markov_chain.html#cb266-15" aria-hidden="true" tabindex="-1"></a><span class="st">    sigma ~ exponential( 1 );</span></span>
+<span id="cb266-16"><a href="markov_chain.html#cb266-16" aria-hidden="true" tabindex="-1"></a><span class="st">    b ~ normal( 0 , 0.3 );</span></span>
+<span id="cb266-17"><a href="markov_chain.html#cb266-17" aria-hidden="true" tabindex="-1"></a><span class="st">    a ~ normal( 1 , 0.1 );</span></span>
+<span id="cb266-18"><a href="markov_chain.html#cb266-18" aria-hidden="true" tabindex="-1"></a><span class="st">    for ( i in 1:170 ) {</span></span>
+<span id="cb266-19"><a href="markov_chain.html#cb266-19" aria-hidden="true" tabindex="-1"></a><span class="st">        mu[i] = a[cid[i]] + b[cid[i]] * (rugged_std[i] - 0.215);</span></span>
+<span id="cb266-20"><a href="markov_chain.html#cb266-20" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb266-21"><a href="markov_chain.html#cb266-21" aria-hidden="true" tabindex="-1"></a><span class="st">    if(run_estimation==1){  </span></span>
+<span id="cb266-22"><a href="markov_chain.html#cb266-22" aria-hidden="true" tabindex="-1"></a><span class="st">    log_gdp_std ~ normal( mu , sigma ); // here I&#39;ve implemented the switch</span></span>
+<span id="cb266-23"><a href="markov_chain.html#cb266-23" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb266-24"><a href="markov_chain.html#cb266-24" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span></span></code></pre></div>
+<p>The difference between the original code for this model above (code_m9_1) and this code is the switch to turn off the likelihood. I read this approach on the <a href="https://modernstatisticalworkflow.blogspot.com/2017/04/an-easy-way-to-simulate-fake-data-from.html">Modern Statistical Workflow</a> blog. When the likelihood is turned off the model doesn’t condition on the data (in this case log_gdp_std) at all and so just returns samples from the prior.</p>
+<p>Here’s how that works in the code:</p>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="markov_chain.html#cb267-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We compile the model - this could be used for either prior or posterior prediction</span></span>
+<span id="cb267-2"><a href="markov_chain.html#cb267-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb267-3"><a href="markov_chain.html#cb267-3" aria-hidden="true" tabindex="-1"></a>compile_m9_1_adapted <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">model_name =</span> <span class="st">&quot;m9_1_adapted&quot;</span>,<span class="at">model_code=</span>code_m9_1_adapted)</span>
+<span id="cb267-4"><a href="markov_chain.html#cb267-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb267-5"><a href="markov_chain.html#cb267-5" aria-hidden="true" tabindex="-1"></a><span class="co"># We sample from the prior. In the data argument of sampling(), we need to add the new variable run_estimation</span></span>
+<span id="cb267-6"><a href="markov_chain.html#cb267-6" aria-hidden="true" tabindex="-1"></a><span class="co"># If we want to sample from the prior we set it to 0, from the posterior we set it to 1.</span></span>
+<span id="cb267-7"><a href="markov_chain.html#cb267-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb267-8"><a href="markov_chain.html#cb267-8" aria-hidden="true" tabindex="-1"></a>m9_1_adapted <span class="ot">&lt;-</span> <span class="fu">sampling</span>(<span class="at">object =</span> compile_m9_1_adapted,</span>
+<span id="cb267-9"><a href="markov_chain.html#cb267-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> <span class="fu">c</span>(<span class="fu">compose_data</span>(data_rugged),<span class="at">run_estimation =</span> <span class="fu">list</span>(<span class="dv">0</span>)), <span class="co"># set run_estimation to 0</span></span>
+<span id="cb267-10"><a href="markov_chain.html#cb267-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">chains=</span><span class="dv">4</span>,<span class="at">cores=</span>parallel<span class="sc">::</span><span class="fu">detectCores</span>())<span class="sc">%&gt;%</span> </span>
+<span id="cb267-11"><a href="markov_chain.html#cb267-11" aria-hidden="true" tabindex="-1"></a>          <span class="fu">recover_types</span>()</span>
+<span id="cb267-12"><a href="markov_chain.html#cb267-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb267-13"><a href="markov_chain.html#cb267-13" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(m9_1_adapted,file=&quot;models\\m9_1_adapted.rds&quot;)</span></span></code></pre></div>
+<p>Then we can more or less use the same code as in the posterior predictive section to take a look at the implications of these priors:</p>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="markov_chain.html#cb268-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a grid of data points to predict over</span></span>
+<span id="cb268-2"><a href="markov_chain.html#cb268-2" aria-hidden="true" tabindex="-1"></a>grid_rugged <span class="ot">&lt;-</span> <span class="fu">data_grid</span>(data_rugged,</span>
+<span id="cb268-3"><a href="markov_chain.html#cb268-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">rugged_std=</span><span class="fu">seq_range</span>(rugged_std, <span class="at">n =</span> <span class="dv">21</span>))</span>
+<span id="cb268-4"><a href="markov_chain.html#cb268-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-5"><a href="markov_chain.html#cb268-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create draws of the parameters in the model</span></span>
+<span id="cb268-6"><a href="markov_chain.html#cb268-6" aria-hidden="true" tabindex="-1"></a><span class="co"># You can use the tidybayes function get_variables() to list all the variables you can include</span></span>
+<span id="cb268-7"><a href="markov_chain.html#cb268-7" aria-hidden="true" tabindex="-1"></a>draws_prior_rugged <span class="ot">&lt;-</span> m9_1_adapted <span class="sc">%&gt;%</span> </span>
+<span id="cb268-8"><a href="markov_chain.html#cb268-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread_draws</span>(a[CID], b[CID], sigma)<span class="sc">%&gt;%</span></span>
+<span id="cb268-9"><a href="markov_chain.html#cb268-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">CID=</span><span class="fu">as.factor</span>(CID),<span class="at">ndraws=</span><span class="dv">50</span>)</span>
+<span id="cb268-10"><a href="markov_chain.html#cb268-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-11"><a href="markov_chain.html#cb268-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Stitch these two data frames together.</span></span>
+<span id="cb268-12"><a href="markov_chain.html#cb268-12" aria-hidden="true" tabindex="-1"></a>pred_prior_rugged <span class="ot">&lt;-</span> </span>
+<span id="cb268-13"><a href="markov_chain.html#cb268-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(grid_rugged, draws_prior_rugged, <span class="at">by=</span><span class="fu">character</span>())<span class="sc">%&gt;%</span> <span class="co"># cross product of the two data frames</span></span>
+<span id="cb268-14"><a href="markov_chain.html#cb268-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>()<span class="sc">%&gt;%</span> <span class="co"># Rowwise for rnorm to work</span></span>
+<span id="cb268-15"><a href="markov_chain.html#cb268-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">linpred =</span> a <span class="sc">+</span> b<span class="sc">*</span>(rugged_std<span class="fl">-0.215</span>), <span class="co"># create the linear predictor</span></span>
+<span id="cb268-16"><a href="markov_chain.html#cb268-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">prediction =</span> <span class="fu">rnorm</span>(<span class="dv">1</span>,linpred,sigma),</span>
+<span id="cb268-17"><a href="markov_chain.html#cb268-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">nation =</span> <span class="fu">if_else</span>(CID<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb268-18"><a href="markov_chain.html#cb268-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb268-19"><a href="markov_chain.html#cb268-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-20"><a href="markov_chain.html#cb268-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pred_prior_rugged,<span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> prediction))<span class="sc">+</span></span>
+<span id="cb268-21"><a href="markov_chain.html#cb268-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>()<span class="sc">+</span></span>
+<span id="cb268-22"><a href="markov_chain.html#cb268-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>data_rugged<span class="sc">%&gt;%</span></span>
+<span id="cb268-23"><a href="markov_chain.html#cb268-23" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">nation =</span> <span class="fu">if_else</span>(cid<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>),</span>
+<span id="cb268-24"><a href="markov_chain.html#cb268-24" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prediction =</span> log_gdp_std) <span class="co"># need to also add nation here for faceting</span></span>
+<span id="cb268-25"><a href="markov_chain.html#cb268-25" aria-hidden="true" tabindex="-1"></a>             , <span class="fu">aes</span>(<span class="at">colour =</span> nation))<span class="sc">+</span></span>
+<span id="cb268-26"><a href="markov_chain.html#cb268-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>nation)<span class="sc">+</span></span>
+<span id="cb268-27"><a href="markov_chain.html#cb268-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)<span class="sc">+</span></span>
+<span id="cb268-28"><a href="markov_chain.html#cb268-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>Compare this plot to the one for the posterior above.</p>
+<p>The benefit of this approach is that you only need to maintain one version of model code, instead of separate code for prior prediction and for your actual model. The downside is that it’s less efficient to sample using MCMC than just drawing from a model coded for this purpose using Stan _rng functions and the fixed parameter sampler. That’s the approach we’ll look at now.</p>
+<p>The second approach is to make use of the generated quantities block in the Stan code. This one will take me a while to start doing competently, at the moment I’ve written almost no Stan code. The <a href="https://mc-stan.org/docs/2_27/stan-users-guide/prior-predictive-checks.html#coding-prior-predictive-checks-in-stan">Stan User Guide</a> contains an example of doing this.</p>
+<p>Here’s some code. It’s not working just now, will revisit.</p>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="markov_chain.html#cb269-1" aria-hidden="true" tabindex="-1"></a>code_m9_1_prior <span class="ot">&lt;-</span> </span>
+<span id="cb269-2"><a href="markov_chain.html#cb269-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;data{</span></span>
+<span id="cb269-3"><a href="markov_chain.html#cb269-3" aria-hidden="true" tabindex="-1"></a><span class="st">  vector[170] rugged_std;</span></span>
+<span id="cb269-4"><a href="markov_chain.html#cb269-4" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb269-5"><a href="markov_chain.html#cb269-5" aria-hidden="true" tabindex="-1"></a><span class="st">generated quantities{</span></span>
+<span id="cb269-6"><a href="markov_chain.html#cb269-6" aria-hidden="true" tabindex="-1"></a><span class="st">  real a = normal_rng(1, 0.1);</span></span>
+<span id="cb269-7"><a href="markov_chain.html#cb269-7" aria-hidden="true" tabindex="-1"></a><span class="st">  real b = normal_rng(0, 0.3);</span></span>
+<span id="cb269-8"><a href="markov_chain.html#cb269-8" aria-hidden="true" tabindex="-1"></a><span class="st">  real sigma = exponential_rng(1);</span></span>
+<span id="cb269-9"><a href="markov_chain.html#cb269-9" aria-hidden="true" tabindex="-1"></a><span class="st">  array[170] real y_sim = normal_rng(a + b * (rugged_std-0.215),sigma);</span></span>
+<span id="cb269-10"><a href="markov_chain.html#cb269-10" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span></span>
+<span id="cb269-11"><a href="markov_chain.html#cb269-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb269-12"><a href="markov_chain.html#cb269-12" aria-hidden="true" tabindex="-1"></a>compile_m9_1_prior <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">model_name =</span> <span class="st">&quot;m9_1_prior&quot;</span>,<span class="at">model_code=</span>code_m9_1_prior)</span></code></pre></div>
 <p><a href="https://discourse.mc-stan.org/t/implementing-prior-predictive-checks-in-stan/23815">Stan Forum Question</a></p>
 <p><a href="https://stats.stackexchange.com/questions/233944/how-to-plot-prior-distributions-in-stan">Cross Validated Example</a></p>
-<p>Revisit this later and try to implement in the ruggedness example.</p>
+</div>
+<div id="diagnostics-comparison---trace-plots-waic-psis" class="section level3 unnumbered">
+<h3>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</h3>
+<p>The loo package contains functions for WAIC and PSIS. <a href="http://mc-stan.org/loo/articles/loo2-example.html">Here’s</a> the vignette. Revisit this and add in an example.</p>
 <p>The rstan package contains some functions for easy plotting. See <a href="https://mc-stan.org/rstan/reference/stan_plot.html">here</a>. One of these function plots the trace plot for a model. The trace plot plots the samples for each parameter in order and connects them with a line. Each chain is shown in a different colour.</p>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="markov_chain.html#cb264-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stan_trace</span>(m9_1)</span></code></pre></div>
-<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-16-1.png" width="672" />
-Here’s what we’re looking for, according to the chapter:</p>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="markov_chain.html#cb270-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stan_trace</span>(m9_1)</span></code></pre></div>
+<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Here’s what we’re looking for, according to the chapter:</p>
 <ul>
 <li>Stationarity - the path of each chain should stay within the same high-probability region</li>
 <li>Good Mixing - the chain should rapidly explore the full region, zig-zagging around instead of meandering</li>
 <li>Convergence - each of the chains should be exploring the same region</li>
 </ul>
 <p>The chapter includes an example of a model with very flat priors and very little data, in order to demonstrate how you may be able to tell if your attempt at model fitting has gone wrong somewhere.</p>
-<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="markov_chain.html#cb265-1" aria-hidden="true" tabindex="-1"></a>code_m9_2 <span class="ot">&lt;-</span> </span>
-<span id="cb265-2"><a href="markov_chain.html#cb265-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;data{</span></span>
-<span id="cb265-3"><a href="markov_chain.html#cb265-3" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[2] y;</span></span>
-<span id="cb265-4"><a href="markov_chain.html#cb265-4" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
-<span id="cb265-5"><a href="markov_chain.html#cb265-5" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
-<span id="cb265-6"><a href="markov_chain.html#cb265-6" aria-hidden="true" tabindex="-1"></a><span class="st">    real a;</span></span>
-<span id="cb265-7"><a href="markov_chain.html#cb265-7" aria-hidden="true" tabindex="-1"></a><span class="st">    real&lt;lower=0&gt; sigma;</span></span>
-<span id="cb265-8"><a href="markov_chain.html#cb265-8" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
-<span id="cb265-9"><a href="markov_chain.html#cb265-9" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
-<span id="cb265-10"><a href="markov_chain.html#cb265-10" aria-hidden="true" tabindex="-1"></a><span class="st">    real mu;</span></span>
-<span id="cb265-11"><a href="markov_chain.html#cb265-11" aria-hidden="true" tabindex="-1"></a><span class="st">    sigma ~ exponential( 0.0001 );</span></span>
-<span id="cb265-12"><a href="markov_chain.html#cb265-12" aria-hidden="true" tabindex="-1"></a><span class="st">    a ~ normal( 0 , 1000 );</span></span>
-<span id="cb265-13"><a href="markov_chain.html#cb265-13" aria-hidden="true" tabindex="-1"></a><span class="st">    mu = a;</span></span>
-<span id="cb265-14"><a href="markov_chain.html#cb265-14" aria-hidden="true" tabindex="-1"></a><span class="st">    y ~ normal( mu , sigma );</span></span>
-<span id="cb265-15"><a href="markov_chain.html#cb265-15" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span></span>
-<span id="cb265-16"><a href="markov_chain.html#cb265-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb265-17"><a href="markov_chain.html#cb265-17" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="co"># our data</span></span>
-<span id="cb265-18"><a href="markov_chain.html#cb265-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb265-19"><a href="markov_chain.html#cb265-19" aria-hidden="true" tabindex="-1"></a>m9_2 <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">model_name =</span> <span class="st">&quot;m9_2&quot;</span>,<span class="at">model_code=</span>code_m9_2)<span class="sc">%&gt;%</span> </span>
-<span id="cb265-20"><a href="markov_chain.html#cb265-20" aria-hidden="true" tabindex="-1"></a>          <span class="fu">sampling</span>(<span class="at">data =</span> <span class="fu">compose_data</span>(y), <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span><span class="fu">detectCores</span>())<span class="sc">%&gt;%</span></span>
-<span id="cb265-21"><a href="markov_chain.html#cb265-21" aria-hidden="true" tabindex="-1"></a>          <span class="fu">recover_types</span>()</span>
-<span id="cb265-22"><a href="markov_chain.html#cb265-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb265-23"><a href="markov_chain.html#cb265-23" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(m9_2,file = &quot;models\\m9_2.rds&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="markov_chain.html#cb271-1" aria-hidden="true" tabindex="-1"></a>code_m9_2 <span class="ot">&lt;-</span> </span>
+<span id="cb271-2"><a href="markov_chain.html#cb271-2" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;data{</span></span>
+<span id="cb271-3"><a href="markov_chain.html#cb271-3" aria-hidden="true" tabindex="-1"></a><span class="st">    vector[2] y;</span></span>
+<span id="cb271-4"><a href="markov_chain.html#cb271-4" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb271-5"><a href="markov_chain.html#cb271-5" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
+<span id="cb271-6"><a href="markov_chain.html#cb271-6" aria-hidden="true" tabindex="-1"></a><span class="st">    real a;</span></span>
+<span id="cb271-7"><a href="markov_chain.html#cb271-7" aria-hidden="true" tabindex="-1"></a><span class="st">    real&lt;lower=0&gt; sigma;</span></span>
+<span id="cb271-8"><a href="markov_chain.html#cb271-8" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb271-9"><a href="markov_chain.html#cb271-9" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
+<span id="cb271-10"><a href="markov_chain.html#cb271-10" aria-hidden="true" tabindex="-1"></a><span class="st">    real mu;</span></span>
+<span id="cb271-11"><a href="markov_chain.html#cb271-11" aria-hidden="true" tabindex="-1"></a><span class="st">    sigma ~ exponential( 0.0001 );</span></span>
+<span id="cb271-12"><a href="markov_chain.html#cb271-12" aria-hidden="true" tabindex="-1"></a><span class="st">    a ~ normal( 0 , 1000 );</span></span>
+<span id="cb271-13"><a href="markov_chain.html#cb271-13" aria-hidden="true" tabindex="-1"></a><span class="st">    mu = a;</span></span>
+<span id="cb271-14"><a href="markov_chain.html#cb271-14" aria-hidden="true" tabindex="-1"></a><span class="st">    y ~ normal( mu , sigma );</span></span>
+<span id="cb271-15"><a href="markov_chain.html#cb271-15" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span></span>
+<span id="cb271-16"><a href="markov_chain.html#cb271-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb271-17"><a href="markov_chain.html#cb271-17" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="co"># our data</span></span>
+<span id="cb271-18"><a href="markov_chain.html#cb271-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb271-19"><a href="markov_chain.html#cb271-19" aria-hidden="true" tabindex="-1"></a>m9_2 <span class="ot">&lt;-</span> <span class="fu">stan_model</span>(<span class="at">model_name =</span> <span class="st">&quot;m9_2&quot;</span>,<span class="at">model_code=</span>code_m9_2)<span class="sc">%&gt;%</span> </span>
+<span id="cb271-20"><a href="markov_chain.html#cb271-20" aria-hidden="true" tabindex="-1"></a>          <span class="fu">sampling</span>(<span class="at">data =</span> <span class="fu">compose_data</span>(y), <span class="at">chains=</span><span class="dv">4</span>, <span class="at">cores=</span><span class="fu">detectCores</span>())<span class="sc">%&gt;%</span></span>
+<span id="cb271-21"><a href="markov_chain.html#cb271-21" aria-hidden="true" tabindex="-1"></a>          <span class="fu">recover_types</span>()</span>
+<span id="cb271-22"><a href="markov_chain.html#cb271-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb271-23"><a href="markov_chain.html#cb271-23" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(m9_2,file = &quot;models\\m9_2.rds&quot;)</span></span></code></pre></div>
 <p>Here’s the trace plot:</p>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="markov_chain.html#cb266-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stan_trace</span>(m9_2)</span></code></pre></div>
-<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="markov_chain.html#cb272-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stan_trace</span>(m9_2)</span></code></pre></div>
+<p><img src="09-markov_chain_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <p>The chains here are not stationary, and they do not converge to the same region of high probability. They are a warning that something has gone wrong. In this case the issue can be fixed by using even slightly informative priors.</p>
 <p>Another way that model fitting can go wrong is with non-identifiable parameters. We saw this in the leg length example in chapter 6.</p>
 <p>Revisit - page 293.</p>

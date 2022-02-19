@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -623,16 +626,16 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <pre><code>## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1     NA         NA     1  155.  7.32
-##  2     NA         NA     2  155.  7.47
-##  3     NA         NA     3  154.  7.74
-##  4     NA         NA     4  155.  7.89
-##  5     NA         NA     5  154.  7.47
-##  6     NA         NA     6  156.  7.47
-##  7     NA         NA     7  155.  8.05
-##  8     NA         NA     8  155.  8.00
-##  9     NA         NA     9  154.  7.57
-## 10     NA         NA    10  154.  8.00</code></pre>
+##  1     NA         NA     1  154.  7.49
+##  2     NA         NA     2  155.  7.61
+##  3     NA         NA     3  155.  7.09
+##  4     NA         NA     4  154.  7.53
+##  5     NA         NA     5  155.  7.61
+##  6     NA         NA     6  155.  7.91
+##  7     NA         NA     7  155.  7.39
+##  8     NA         NA     8  155.  7.75
+##  9     NA         NA     9  155.  7.39
+## 10     NA         NA    10  154.  7.52</code></pre>
 <p>Here’s a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="geocentric.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>)</span>
 <span id="cb70-2"><a href="geocentric.html#cb70-2" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
@@ -884,9 +887,9 @@ h_i &amp;= \text{Normal}(\mu_i, \sigma)\\
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 a         146.   145.   147.     0.89 median qi       
-## 2 b1         21.7   21.3   22.2    0.89 median qi       
-## 3 b2         -7.80  -8.24  -7.36   0.89 median qi       
-## 4 sigma       5.78   5.49   6.06   0.89 median qi</code></pre>
+## 2 b1         21.7   21.2   22.2    0.89 median qi       
+## 3 b2         -7.81  -8.25  -7.36   0.89 median qi       
+## 4 sigma       5.77   5.48   6.06   0.89 median qi</code></pre>
 <p>Here’s a plot of draws from the posterior:</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="geocentric.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_howell,<span class="at">weight_s=</span><span class="fu">seq_range</span>(weight_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> <span class="co"># grid of standardised weights to range over</span></span>
 <span id="cb96-2"><a href="geocentric.html#cb96-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_s2 =</span> weight_s<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%&gt;%</span> <span class="co"># the add_predicted_draws() function expects both weight_s and weight_s2</span></span>

@@ -29,6 +29,7 @@ tol_light <- c('#BBCC33', '#AAAA00', '#77AADD', '#EE8866', '#EEDD88', '#FFAABB',
 
 ### A Metropolis Algorithm {-}
 
+This chapter introduces Markov chain Monte Carlo conceptually, but I'm also using this chapter of my notes to try to introduce myself to working directly with Stan. The book uses a wrapper for Stan called ulam and introduces more and more direct Stan code as the book goes on. In these notes though I'll try to figure out my workflow for prior predictive checks, sampling from the posterior, prediction from the posterior, plotting, diagnostics and so on when working with stanfit models.
 
 The chapter opens with an implementation of the Metropolis algorithm, through a parable about the king of a ring of ten islands. Each week, the king decides whether to remain on his current island, or move to a neighbouring island. A proposal island is chosen by flipping a coin - either the next island clockwise or anti-clockwise from the current one. Whether the king moves to the proposal island or stays put depends on a random draw, with the probability weighted by the relative population of the island. In this example island 2 has twice as many people as island 1, island 3 has three times as many as island 1 etc.
 
@@ -213,7 +214,7 @@ Here's the code for compiling the model and sampling:
 # stan_model compiles the model
 # the data is not used and no samples are drawn
 m9_1 <- stan_model(model_name = "m9_1",model_code=code_m9_1)%>% # compose_data is a tidybayes function
-          sampling(data = compose_data(data_rugged), chains=4, cores=detectCores())%>% # sampling draws samples from the posterior
+          sampling(data = compose_data(data_rugged), chains=4, cores=parallel::detectCores())%>% # sampling draws samples from the posterior
           recover_types() # tidybayes function useful when we have more complex indexing than this model
   
 
@@ -272,20 +273,181 @@ m8_3 %>%
 
 They are very similar for this model.
 
-There is also the loo package for WAIC and PSIS. [Here's](http://mc-stan.org/loo/articles/loo2-example.html) the vignette.
+### Posterior Predictive Checks with Stan {-}
 
-Revisit this.
+We've just seen the information we can extract using spread_draws() and gather_draws() from tidybayes. It's a little bit harder to sample from the linear predictor or the posterior predictive distribution with stanfit models. I'm sure I'll refine (or totally overhaul) this as I get more experience (e.g. I believe the generated quantities block can do some of the below) but here's what I'm doing just now:
 
-One last thing I'll need is a way to to prior predictive checks with Stan models. Here are some resources. 
+```{r}
+# Create a grid of data points to predict over
+grid_rugged <- data_grid(data_rugged,
+                         rugged_std=seq_range(rugged_std, n = 21))
 
-[Stan User Guide](https://mc-stan.org/docs/2_27/stan-users-guide/prior-predictive-checks.html#coding-prior-predictive-checks-in-stan)
+# Create draws of the parameters in the model
+# You can use the tidybayes function get_variables() to list all the variables you can include
+draws_rugged <- m9_1 %>% 
+  spread_draws(a[CID], b[CID], sigma)%>%
+  mutate(CID=as.factor(CID),ndraws=50)
+
+# Stitch these two data frames together.
+pred_rugged <- 
+  inner_join(grid_rugged, draws_rugged, by=character())%>% # cross product of the two data frames
+  rowwise()%>% # Rowwise for rnorm to work
+  mutate(linpred = a + b*(rugged_std-0.215), # create the linear predictor
+         prediction = withr::with_seed(71,rnorm(1,linpred,sigma)), # sample from the posterior predictive. seed = 71
+         nation = if_else(CID==1,"African Nations","Non-African Nations"))%>%
+  ungroup()
+```
+
+We can then use this data frame of posterior predictions in plots as before. This code is more or less copied from the code I wrote in chapter 8 for the quap model.
+
+```{r}
+ggplot(data=pred_rugged,aes(x=rugged_std, y = prediction))+
+  stat_lineribbon()+
+  geom_point(data=data_rugged%>%
+               mutate(nation = if_else(cid==1,"African Nations","Non-African Nations"),
+                      prediction = log_gdp_std) # need to also add nation here for faceting
+             , aes(colour = nation))+
+  facet_wrap(~nation)+
+  scale_fill_brewer(palette = "Greys")+
+  guides(colour="none")
+```
+
+
+### Prior Predictive Checks with Stan {-}
+
+I put this section after the posterior checks because one of the approaches I'll take requires extracting samples. Again I'm sure I'll adapt or totally overhaul this approach as I get more experience. There aren't a lot of very detailed guides on how to actually code prior predictive checks for raw Stan models.
+
+As far as I can tell there are two ways of doing prior predictive checks:
+
+* Build the possibility into your model and then use MCMC to sample from the prior
+* Write a model with similar structure using the generated quantities block only and use Stan's fixed parameter sampler
+
+Here's an example of the first approach:
+
+```{r}
+
+code_m9_1_adapted <- 
+"data{
+    vector[170] log_gdp_std;
+    vector[170] rugged_std;
+    int cid[170];
+    int<lower = 0, upper = 1> run_estimation; // a switch to evaluate the likelihood
+}
+parameters{
+    vector[2] a;
+    vector[2] b;
+    real<lower=0> sigma;
+}
+model{
+    vector[170] mu;
+    sigma ~ exponential( 1 );
+    b ~ normal( 0 , 0.3 );
+    a ~ normal( 1 , 0.1 );
+    for ( i in 1:170 ) {
+        mu[i] = a[cid[i]] + b[cid[i]] * (rugged_std[i] - 0.215);
+    }
+    if(run_estimation==1){  
+    log_gdp_std ~ normal( mu , sigma ); // here I've implemented the switch
+    }
+}"
+
+```
+
+The difference between the original code for this model above (code_m9_1) and this code is the switch to turn off the likelihood. I read this approach on the [Modern Statistical Workflow](https://modernstatisticalworkflow.blogspot.com/2017/04/an-easy-way-to-simulate-fake-data-from.html) blog. When the likelihood is turned off the model doesn't condition on the data (in this case log_gdp_std) at all and so just returns samples from the prior.
+
+Here's how that works in the code:
+
+```{r eval = FALSE}
+
+# We compile the model - this could be used for either prior or posterior prediction
+
+compile_m9_1_adapted <- stan_model(model_name = "m9_1_adapted",model_code=code_m9_1_adapted)
+
+# We sample from the prior. In the data argument of sampling(), we need to add the new variable run_estimation
+# If we want to sample from the prior we set it to 0, from the posterior we set it to 1.
+
+m9_1_adapted <- sampling(object = compile_m9_1_adapted,
+                         data = c(compose_data(data_rugged),run_estimation = list(0)), # set run_estimation to 0
+                         chains=4,cores=parallel::detectCores())%>% 
+          recover_types()
+
+# saveRDS(m9_1_adapted,file="models\\m9_1_adapted.rds")
+
+```
+
+```{r echo = FALSE}
+
+m9_1_adapted <- readRDS("models\\m9_1_adapted.rds")
+
+```
+
+Then we can more or less use the same code as in the posterior predictive section to take a look at the implications of these priors:
+
+```{r}
+# Create a grid of data points to predict over
+grid_rugged <- data_grid(data_rugged,
+                         rugged_std=seq_range(rugged_std, n = 21))
+
+# Create draws of the parameters in the model
+# You can use the tidybayes function get_variables() to list all the variables you can include
+draws_prior_rugged <- m9_1_adapted %>% 
+  spread_draws(a[CID], b[CID], sigma)%>%
+  mutate(CID=as.factor(CID),ndraws=50)
+
+# Stitch these two data frames together.
+pred_prior_rugged <- 
+  inner_join(grid_rugged, draws_prior_rugged, by=character())%>% # cross product of the two data frames
+  rowwise()%>% # Rowwise for rnorm to work
+  mutate(linpred = a + b*(rugged_std-0.215), # create the linear predictor
+         prediction = rnorm(1,linpred,sigma),
+         nation = if_else(CID==1,"African Nations","Non-African Nations"))%>%
+  ungroup()
+
+ggplot(data=pred_prior_rugged,aes(x=rugged_std, y = prediction))+
+  stat_lineribbon()+
+  geom_point(data=data_rugged%>%
+               mutate(nation = if_else(cid==1,"African Nations","Non-African Nations"),
+                      prediction = log_gdp_std) # need to also add nation here for faceting
+             , aes(colour = nation))+
+  facet_wrap(~nation)+
+  scale_fill_brewer(palette = "Greys")+
+  guides(colour="none")
+
+```
+
+Compare this plot to the one for the posterior above.
+
+The benefit of this approach is that you only need to maintain one version of model code, instead of separate code for prior prediction and for your actual model. The downside is that it's less efficient to sample using MCMC than just drawing from a model coded for this purpose using Stan _rng functions and the fixed parameter sampler. That's the approach we'll look at now.
+
+The second approach is to make use of the generated quantities block in the Stan code. This one will take me a while to start doing competently, at the moment I've written almost no Stan code. The [Stan User Guide](https://mc-stan.org/docs/2_27/stan-users-guide/prior-predictive-checks.html#coding-prior-predictive-checks-in-stan) contains an example of doing this.
+
+Here's some code. It's not working just now, will revisit.
+
+```{r eval = FALSE}
+
+code_m9_1_prior <- 
+"data{
+  vector[170] rugged_std;
+}
+generated quantities{
+  real a = normal_rng(1, 0.1);
+  real b = normal_rng(0, 0.3);
+  real sigma = exponential_rng(1);
+  array[170] real y_sim = normal_rng(a + b * (rugged_std-0.215),sigma);
+}"
+
+compile_m9_1_prior <- stan_model(model_name = "m9_1_prior",model_code=code_m9_1_prior)
+
+```
+
 
 [Stan Forum Question](https://discourse.mc-stan.org/t/implementing-prior-predictive-checks-in-stan/23815)
 
 [Cross Validated Example](https://stats.stackexchange.com/questions/233944/how-to-plot-prior-distributions-in-stan)
 
-Revisit this later and try to implement in the ruggedness example.
+### Diagnostics & Comparison - Trace Plots, WAIC & PSIS {-}
 
+The loo package contains functions for WAIC and PSIS. [Here's](http://mc-stan.org/loo/articles/loo2-example.html) the vignette. Revisit this and add in an example.
 
 The rstan package contains some functions for easy plotting. See [here](https://mc-stan.org/rstan/reference/stan_plot.html). One of these function plots the trace plot for a model. The trace plot plots the samples for each parameter in order and connects them with a line. Each chain is shown in a different colour.
 
@@ -293,6 +455,7 @@ The rstan package contains some functions for easy plotting. See [here](https://
 
 stan_trace(m9_1)
 ```
+
 Here's what we're looking for, according to the chapter:
 
 * Stationarity - the path of each chain should stay within the same high-probability region

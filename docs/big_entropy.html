@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -437,21 +440,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="big_entropy" class="section level1" number="10">
 <h1><span class="header-section-number">Chapter 10</span> Big Entropy and the Generalized Linear Model</h1>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="big_entropy.html#cb273-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Colours by Paul Tol.</span></span>
+<span id="cb273-2"><a href="big_entropy.html#cb273-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Defined in R by Joachim Goedhart </span></span>
+<span id="cb273-3"><a href="big_entropy.html#cb273-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Source: doi 10.5281/zenodo.3381072</span></span>
+<span id="cb273-4"><a href="big_entropy.html#cb273-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb273-5"><a href="big_entropy.html#cb273-5" aria-hidden="true" tabindex="-1"></a>tol_light <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;#BBCC33&#39;</span>, <span class="st">&#39;#AAAA00&#39;</span>, <span class="st">&#39;#77AADD&#39;</span>, <span class="st">&#39;#EE8866&#39;</span>, <span class="st">&#39;#EEDD88&#39;</span>, <span class="st">&#39;#FFAABB&#39;</span>, <span class="st">&#39;#99DDFF&#39;</span>, <span class="st">&#39;#44BB99&#39;</span>, <span class="st">&#39;#DDDDDD&#39;</span>)</span></code></pre></div>
 <div id="chapter-notes-9" class="section level2" number="10.1">
 <h2><span class="header-section-number">10.1</span> Chapter Notes</h2>
+<p>The chapter title is pretty straightforward: this one discusses maximum entropy arguments and introduces GLMs.</p>
 <div id="maximum-entropy" class="section level3 unnumbered">
 <h3>Maximum Entropy</h3>
 <p>The chapter introduces a justification for maximum entropy approaches that appears in Jaynes’ Probability Theory. Jaynes attributes the approach to Graham Wallis. We have <span class="math inline">\(m\)</span> different possibilities, and we want to assign probabilities <span class="math inline">\(\{ p_1, \dots, p_m \}\)</span> to them, with the probabilities summing to 1. We want to do this by making use of some information <span class="math inline">\(I\)</span> that we have.</p>
-<p>Jaynes described a thought experiment in which a blindfolded person throws pennies into <span class="math inline">\(m\)</span> equal boxes, so that any penny has an equal chance of landing in any of the boxes. The person throws some large number <span class="math inline">\(n &gt;&gt; m\)</span> of pennies and at the end we count up all the pennies in each box, divide by the total number of pennies and take this to be the probability assigned to the boxes by our experiment. For each box <span class="math inline">\(i = 1,2,\dots,m\)</span></p>
+<p>The following is outlined in an Overthinking box in the chapter. There’s a footnote there to page 352 of Jaynes’ <em>Probability Theory</em>, which is where the detail below (and more!) comes from.</p>
+<p>Jaynes describes a thought experiment in which a blindfolded person throws pennies into <span class="math inline">\(m\)</span> equal boxes, so that any penny has an equal chance of landing in any of the boxes. The person throws some large number <span class="math inline">\(n &gt;&gt; m\)</span> of pennies and at the end we count up all the pennies in each box, divide by the total number of pennies and take this to be the probability assigned to the boxes by our experiment. For each box <span class="math inline">\(i = 1,2,\dots,m\)</span></p>
 <p><span class="math display">\[
 p_i = \frac{n_i}{n} 
 \]</span></p>
-<p>where <span class="math inline">\(n_i\)</span> is the observed number of pennies in box <span class="math inline">\(i\)</span>.</p>
+<p>where <span class="math inline">\(n_i\)</span> is the observed number of pennies in box <span class="math inline">\(i\)</span>. This is our candidate probability distribution.</p>
 <p>The probability of any particular assignment is given by the multinomial distribution:</p>
 <p><span class="math display">\[
 m^{-n} \frac{n!}{n_1! \dots n_m!}.
 \]</span></p>
-<p>After the experiment, we check whether the probability assignment is consistent with our information <span class="math inline">\(I\)</span>. If it is not, we ask the blindfolded person to try again. We continue in this way until a probability assignment is accepted.</p>
+<p>After the experiment, we check whether the candidate probability distribution is consistent with our information <span class="math inline">\(I\)</span>. If not, we ask the blindfolded person to try again until a distribution is accepted. The most likely probability distibution to result from this game we say is the fairest, subject to our information constraints.</p>
 <p>What is the most likely probability distribution to be chosen by this experiment? The answer is whatever one maximises</p>
 <p><span class="math display">\[
 W = m^{-n} \frac{n!}{n_1! \dots n_m!}
@@ -459,8 +469,8 @@ W = m^{-n} \frac{n!}{n_1! \dots n_m!}
 <p>subject to the constraints of <span class="math inline">\(I\)</span>. This is equivalent to finding the distribution which maximises <span class="math inline">\(\frac{1}{n} \log(W)\)</span>:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\frac{1}{n} \log(W) &amp;= \frac{1}{n} \left( \log(n!) - \log(n_1!) - \dots - \log(n_m!) \right) \\
- &amp;= \frac{1}{n} \left( n \log(n) - n + \sqrt{2 \pi n} + \frac{1}{12n} + \mathcal{O}\left(\frac{1}{n^2}\right) \right) \\ 
+\frac{1}{n} \log(W) &amp;= \frac{1}{n} \left( \log(n!) - \log(n_1!) - \dots - \log(n_m!) \right)\\
+ &amp;= \frac{1}{n} \left( n \log(n) - n + \sqrt{2 \pi n} + \frac{1}{12n} + \mathcal{O}\left(\frac{1}{n^2}\right) \right) &amp;&amp; (\text{Stirling approximation for } \log(n!))\\ 
  &amp;\quad - \frac{1}{n} \left( n_1 \log(n_1) - n_1 + \sqrt{2 \pi n_1} + \frac{1}{12n_1} + \mathcal{O}\left(\frac{1}{n_1^2}\right)  \right) \\
  &amp;\vdots \\
  &amp;\quad- \frac{1}{n} \left( n_m \log(n_m) - n_m + \sqrt{2 \pi n_m} + \frac{1}{12n_m} + \mathcal{O}\left(\frac{1}{n_m^2}\right)  \right)  \\
@@ -473,7 +483,6 @@ W = m^{-n} \frac{n!}{n_1! \dots n_m!}
 \end{aligned}
 \]</span></p>
 <p>with the limit taken as <span class="math inline">\(n \to \inf\)</span> and <span class="math inline">\(n_i \to \inf\)</span> so that <span class="math inline">\(p_i\)</span> remains constant.</p>
-<p>Note: I used the Stirling approximation above. Initially used a tag in the latex to explain but doesn’t seem to work with the aligned environment. Correct later.</p>
 <p>We’ve recovered the formula for information entropy introduced in Chapter 7.</p>
 <p>The chapter then goes on to introduce proofs that the Gaussian distribution is the maximum entropy distribution given only a finite variance, and that the binomial is the maximum entropy distribution given only some constant expected value and two unordered possible events. First the Gaussian.</p>
 <p>Here’s the probability density function of the Gaussian:</p>
@@ -485,11 +494,28 @@ and its entropy:</p>
 H(p) = - \int p(x) \log p(x) dx = \frac{1}{2} \log(2 \pi e \sigma^2) 
 \]</span></p>
 <p>We want to consider <span class="math inline">\(q(x)\)</span>, some other probability density function with the same variance <span class="math inline">\(\sigma^2\)</span>. The basic structure of this proof is that we reintroduce KL divergence from Chapter 7</p>
+<p>Revisit.</p>
 </div>
 <div id="generalized-linear-models" class="section level3 unnumbered">
 <h3>Generalized Linear Models</h3>
 <p>This part of the chapter extends the notion of a linear model we’ve been working with so far to include non-Gaussian likelihoods. There is an introduction to the exponential family, and then a discussion of two common link functions that we’ll be using over the rest of the book: the logit link and the log link.</p>
-<p>The logit link is used for parameters that represent probabilities, and that therefore must be between 0 and 1. Since a linear function of a predictor may well return values for parameters outside of these boundaries, we want a function to transform the output of our linear function. E.g.</p>
+<p>So far we have assumed a Gaussian distribution for the outcome of our models like so:</p>
+<p><span class="math display">\[
+\begin{aligned}
+y_i &amp;\sim \text{Normal}(\mu_i,\sigma) \\
+\mu_i &amp;= \alpha + \beta x_i
+\end{aligned}
+\]</span></p>
+<p>but this is not the best choice when our outcome variable is bounded (like a proportion or a probability), or when it is discrete. Otherwise we could have a model that predicts that the Earth is 130% covered in water, or similar. General linear model approaches <em>generalise</em> the linear models we’ve seen so far. We’ll let our outcome variable be, say, binomially distributed and our linear predictor will we some function of, say, the <span class="math inline">\(p\)</span> parameter of our binomial:</p>
+<p><span class="math display">\[
+\begin{aligned}
+y_i &amp;\sim \text{Binomial}(n,p_i) \\
+f(p_i) &amp;= \alpha + \beta x_i
+\end{aligned}
+\]</span></p>
+<p>The chapter recommends a maximum entropy approach to selecting the probability distribution that you’ll use for the outcome.</p>
+<p>The other new item in the model above is the function <span class="math inline">\(f()\)</span>. This is the link function. We need this because the parameter that we’re feeding into our new distribution may not represent the mean value any more, and it also may have constraints that our linear model <span class="math inline">\(\alpha + \beta x_i\)</span> may not satisfy. For example, we can’t feed a <span class="math inline">\(p_i\)</span> to our binomial distribution unless it is between zero and 1. The job of the link function is to map the linear space of <span class="math inline">\(\alpha + \beta x_i\)</span> onto the non-linear space of the parameter we’re using.</p>
+<p>The logit link is used for parameters that represent probabilities, and that therefore must be between 0 and 1. Our models will look like this:</p>
 <p><span class="math display">\[
 \begin{aligned}
 y_i &amp;\sim \text{Binomial}(n,p_i) \\
@@ -498,12 +524,37 @@ y_i &amp;\sim \text{Binomial}(n,p_i) \\
 \]</span></p>
 <p>with the logit function representing the log odds like so:
 <span class="math display">\[
-\text{logit}(p_i) = \frac{p_i}{1 - p_i}
+\text{logit}(p_i) = \log \frac{p_i}{1 - p_i}
 \]</span></p>
 <p>So in this model, our parameter <span class="math inline">\(p_i\)</span> is the inverse-logit transform of the linear model:</p>
 <p><span class="math display">\[
 p_i = \frac{\exp(\alpha + \beta x_i)}{1 + \exp(\alpha + \beta x_i)}.
 \]</span></p>
+<p>This function is called the <em>logistic</em>, or in GLM contexts, the <em>inverse logit</em>.</p>
+<p>Here’s a plot:</p>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="big_entropy.html#cb274-1" aria-hidden="true" tabindex="-1"></a>data_logit <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">n=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">101</span>,</span>
+<span id="cb274-2"><a href="big_entropy.html#cb274-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">predictor_value =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out=</span><span class="dv">101</span>),</span>
+<span id="cb274-3"><a href="big_entropy.html#cb274-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">without_link =</span> <span class="dv">2</span><span class="sc">*</span>predictor_value, <span class="co"># simple linear model</span></span>
+<span id="cb274-4"><a href="big_entropy.html#cb274-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">logit_link =</span> <span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>predictor_value)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>predictor_value))) <span class="sc">%&gt;%</span> <span class="co"># applying the inverse logit function</span></span>
+<span id="cb274-5"><a href="big_entropy.html#cb274-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(without_link,logit_link), <span class="at">names_to=</span> <span class="st">&quot;space&quot;</span>,<span class="at">values_to =</span> <span class="st">&quot;parameter_value&quot;</span>)</span>
+<span id="cb274-6"><a href="big_entropy.html#cb274-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-7"><a href="big_entropy.html#cb274-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-8"><a href="big_entropy.html#cb274-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-9"><a href="big_entropy.html#cb274-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>data_logit,<span class="fu">aes</span>(<span class="at">x=</span>predictor_value,<span class="at">y=</span>parameter_value))<span class="sc">+</span></span>
+<span id="cb274-10"><a href="big_entropy.html#cb274-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">colour=</span>tol_light[[<span class="dv">4</span>]],<span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb274-11"><a href="big_entropy.html#cb274-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">data =</span> data_logit <span class="sc">%&gt;%</span> <span class="fu">filter</span>(n<span class="sc">%%</span><span class="dv">3</span><span class="sc">==</span><span class="dv">0</span>), <span class="co"># display every third row in the data as a horizontal line</span></span>
+<span id="cb274-12"><a href="big_entropy.html#cb274-12" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">yintercept=</span>parameter_value), <span class="at">alpha=</span><span class="fl">0.4</span>)<span class="sc">+</span></span>
+<span id="cb274-13"><a href="big_entropy.html#cb274-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">fct_rev</span>(space), <span class="at">scales=</span><span class="st">&quot;free&quot;</span>)</span></code></pre></div>
+<p><img src="10-big_entropy_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>The linear model <span class="math inline">\(2x\)</span> ranges over the log odds space (LHS of plot):</p>
+<p><span class="math display">\[
+\text{logit}(p_i) = \log \frac{p_i}{1-p_i}=  2x_i
+\]</span></p>
+<p>After applying the inverse logit, we can see that our parameter <span class="math inline">\(p\)</span> ranges over the probability space <span class="math inline">\([0,1]\)</span> (RHS of plot). The horizontal lines are there to show the compression that happens as we get closer to either 0 or 1. From the chapter:</p>
+<blockquote>
+<p>This compression does affect interpretation of parameter estimates, because no longer does a unit change in a predictor variable produce a constant change in the mean of the outcome variable. Instead, a unit change in <span class="math inline">\(x_i\)</span> may produce a larger or smaller change in the probability <span class="math inline">\(p_i\)</span>, depending upon how far from zero the log-odds are… When an event is almost guaranteed to happen, its probability cannot increase very much, no matter how important the predictor may be.</p>
+</blockquote>
+<p>The other link function introduced in this chapter is the log link.</p>
 <p>The log link function is for parameters that are only defined over positive real numbers. E.g.</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -511,7 +562,24 @@ y_i &amp;\sim \text{Normal}(\mu,\sigma) \\
 \log(\sigma_i) &amp;= \alpha + \beta x_i
 \end{aligned}
 \]</span></p>
-<p>Definitionally, <span class="math inline">\(\sigma\)</span> cannot be negative, and the log transform keeps this from happening. In the model above, our <span class="math inline">\(sigma\)</span> is modelled as the exponentiation of the linear model.</p>
+<p>By definition, <span class="math inline">\(\sigma\)</span> cannot be negative, and the log transform keeps this from happening. In the model above, our <span class="math inline">\(sigma\)</span> is modelled as the exponentiation of the linear model, since our inverse link function is exponentiation.</p>
+<p>Here’s a plot similar to the one for the logit:</p>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="big_entropy.html#cb275-1" aria-hidden="true" tabindex="-1"></a>data_log <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">n=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">101</span>,</span>
+<span id="cb275-2"><a href="big_entropy.html#cb275-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">predictor_value =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out=</span><span class="dv">101</span>),</span>
+<span id="cb275-3"><a href="big_entropy.html#cb275-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">without_link =</span> <span class="dv">2</span><span class="sc">*</span>predictor_value, <span class="co"># simple linear model</span></span>
+<span id="cb275-4"><a href="big_entropy.html#cb275-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">log_link =</span> <span class="fu">exp</span>(<span class="dv">2</span><span class="sc">*</span>predictor_value)) <span class="sc">%&gt;%</span> <span class="co"># applying the inverse log function exp()</span></span>
+<span id="cb275-5"><a href="big_entropy.html#cb275-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(without_link,log_link), <span class="at">names_to=</span> <span class="st">&quot;space&quot;</span>,<span class="at">values_to =</span> <span class="st">&quot;parameter_value&quot;</span>)</span>
+<span id="cb275-6"><a href="big_entropy.html#cb275-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb275-7"><a href="big_entropy.html#cb275-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb275-8"><a href="big_entropy.html#cb275-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb275-9"><a href="big_entropy.html#cb275-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>data_log,<span class="fu">aes</span>(<span class="at">x=</span>predictor_value,<span class="at">y=</span>parameter_value))<span class="sc">+</span></span>
+<span id="cb275-10"><a href="big_entropy.html#cb275-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">colour=</span>tol_light[[<span class="dv">4</span>]],<span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb275-11"><a href="big_entropy.html#cb275-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">data =</span> data_log <span class="sc">%&gt;%</span> <span class="fu">filter</span>(n<span class="sc">%%</span><span class="dv">3</span><span class="sc">==</span><span class="dv">0</span>), <span class="co"># display every third row in the data as a horizontal line</span></span>
+<span id="cb275-12"><a href="big_entropy.html#cb275-12" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">yintercept=</span>parameter_value), <span class="at">alpha=</span><span class="fl">0.4</span>)<span class="sc">+</span></span>
+<span id="cb275-13"><a href="big_entropy.html#cb275-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">fct_rev</span>(space), <span class="at">scales=</span><span class="st">&quot;free&quot;</span>)</span></code></pre></div>
+<p><img src="10-big_entropy_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We can see potential trouble here - when asking a model to predict outside of the range of the data it was trained on, the log link can create implausible outputs because of the exponential relationship.</p>
+<p>The chapter ends with a couple of</p>
 </div>
 </div>
 <div id="questions-9" class="section level2" number="10.2">

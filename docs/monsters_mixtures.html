@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-16" />
+<meta name="date" content="2022-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -304,6 +304,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#a-metropolis-algorithm"><i class="fa fa-check"></i>A Metropolis Algorithm</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#gibbs-sampling-and-hamiltonian-monte-carlo"><i class="fa fa-check"></i>Gibbs Sampling and Hamiltonian Monte Carlo</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#posterior-predictive-checks-with-stan"><i class="fa fa-check"></i>Posterior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#prior-predictive-checks-with-stan"><i class="fa fa-check"></i>Prior Predictive Checks with Stan</a></li>
+<li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#diagnostics-comparison---trace-plots-waic-psis"><i class="fa fa-check"></i>Diagnostics &amp; Comparison - Trace Plots, WAIC &amp; PSIS</a></li>
 <li class="chapter" data-level="" data-path="markov_chain.html"><a href="markov_chain.html#care-and-feeding-of-your-markov-chain"><i class="fa fa-check"></i>Care and Feeding of Your Markov Chain</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="markov_chain.html"><a href="markov_chain.html#questions-8"><i class="fa fa-check"></i><b>9.2</b> Questions</a>
@@ -462,7 +465,7 @@ The higher the value of <span class="math inline">\(\theta\)</span>, the more co
 ## phi    0.9966260 0.7846515  0.07746409 2.3980537 1659.046 1.0004995
 ## theta  2.9966260 0.7846514  2.07745965 4.3980537 1659.046 1.0004995</code></pre>
 <p>The probability of admission increases with the value of <span class="math inline">\(\alpha\)</span>. The difference between <span class="math inline">\(\alpha\)</span> for men and women is</p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="monsters_mixtures.html#cb285-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(post_UCB<span class="sc">$</span>diff_a)</span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="monsters_mixtures.html#cb294-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(post_UCB<span class="sc">$</span>diff_a)</span></code></pre></div>
 <pre><code>## [1] -0.1079617</code></pre>
 <p>suggesting the model believes women are more likely to be admitted. However the standard deviation of this value is 0.5710928;the model is very uncertain. We contrast this with model m11.7 in the last chapter, which predicted that men were more likely to be admitted, and was quite a bit more confident about this. Even though we haven’t included department in the model, allowing <span class="math inline">\(p\)</span> to vary by department / gender combination has captured some of the variation between departments.</p>
 <p>Here’s a plot:</p>
@@ -506,46 +509,46 @@ y_i &amp; \sim \text{ZIPoisson}(p_i,\lambda_i) \\
 <p>Here the outcome we want to predict is made up of some number of categories, like a multinomial. Except that the categories are ordered, e.g. an approval rating from 1 (strongly disapprove) to 5 (strongly approve). The ordering is important, but the scale is not necessarily linear, and so shouldn’t be modelled as a continuous outcome.</p>
 <p>The way of dealing with this described in the chapter is to use a log cumulative odds function, as we have used the log odds link in previous chapters. The chapter introduces a trolley problem example where respondents grade the moral permissability of action in a scenario on a scale of 1 to 7.</p>
 <p>Here I’ve reproduced some charts in the chapter that show the counts of each response, the cumulative proportion, and then the log cumulative odds.</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="monsters_mixtures.html#cb287-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Trolley)</span>
-<span id="cb287-2"><a href="monsters_mixtures.html#cb287-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-3"><a href="monsters_mixtures.html#cb287-3" aria-hidden="true" tabindex="-1"></a>data_trol <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(Trolley)<span class="sc">%&gt;%</span></span>
-<span id="cb287-4"><a href="monsters_mixtures.html#cb287-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as_factor</span>(response),</span>
-<span id="cb287-5"><a href="monsters_mixtures.html#cb287-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">prop =</span> )</span>
-<span id="cb287-6"><a href="monsters_mixtures.html#cb287-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-7"><a href="monsters_mixtures.html#cb287-7" aria-hidden="true" tabindex="-1"></a>plot_trol_hist <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_trol)<span class="sc">+</span></span>
-<span id="cb287-8"><a href="monsters_mixtures.html#cb287-8" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> response), <span class="at">stat=</span><span class="st">&quot;count&quot;</span>)</span>
-<span id="cb287-9"><a href="monsters_mixtures.html#cb287-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-10"><a href="monsters_mixtures.html#cb287-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-11"><a href="monsters_mixtures.html#cb287-11" aria-hidden="true" tabindex="-1"></a>hist_trol <span class="ot">&lt;-</span> data_trol<span class="sc">%&gt;%</span></span>
-<span id="cb287-12"><a href="monsters_mixtures.html#cb287-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(response)<span class="sc">%&gt;%</span></span>
-<span id="cb287-13"><a href="monsters_mixtures.html#cb287-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())<span class="sc">%&gt;%</span></span>
-<span id="cb287-14"><a href="monsters_mixtures.html#cb287-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
-<span id="cb287-15"><a href="monsters_mixtures.html#cb287-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">prop_cum =</span> <span class="fu">cumsum</span>(prop),</span>
-<span id="cb287-16"><a href="monsters_mixtures.html#cb287-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">log_cum_odds =</span> <span class="fu">log</span>(prop_cum <span class="sc">/</span> (<span class="dv">1</span><span class="sc">-</span> prop_cum)))</span>
-<span id="cb287-17"><a href="monsters_mixtures.html#cb287-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-18"><a href="monsters_mixtures.html#cb287-18" aria-hidden="true" tabindex="-1"></a>plot_trol_prop <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(hist_trol, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> response, <span class="at">y =</span> prop_cum,<span class="at">group =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb287-19"><a href="monsters_mixtures.html#cb287-19" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_line</span>()<span class="sc">+</span></span>
-<span id="cb287-20"><a href="monsters_mixtures.html#cb287-20" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb287-21"><a href="monsters_mixtures.html#cb287-21" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ylab</span>(<span class="st">&quot;cumulative proportion&quot;</span>)</span>
-<span id="cb287-22"><a href="monsters_mixtures.html#cb287-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-23"><a href="monsters_mixtures.html#cb287-23" aria-hidden="true" tabindex="-1"></a>plot_trol_odd <span class="ot">&lt;-</span>  <span class="fu">ggplot</span>(hist_trol<span class="sc">%&gt;%</span><span class="fu">filter</span>(log_cum_odds<span class="sc">!=</span> <span class="cn">Inf</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> response, <span class="at">y =</span> log_cum_odds,<span class="at">group =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
-<span id="cb287-24"><a href="monsters_mixtures.html#cb287-24" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_line</span>()<span class="sc">+</span></span>
-<span id="cb287-25"><a href="monsters_mixtures.html#cb287-25" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb287-26"><a href="monsters_mixtures.html#cb287-26" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">ylab</span>(<span class="st">&quot;log cumulative odds&quot;</span>)</span>
-<span id="cb287-27"><a href="monsters_mixtures.html#cb287-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb287-28"><a href="monsters_mixtures.html#cb287-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(plot_trol_hist,plot_trol_prop,plot_trol_odd,<span class="at">nrow =</span><span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="monsters_mixtures.html#cb296-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Trolley)</span>
+<span id="cb296-2"><a href="monsters_mixtures.html#cb296-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-3"><a href="monsters_mixtures.html#cb296-3" aria-hidden="true" tabindex="-1"></a>data_trol <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(Trolley)<span class="sc">%&gt;%</span></span>
+<span id="cb296-4"><a href="monsters_mixtures.html#cb296-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">response =</span> <span class="fu">as_factor</span>(response),</span>
+<span id="cb296-5"><a href="monsters_mixtures.html#cb296-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">prop =</span> )</span>
+<span id="cb296-6"><a href="monsters_mixtures.html#cb296-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-7"><a href="monsters_mixtures.html#cb296-7" aria-hidden="true" tabindex="-1"></a>plot_trol_hist <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_trol)<span class="sc">+</span></span>
+<span id="cb296-8"><a href="monsters_mixtures.html#cb296-8" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> response), <span class="at">stat=</span><span class="st">&quot;count&quot;</span>)</span>
+<span id="cb296-9"><a href="monsters_mixtures.html#cb296-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-10"><a href="monsters_mixtures.html#cb296-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-11"><a href="monsters_mixtures.html#cb296-11" aria-hidden="true" tabindex="-1"></a>hist_trol <span class="ot">&lt;-</span> data_trol<span class="sc">%&gt;%</span></span>
+<span id="cb296-12"><a href="monsters_mixtures.html#cb296-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(response)<span class="sc">%&gt;%</span></span>
+<span id="cb296-13"><a href="monsters_mixtures.html#cb296-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())<span class="sc">%&gt;%</span></span>
+<span id="cb296-14"><a href="monsters_mixtures.html#cb296-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
+<span id="cb296-15"><a href="monsters_mixtures.html#cb296-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">prop_cum =</span> <span class="fu">cumsum</span>(prop),</span>
+<span id="cb296-16"><a href="monsters_mixtures.html#cb296-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">log_cum_odds =</span> <span class="fu">log</span>(prop_cum <span class="sc">/</span> (<span class="dv">1</span><span class="sc">-</span> prop_cum)))</span>
+<span id="cb296-17"><a href="monsters_mixtures.html#cb296-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-18"><a href="monsters_mixtures.html#cb296-18" aria-hidden="true" tabindex="-1"></a>plot_trol_prop <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(hist_trol, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> response, <span class="at">y =</span> prop_cum,<span class="at">group =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb296-19"><a href="monsters_mixtures.html#cb296-19" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb296-20"><a href="monsters_mixtures.html#cb296-20" aria-hidden="true" tabindex="-1"></a>            <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb296-21"><a href="monsters_mixtures.html#cb296-21" aria-hidden="true" tabindex="-1"></a>            <span class="fu">ylab</span>(<span class="st">&quot;cumulative proportion&quot;</span>)</span>
+<span id="cb296-22"><a href="monsters_mixtures.html#cb296-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-23"><a href="monsters_mixtures.html#cb296-23" aria-hidden="true" tabindex="-1"></a>plot_trol_odd <span class="ot">&lt;-</span>  <span class="fu">ggplot</span>(hist_trol<span class="sc">%&gt;%</span><span class="fu">filter</span>(log_cum_odds<span class="sc">!=</span> <span class="cn">Inf</span>), <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> response, <span class="at">y =</span> log_cum_odds,<span class="at">group =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb296-24"><a href="monsters_mixtures.html#cb296-24" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb296-25"><a href="monsters_mixtures.html#cb296-25" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb296-26"><a href="monsters_mixtures.html#cb296-26" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">ylab</span>(<span class="st">&quot;log cumulative odds&quot;</span>)</span>
+<span id="cb296-27"><a href="monsters_mixtures.html#cb296-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb296-28"><a href="monsters_mixtures.html#cb296-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_grid</span>(plot_trol_hist,plot_trol_prop,plot_trol_odd,<span class="at">nrow =</span><span class="dv">1</span>)</span></code></pre></div>
 <p>A model with no predictors is introduced, to check that we can recover the cumulative proportions in the data in the posterior distribution:</p>
-<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="monsters_mixtures.html#cb288-1" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
-<span id="cb288-2"><a href="monsters_mixtures.html#cb288-2" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( <span class="dv">0</span> , cutpoints ), </span>
-<span id="cb288-3"><a href="monsters_mixtures.html#cb288-3" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
-<span id="cb288-4"><a href="monsters_mixtures.html#cb288-4" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span><span class="fu">list</span>( <span class="at">R=</span>data_trol<span class="sc">$</span>response ), <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>,<span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb288-5"><a href="monsters_mixtures.html#cb288-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb288-6"><a href="monsters_mixtures.html#cb288-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb288-7"><a href="monsters_mixtures.html#cb288-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cumulative proportions in the data</span></span>
-<span id="cb288-8"><a href="monsters_mixtures.html#cb288-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(hist_trol<span class="sc">$</span>prop_cum, <span class="dv">3</span>)</span>
-<span id="cb288-9"><a href="monsters_mixtures.html#cb288-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb288-10"><a href="monsters_mixtures.html#cb288-10" aria-hidden="true" tabindex="-1"></a><span class="co"># model expectations for cumulative proportions</span></span>
-<span id="cb288-11"><a href="monsters_mixtures.html#cb288-11" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>( <span class="fu">inverse_logit</span>(<span class="fu">coef</span>(m12<span class="fl">.4</span>)) , <span class="dv">3</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="monsters_mixtures.html#cb297-1" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
+<span id="cb297-2"><a href="monsters_mixtures.html#cb297-2" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( <span class="dv">0</span> , cutpoints ), </span>
+<span id="cb297-3"><a href="monsters_mixtures.html#cb297-3" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
+<span id="cb297-4"><a href="monsters_mixtures.html#cb297-4" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span><span class="fu">list</span>( <span class="at">R=</span>data_trol<span class="sc">$</span>response ), <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>,<span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb297-5"><a href="monsters_mixtures.html#cb297-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-6"><a href="monsters_mixtures.html#cb297-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-7"><a href="monsters_mixtures.html#cb297-7" aria-hidden="true" tabindex="-1"></a><span class="co"># cumulative proportions in the data</span></span>
+<span id="cb297-8"><a href="monsters_mixtures.html#cb297-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(hist_trol<span class="sc">$</span>prop_cum, <span class="dv">3</span>)</span>
+<span id="cb297-9"><a href="monsters_mixtures.html#cb297-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-10"><a href="monsters_mixtures.html#cb297-10" aria-hidden="true" tabindex="-1"></a><span class="co"># model expectations for cumulative proportions</span></span>
+<span id="cb297-11"><a href="monsters_mixtures.html#cb297-11" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>( <span class="fu">inverse_logit</span>(<span class="fu">coef</span>(m12<span class="fl">.4</span>)) , <span class="dv">3</span> )</span></code></pre></div>
 <p>Then the chapter explains how to include predictors in this kind of model. The log cumulative odds for each response k is modelled as a linear combination of it’s intercept <span class="math inline">\(\alpha_k\)</span> and a standard linear model:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -567,19 +570,19 @@ Here:
 * <span class="math inline">\(I_i\)</span> is the value of intention on row <span class="math inline">\(i\)</span>, 0 or 1.
 * <span class="math inline">\(C_i\)</span> is the value of contact on row <span class="math inline">\(i\)</span>, 0 or 1.
 * <span class="math inline">\(B_I,i\)</span> introduces an interaction effect between intention and action, and intention and contact.</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="monsters_mixtures.html#cb289-1" aria-hidden="true" tabindex="-1"></a>list_trol <span class="ot">&lt;-</span> <span class="fu">with</span>(data_trol, <span class="fu">list</span>(<span class="at">R =</span> response, <span class="at">A =</span> action, <span class="at">C =</span> contact, <span class="at">I =</span> intention))</span>
-<span id="cb289-2"><a href="monsters_mixtures.html#cb289-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb289-3"><a href="monsters_mixtures.html#cb289-3" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
-<span id="cb289-4"><a href="monsters_mixtures.html#cb289-4" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( phi , cutpoints ), </span>
-<span id="cb289-5"><a href="monsters_mixtures.html#cb289-5" aria-hidden="true" tabindex="-1"></a>  phi <span class="ot">&lt;-</span> bA<span class="sc">*</span>A <span class="sc">+</span> bC<span class="sc">*</span>C <span class="sc">+</span> BI<span class="sc">*</span>I , </span>
-<span id="cb289-6"><a href="monsters_mixtures.html#cb289-6" aria-hidden="true" tabindex="-1"></a>  BI <span class="ot">&lt;-</span> bI <span class="sc">+</span> bIA<span class="sc">*</span>A <span class="sc">+</span> bIC<span class="sc">*</span>C , </span>
-<span id="cb289-7"><a href="monsters_mixtures.html#cb289-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(bA,bI,bC,bIA,bIC) <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ), </span>
-<span id="cb289-8"><a href="monsters_mixtures.html#cb289-8" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
-<span id="cb289-9"><a href="monsters_mixtures.html#cb289-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>list_trol , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
-<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="monsters_mixtures.html#cb290-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m12<span class="fl">.5</span>))<span class="sc">+</span></span>
-<span id="cb290-2"><a href="monsters_mixtures.html#cb290-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m12<span class="fl">.5</span>)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
-<span id="cb290-3"><a href="monsters_mixtures.html#cb290-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
-<span id="cb290-4"><a href="monsters_mixtures.html#cb290-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="monsters_mixtures.html#cb298-1" aria-hidden="true" tabindex="-1"></a>list_trol <span class="ot">&lt;-</span> <span class="fu">with</span>(data_trol, <span class="fu">list</span>(<span class="at">R =</span> response, <span class="at">A =</span> action, <span class="at">C =</span> contact, <span class="at">I =</span> intention))</span>
+<span id="cb298-2"><a href="monsters_mixtures.html#cb298-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb298-3"><a href="monsters_mixtures.html#cb298-3" aria-hidden="true" tabindex="-1"></a>m12<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">ulam</span>( <span class="fu">alist</span>( </span>
+<span id="cb298-4"><a href="monsters_mixtures.html#cb298-4" aria-hidden="true" tabindex="-1"></a>  R <span class="sc">~</span> <span class="fu">dordlogit</span>( phi , cutpoints ), </span>
+<span id="cb298-5"><a href="monsters_mixtures.html#cb298-5" aria-hidden="true" tabindex="-1"></a>  phi <span class="ot">&lt;-</span> bA<span class="sc">*</span>A <span class="sc">+</span> bC<span class="sc">*</span>C <span class="sc">+</span> BI<span class="sc">*</span>I , </span>
+<span id="cb298-6"><a href="monsters_mixtures.html#cb298-6" aria-hidden="true" tabindex="-1"></a>  BI <span class="ot">&lt;-</span> bI <span class="sc">+</span> bIA<span class="sc">*</span>A <span class="sc">+</span> bIC<span class="sc">*</span>C , </span>
+<span id="cb298-7"><a href="monsters_mixtures.html#cb298-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(bA,bI,bC,bIA,bIC) <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ), </span>
+<span id="cb298-8"><a href="monsters_mixtures.html#cb298-8" aria-hidden="true" tabindex="-1"></a>  cutpoints <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> )</span>
+<span id="cb298-9"><a href="monsters_mixtures.html#cb298-9" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>list_trol , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">cores=</span><span class="dv">4</span>, <span class="at">cmdstan =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="monsters_mixtures.html#cb299-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">precis</span>(m12<span class="fl">.5</span>))<span class="sc">+</span></span>
+<span id="cb299-2"><a href="monsters_mixtures.html#cb299-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">rownames</span>(<span class="fu">precis</span>(m12<span class="fl">.5</span>)),<span class="at">y=</span>mean,<span class="at">ymin=</span><span class="st">`</span><span class="at">5.5%</span><span class="st">`</span>,<span class="at">ymax=</span><span class="st">`</span><span class="at">94.5%</span><span class="st">`</span>))<span class="sc">+</span></span>
+<span id="cb299-3"><a href="monsters_mixtures.html#cb299-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;parameter&quot;</span>)<span class="sc">+</span></span>
+<span id="cb299-4"><a href="monsters_mixtures.html#cb299-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
 <p>We can see that all of the predictors (action - bA, contact - bC, intention - bI) are all negatively associated with permissability.</p>
 <p>Need to revisit this for posterior plots. And also the section on ordered categorical predictors.</p>
 </div>
