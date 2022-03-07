@@ -61,7 +61,7 @@ Here's a nice bit about choosing modelling assumptions:
 > These data look rather Gaussian in shape, as is typical of height data. This may be because height is a sum of many
 small growth factors. As you saw at the start of the chapter, a distribution of sums tends to converge to a Gaussian distribution. Whatever the reason, adult heights from a single population are nearly always approximately normal. 
 >
-> So it’s reasonable for the moment to adopt the stance that the model should use a Gaussian distribution for the probability distribution of the data. But be careful about choosing the Gaussian distribution only when the plotted outcome variable looks Gaussian to you. Gawking at the raw data, to try to decide how tomodel them, is usually not a good idea. The data could be a mixture of different Gaussian distributions, for example, and in that case you won’t be able to detect the underlying normality just by eyeballing the outcome distribution. Furthermore, as mentioned earlier in this chapter, the empirical distribution needn’t be actually Gaussian in order to justify using a Gaussian probability distribution.
+> So it’s reasonable for the moment to adopt the stance that the model should use a Gaussian distribution for the probability distribution of the data. But be careful about choosing the Gaussian distribution only when the plotted outcome variable looks Gaussian to you. Gawking at the raw data, to try to decide how to model them, is usually not a good idea. The data could be a mixture of different Gaussian distributions, for example, and in that case you won’t be able to detect the underlying normality just by eyeballing the outcome distribution. Furthermore, as mentioned earlier in this chapter, the empirical distribution needn’t be actually Gaussian in order to justify using a Gaussian probability distribution.
 
 We start building up our model:
 
@@ -311,6 +311,7 @@ ggplot(data_adults)+
   geom_point(aes(x=weight, y=height))+
   ggtitle("!Kung San Adults")
 ```
+
 Here's the chapter:
 
 > The strategy is to make the parameter for the mean of a Gaussian distribution, $\mu$, into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.
@@ -376,7 +377,7 @@ $$
 \mu_i = (\alpha - \beta\bar{x}) + \beta(x_i ) 
 $$
 
-over the range $(\min( x_i),\max( x_i)$.
+over the range $(\min( x_i),\max( x_i))$.
 
 The plot makes clear that our priors are very permissive. They allow impossible (e.g. negative) heights to be associated with observed weights. Also, just as many lines suggest that height may be negatively correlated with height as suggest a positive correlation.
 
@@ -472,6 +473,7 @@ data_grid(data_adults,weight=seq_range(weight, n = 51)) %>%
   geom_point(data = data_adults, colour = "light blue") +
   scale_fill_brewer(palette = "Greys")
 ```
+
 The shaded regions display the uncertainty in the expected heights for each weight.
 
 However this is not the only source of uncertainty in our model. We also have uncertainty *around* the mean heights, represented by $\sigma$ in the model specification:

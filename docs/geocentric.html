@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-19" />
+<meta name="date" content="2022-03-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -330,7 +330,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.1" data-path="god_spiked.html"><a href="god_spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
-<li class="chapter" data-level="11.1.1" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i>Poisson Regression</a></li>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
 </ul></li>
 <li class="chapter" data-level="11.2" data-path="god_spiked.html"><a href="god_spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
@@ -481,7 +481,7 @@ y_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
 <blockquote>
 <p>These data look rather Gaussian in shape, as is typical of height data. This may be because height is a sum of many
 small growth factors. As you saw at the start of the chapter, a distribution of sums tends to converge to a Gaussian distribution. Whatever the reason, adult heights from a single population are nearly always approximately normal.</p>
-<p>So it’s reasonable for the moment to adopt the stance that the model should use a Gaussian distribution for the probability distribution of the data. But be careful about choosing the Gaussian distribution only when the plotted outcome variable looks Gaussian to you. Gawking at the raw data, to try to decide how tomodel them, is usually not a good idea. The data could be a mixture of different Gaussian distributions, for example, and in that case you won’t be able to detect the underlying normality just by eyeballing the outcome distribution. Furthermore, as mentioned earlier in this chapter, the empirical distribution needn’t be actually Gaussian in order to justify using a Gaussian probability distribution.</p>
+<p>So it’s reasonable for the moment to adopt the stance that the model should use a Gaussian distribution for the probability distribution of the data. But be careful about choosing the Gaussian distribution only when the plotted outcome variable looks Gaussian to you. Gawking at the raw data, to try to decide how to model them, is usually not a good idea. The data could be a mixture of different Gaussian distributions, for example, and in that case you won’t be able to detect the underlying normality just by eyeballing the outcome distribution. Furthermore, as mentioned earlier in this chapter, the empirical distribution needn’t be actually Gaussian in order to justify using a Gaussian probability distribution.</p>
 </blockquote>
 <p>We start building up our model:</p>
 <p><span class="math display">\[
@@ -626,16 +626,16 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <pre><code>## # A tibble: 10 x 5
 ##    .chain .iteration .draw    mu sigma
 ##     &lt;int&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1     NA         NA     1  154.  7.49
-##  2     NA         NA     2  155.  7.61
-##  3     NA         NA     3  155.  7.09
-##  4     NA         NA     4  154.  7.53
-##  5     NA         NA     5  155.  7.61
-##  6     NA         NA     6  155.  7.91
-##  7     NA         NA     7  155.  7.39
-##  8     NA         NA     8  155.  7.75
-##  9     NA         NA     9  155.  7.39
-## 10     NA         NA    10  154.  7.52</code></pre>
+##  1     NA         NA     1  155.  8.05
+##  2     NA         NA     2  154.  7.90
+##  3     NA         NA     3  154.  8.36
+##  4     NA         NA     4  155.  7.52
+##  5     NA         NA     5  155.  7.35
+##  6     NA         NA     6  156.  7.92
+##  7     NA         NA     7  155.  7.97
+##  8     NA         NA     8  155.  7.89
+##  9     NA         NA     9  155.  7.33
+## 10     NA         NA    10  155.  8.18</code></pre>
 <p>Here’s a summary of the posterior for our parameters using the point and interval summary functions from tidybayes:</p>
 <div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="geocentric.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>)</span>
 <span id="cb70-2"><a href="geocentric.html#cb70-2" aria-hidden="true" tabindex="-1"></a>m4_1 <span class="sc">%&gt;%</span></span>
@@ -701,8 +701,8 @@ To get the probability of the parameters given the <em>total</em> data, we compu
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="geocentric.html#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_adults)<span class="sc">+</span></span>
 <span id="cb86-2"><a href="geocentric.html#cb86-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>weight, <span class="at">y=</span>height))<span class="sc">+</span></span>
 <span id="cb86-3"><a href="geocentric.html#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;!Kung San Adults&quot;</span>)</span></code></pre></div>
-<p><img src="04-geocentric_files/figure-html/unnamed-chunk-18-1.png" width="672" />
-Here’s the chapter:</p>
+<p><img src="04-geocentric_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Here’s the chapter:</p>
 <blockquote>
 <p>The strategy is to make the parameter for the mean of a Gaussian distribution, <span class="math inline">\(\mu\)</span>, into a linear function of the predictor variable and other, new parameters that we invent. This strategy is often simply called the linear model. The linear model strategy instructs the golem to assume that the predictor variable has a constant and additive relationship to the mean of the outcome. The golem then computes the posterior distribution of this constant relationship.</p>
 </blockquote>
@@ -754,7 +754,7 @@ over the range <span class="math inline">\((\min( x_i) - \bar{x},\max( x_i) - \b
 <p><span class="math display">\[
 \mu_i = (\alpha - \beta\bar{x}) + \beta(x_i ) 
 \]</span></p>
-<p>over the range <span class="math inline">\((\min( x_i),\max( x_i)\)</span>.</p>
+<p>over the range <span class="math inline">\((\min( x_i),\max( x_i))\)</span>.</p>
 <p>The plot makes clear that our priors are very permissive. They allow impossible (e.g. negative) heights to be associated with observed weights. Also, just as many lines suggest that height may be negatively correlated with height as suggest a positive correlation.</p>
 <p>The chapter also trials the more informative prior</p>
 <p><span class="math display">\[
@@ -833,8 +833,8 @@ We feed it to quap and create a table of the parameters using tidybayes:</p>
 <span id="cb92-6"><a href="geocentric.html#cb92-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> .linpred)) <span class="sc">+</span></span>
 <span id="cb92-7"><a href="geocentric.html#cb92-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_adults, <span class="at">colour =</span> <span class="st">&quot;light blue&quot;</span>) <span class="sc">+</span></span>
 <span id="cb92-8"><a href="geocentric.html#cb92-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Greys&quot;</span>)</span></code></pre></div>
-<p><img src="04-geocentric_files/figure-html/unnamed-chunk-23-1.png" width="672" />
-The shaded regions display the uncertainty in the expected heights for each weight.</p>
+<p><img src="04-geocentric_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>The shaded regions display the uncertainty in the expected heights for each weight.</p>
 <p>However this is not the only source of uncertainty in our model. We also have uncertainty <em>around</em> the mean heights, represented by <span class="math inline">\(\sigma\)</span> in the model specification:</p>
 <p><span class="math display">\[
 h_i = \text{Normal}(\mu_i, \sigma)
@@ -887,9 +887,9 @@ h_i &amp;= \text{Normal}(\mu_i, \sigma)\\
 ##   .variable .value .lower .upper .width .point .interval
 ##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
 ## 1 a         146.   145.   147.     0.89 median qi       
-## 2 b1         21.7   21.2   22.2    0.89 median qi       
+## 2 b1         21.7   21.3   22.2    0.89 median qi       
 ## 3 b2         -7.81  -8.25  -7.36   0.89 median qi       
-## 4 sigma       5.77   5.48   6.06   0.89 median qi</code></pre>
+## 4 sigma       5.77   5.49   6.06   0.89 median qi</code></pre>
 <p>Here’s a plot of draws from the posterior:</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="geocentric.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_grid</span>(data_howell,<span class="at">weight_s=</span><span class="fu">seq_range</span>(weight_s, <span class="at">n =</span> <span class="dv">51</span>)) <span class="sc">%&gt;%</span> <span class="co"># grid of standardised weights to range over</span></span>
 <span id="cb96-2"><a href="geocentric.html#cb96-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_s2 =</span> weight_s<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%&gt;%</span> <span class="co"># the add_predicted_draws() function expects both weight_s and weight_s2</span></span>

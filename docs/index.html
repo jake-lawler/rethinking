@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-19" />
+<meta name="date" content="2022-03-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -330,7 +330,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.1" data-path="god_spiked.html"><a href="god_spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
-<li class="chapter" data-level="11.1.1" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i>Poisson Regression</a></li>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
 </ul></li>
 <li class="chapter" data-level="11.2" data-path="god_spiked.html"><a href="god_spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
@@ -441,22 +441,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Statistical Rethinking Notes</h1>
 <p class="author"><em>Jake Lawler</em></p>
-<p class="date"><em>2022-02-19</em></p>
+<p class="date"><em>2022-03-07</em></p>
 </div>
 <div id="preface" class="section level1 unnumbered">
 <h1>Preface</h1>
-<p>These are my notes on Richard McElreath’s ‘Statistical Rethinking.’ They are currently incomplete. In particular:</p>
-<ul>
-<li>I haven’t done the question sets of the final few chapters yet.</li>
-</ul>
+<p>These are my notes on Richard McElreath’s ‘Statistical Rethinking.’ They contain summaries for each chapter, and recreations of many of the models in base Stan. Data for the Stan models, and extraction of the posterior draws is done using the tidybayes package. I’ve also recreated many of the graphs using ggplot (the book uses base R). There are also attempted answers to many, but not (yet) all, of the questions in the book.</p>
 <p>If you are a student working through Rethinking and happen to stumble across these notes, please be careful! I am not a statistician, and this book was my first exposure to a lot of this material - my summaries and answers to end-of-chapter questions are probably wrong in many places (!)</p>
-<p>This is also my first use of the bookdown package. I’ve really enjoyed using it as a way of structuring textbook notes, and plan to keep using it in the future. Thank you to Yihui Xie for his work on the package and for the very helpful guide ‘bookdown: Authoring Books and Technical Documents with R Markdown.’</p>
-<p>I’ve hidden a lot of the code used to train the models, create the graphs etc. It’s all available at <a href="https://github.com/jake-lawler" class="uri">https://github.com/jake-lawler</a>. The code is a little muddled because I’m trying to use tidyverse-oriented R and the rethinking package is not built with that in mind. I think once I move on to e.g. ‘Bayesian Data Analysis’ I’ll try to use brms, or just raw Stan.</p>
+<p>This was also my first use of the bookdown package. I’ve really enjoyed using it as a way of structuring textbook notes, and plan to keep using it in the future. Thank you to Yihui Xie for his work on the package and for the very helpful guide ‘bookdown: Authoring Books and Technical Documents with R Markdown.’</p>
 <p>Also, thanks to Richard McElreath. I had a lot of fun working my way through the book, and have collected a long list of interesting further reading that I’m only just beginning to get started on.</p>
-<p>Items to revisit:</p>
-<ul>
-<li>Chapter Four - Revisit the spline section once I’m better at using tidybayes to extract draws from more complicated models.</li>
-</ul>
 
 </div>
             </section>

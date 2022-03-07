@@ -36,7 +36,6 @@ chapter-notes-9
 questions-9
 god_spiked
 chapter-notes-10
-poisson-regression
 questions-10
 monsters_mixtures
 chapter-notes-11

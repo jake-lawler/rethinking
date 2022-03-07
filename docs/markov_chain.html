@@ -24,7 +24,7 @@
 <meta name="author" content="Jake Lawler" />
 
 
-<meta name="date" content="2022-02-19" />
+<meta name="date" content="2022-03-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -330,7 +330,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.1" data-path="god_spiked.html"><a href="god_spiked.html#chapter-notes-10"><i class="fa fa-check"></i><b>11.1</b> Chapter Notes</a>
 <ul>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#binomial-regression"><i class="fa fa-check"></i>Binomial Regression</a></li>
-<li class="chapter" data-level="11.1.1" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i><b>11.1.1</b> Poisson Regression</a></li>
+<li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#poisson-regression"><i class="fa fa-check"></i>Poisson Regression</a></li>
 <li class="chapter" data-level="" data-path="god_spiked.html"><a href="god_spiked.html#multinomial-and-categorical-models"><i class="fa fa-check"></i>Multinomial and Categorical Models</a></li>
 </ul></li>
 <li class="chapter" data-level="11.2" data-path="god_spiked.html"><a href="god_spiked.html#questions-10"><i class="fa fa-check"></i><b>11.2</b> Questions</a>
@@ -662,16 +662,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb264-6"><a href="markov_chain.html#cb264-6" aria-hidden="true" tabindex="-1"></a><span class="co"># You can use the tidybayes function get_variables() to list all the variables you can include</span></span>
 <span id="cb264-7"><a href="markov_chain.html#cb264-7" aria-hidden="true" tabindex="-1"></a>draws_rugged <span class="ot">&lt;-</span> m9_1 <span class="sc">%&gt;%</span> </span>
 <span id="cb264-8"><a href="markov_chain.html#cb264-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread_draws</span>(a[CID], b[CID], sigma)<span class="sc">%&gt;%</span></span>
-<span id="cb264-9"><a href="markov_chain.html#cb264-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">CID=</span><span class="fu">as.factor</span>(CID),<span class="at">ndraws=</span><span class="dv">50</span>)</span>
+<span id="cb264-9"><a href="markov_chain.html#cb264-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">CID=</span><span class="fu">as.factor</span>(CID))</span>
 <span id="cb264-10"><a href="markov_chain.html#cb264-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb264-11"><a href="markov_chain.html#cb264-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Stitch these two data frames together.</span></span>
 <span id="cb264-12"><a href="markov_chain.html#cb264-12" aria-hidden="true" tabindex="-1"></a>pred_rugged <span class="ot">&lt;-</span> </span>
 <span id="cb264-13"><a href="markov_chain.html#cb264-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(grid_rugged, draws_rugged, <span class="at">by=</span><span class="fu">character</span>())<span class="sc">%&gt;%</span> <span class="co"># cross product of the two data frames</span></span>
 <span id="cb264-14"><a href="markov_chain.html#cb264-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>()<span class="sc">%&gt;%</span> <span class="co"># Rowwise for rnorm to work</span></span>
 <span id="cb264-15"><a href="markov_chain.html#cb264-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">linpred =</span> a <span class="sc">+</span> b<span class="sc">*</span>(rugged_std<span class="fl">-0.215</span>), <span class="co"># create the linear predictor</span></span>
-<span id="cb264-16"><a href="markov_chain.html#cb264-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">prediction =</span> withr<span class="sc">::</span><span class="fu">with_seed</span>(<span class="dv">71</span>,<span class="fu">rnorm</span>(<span class="dv">1</span>,linpred,sigma)), <span class="co"># sample from the posterior predictive. seed = 71</span></span>
+<span id="cb264-16"><a href="markov_chain.html#cb264-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">prediction =</span> withr<span class="sc">::</span><span class="fu">with_seed</span>(<span class="dv">71</span>,<span class="fu">rnorm</span>(<span class="dv">1</span>,linpred,sigma)), <span class="co"># sample from the posterior predictive</span></span>
 <span id="cb264-17"><a href="markov_chain.html#cb264-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">nation =</span> <span class="fu">if_else</span>(CID<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;African Nations&quot;</span>,<span class="st">&quot;Non-African Nations&quot;</span>))<span class="sc">%&gt;%</span></span>
 <span id="cb264-18"><a href="markov_chain.html#cb264-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
+<p>Revisit: the difference between this plot (that should increasing variance as ruggedness increases) and the one from chapter 8 (that shows constant variance) seems to be the presence or absence of the seed in the code for the prediction. Removing the with_seed() function makes the plot look the same as in the previous chapter. Need to understand why this is.</p>
 <p>We can then use this data frame of posterior predictions in plots as before. This code is more or less copied from the code I wrote in chapter 8 for the quap model.</p>
 <div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="markov_chain.html#cb265-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pred_rugged,<span class="fu">aes</span>(<span class="at">x=</span>rugged_std, <span class="at">y =</span> prediction))<span class="sc">+</span></span>
 <span id="cb265-2"><a href="markov_chain.html#cb265-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>()<span class="sc">+</span></span>

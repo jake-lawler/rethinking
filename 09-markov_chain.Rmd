@@ -286,17 +286,19 @@ grid_rugged <- data_grid(data_rugged,
 # You can use the tidybayes function get_variables() to list all the variables you can include
 draws_rugged <- m9_1 %>% 
   spread_draws(a[CID], b[CID], sigma)%>%
-  mutate(CID=as.factor(CID),ndraws=50)
+  mutate(CID=as.factor(CID))
 
 # Stitch these two data frames together.
 pred_rugged <- 
   inner_join(grid_rugged, draws_rugged, by=character())%>% # cross product of the two data frames
   rowwise()%>% # Rowwise for rnorm to work
   mutate(linpred = a + b*(rugged_std-0.215), # create the linear predictor
-         prediction = withr::with_seed(71,rnorm(1,linpred,sigma)), # sample from the posterior predictive. seed = 71
+         prediction = withr::with_seed(71,rnorm(1,linpred,sigma)), # sample from the posterior predictive
          nation = if_else(CID==1,"African Nations","Non-African Nations"))%>%
   ungroup()
 ```
+
+Revisit: the difference between this plot (that should increasing variance as ruggedness increases) and the one from chapter 8 (that shows constant variance) seems to be the presence or absence of the seed in the code for the prediction. Removing the with_seed() function makes the plot look the same as in the previous chapter. Need to understand why this is. 
 
 We can then use this data frame of posterior predictions in plots as before. This code is more or less copied from the code I wrote in chapter 8 for the quap model.
 

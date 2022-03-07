@@ -11,6 +11,9 @@ library(dagitty)
 library(knitr)
 library(RColorBrewer)
 library(cowplot)
+library(tidybayes)
+library(ggdist)
+library(modelr)
 
 inverse_logit <- function(x){
   exp(x) / (1 + exp(x))
@@ -27,7 +30,7 @@ The chapter opens with a discussion of over-dispersion in count data - when the 
 
 The beta-binomial distribution is the binomial distribution, except that instead of the probability of success p being fixed, it is drawn from some beta distribution.
 
-The chapter example returns to the UCB admissions data from the previous chapter, except this time we allow each row of the data (i.e. each department / gender combination) is allowed to have a different probability of admission - drawn from a beta distribution. I'd previously seen beta distributions with $\alpha$ and $\beta$ parametrisation, but the chapter uses $\bar{p}$ and $\theta$, with $\alpha = \bar{p}\theta$ and $\beta = (1-\bar{p})\theta$. Here $\bar{p}$ is the average probability and $\theta$ is a shape parameter.
+The chapter example returns to the UCB admissions data from the previous chapter, except this time we allow each row of the data (i.e. each department / gender combination) to have a different probability of admission - drawn from a beta distribution. I'd previously seen beta distributions with $\alpha$ and $\beta$ parameterisation, but the chapter uses $\bar{p}$ and $\theta$, with $\alpha = \bar{p}\theta$ and $\beta = (1-\bar{p})\theta$. Here $\bar{p}$ is the average probability and $\theta$ is a shape parameter.
 
 Here is the model used for the UCB data:
 
@@ -41,6 +44,7 @@ A_i &\sim \text{BetaBinomial}(N_i,\bar{p_i},\theta) \\
 \end{aligned}
 $$
 The higher the value of $\theta$, the more concentrated the probability. When $\bar{p}_i$ is 0.5, a $\theta$ of 2 gives a completely flat distribution. This is why $\theta$ is assigned a minimum of two in the model above.
+
 
 We fit the model, and examine the posterior:
 
